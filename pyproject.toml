@@ -1,0 +1,36 @@
+[build-system]
+requires = [
+    "setuptools>=61.0.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nomad-material-processing"
+version = "0.0.1"
+description = "A plugin for NOMAD containing base sections for material processing."
+readme = "README.md"
+authors = [
+    { name = "Hampus Näsström", email = 'hampus.naesstroem@physik.hu-berlin.de' },
+    { name = "Andrea Albino", email = 'andrea.albino@physik.hu-berlin.de' },
+    { name = "Sebastian Brückner", email = 'sebastian.brueckner@ikz-berlin.de' },
+]
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+]
+dependencies = [
+    "nomad-lab>=1.2.0-pre",
+    "pytest",
+    "typing-extensions==4.4.0",
+    "structlog==22.3.0",
+]
+
+[project.license]
+file = "LICENSE"
+
+[tool.setuptools.packages.find]
+where = [
+    "src",
+]

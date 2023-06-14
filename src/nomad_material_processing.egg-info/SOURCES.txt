@@ -1,0 +1,13 @@
+LICENSE
+README.md
+pyproject.toml
+setup.py
+src/nomad_material_processing/__init__.py
+src/nomad_material_processing/schema.py
+src/nomad_material_processing/schema_actual.py
+src/nomad_material_processing.egg-info/PKG-INFO
+src/nomad_material_processing.egg-info/SOURCES.txt
+src/nomad_material_processing.egg-info/dependency_links.txt
+src/nomad_material_processing.egg-info/requires.txt
+src/nomad_material_processing.egg-info/top_level.txt
+tests/test_schema.py
