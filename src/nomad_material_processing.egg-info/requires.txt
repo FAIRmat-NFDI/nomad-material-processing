@@ -1,4 +1,0 @@
-nomad-lab>=1.2.0-pre
-pytest
-typing-extensions==4.4.0
-structlog==22.3.0
