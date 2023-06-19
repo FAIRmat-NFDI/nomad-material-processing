@@ -22,12 +22,292 @@ from structlog.stdlib import (
 from nomad.metainfo import (
     Package,
     Section,
+    SubSection,
+    Quantity,
+    MEnum,
+)
+from nomad.datamodel.data import (
+    ArchiveSection,
+)
+from nomad.datamodel.metainfo.annotations import (
+    ELNAnnotation,
+)
+from nomad.datamodel.metainfo.eln import (
+    Ensemble,
+    SampleID,
+    Substance,
 )
 from nomad_material_processing import (
+    ActivityStep,
     SampleDeposition,
+    ThinFilmStack,
 )
 
 m_package = Package(name='Physical Vapor Deposition')
+
+
+class PVDMaterialEvaporationRate(ArchiveSection):
+    m_def = Section(
+        a_plot=dict(
+            x='process_time',
+            y='rate',
+        ),
+    )
+    rate = Quantity(
+        type=float,
+        unit='meter/second',
+        shape=['*'],
+        # a_eln=ELNAnnotation(
+        #     defaultDisplayUnit='nanometer/second',
+        # ),
+    )
+    process_time = Quantity(
+        type=float,
+        unit='second',
+        shape=['*'],
+        # a_eln=ELNAnnotation(
+        #     defaultDisplayUnit='second',
+        # ),
+    )
+    measurement_type = Quantity(
+        type=MEnum(
+            'Assumed',
+            'Quartz Microbalance',
+            'RHEED',
+        )
+    )
+
+
+class PVDMaterialSource(ArchiveSection):
+    m_def = Section()
+    material = Quantity(
+        description='''
+        The material that is being evaporated.
+        ''',
+        type=Ensemble,
+    )
+    rate = SubSection(
+        section_def=PVDMaterialEvaporationRate,
+    )
+
+
+class PVDSourcePower(ArchiveSection):
+    m_def = Section(
+        a_plot=dict(
+            x='process_time',
+            y='power',
+        ),
+    )
+    power = Quantity(
+        type=float,
+        unit='watt',
+        shape=['*'],
+        # a_eln=ELNAnnotation(
+        #     defaultDisplayUnit='watt',
+        # ),
+    )
+    process_time = Quantity(
+        type=float,
+        unit='second',
+        shape=['*'],
+        # a_eln=ELNAnnotation(
+        #     defaultDisplayUnit='second',
+        # ),
+    )
+
+
+class PVDEvaporationSource(ArchiveSection):
+    m_def = Section(
+        a_plot=dict(
+            x='power/process_time',
+            y='power/power',
+        ),
+    )
+    power = SubSection(
+        section_def=PVDSourcePower,
+    )
+
+
+class PVDSource(ArchiveSection):
+    m_def = Section(
+        a_plot=[
+            dict(
+                x=[
+                    'evaporation_source/power/process_time',
+                    'material_source/rate/process_time',
+                ],
+                y=[
+                    'evaporation_source/power/power',
+                    'material_source/rate/rate',
+                ]
+            ),
+        ],
+    )
+    material_source = SubSection(
+        section_def=PVDMaterialSource,
+    )
+    evaporation_source = SubSection(
+        section_def=PVDEvaporationSource,
+    )
+
+
+class PVDTemperature(ArchiveSection):
+    m_def = Section(
+        a_plot=dict(
+            x='process_time',
+            y='temperature',
+        ),
+    )
+    temperature = Quantity(
+        type=float,
+        unit='kelvin',
+        shape=['*'],
+        # a_eln=ELNAnnotation(
+        #     defaultDisplayUnit='celsius',
+        # ),
+    )
+    process_time = Quantity(
+        type=float,
+        unit='second',
+        shape=['*'],
+        # a_eln=ELNAnnotation(
+        #     defaultDisplayUnit='second',
+        # ),
+    )
+    measurement_type = Quantity(
+        type=MEnum(
+            'Heater thermocouple',
+            'Pyrometer',
+        )
+    )
+
+
+class PVDSubstrate(ArchiveSection):
+    m_def = Section()
+    substrate = Quantity(
+        description='''
+        The thin film stack that is being evaporated on.
+        ''',
+        type=ThinFilmStack,
+    )
+    temperature = SubSection(
+        section_def=PVDTemperature,
+    )
+    heater = Quantity(
+        type=MEnum(
+            'No heating',
+            'Halogen lamp',
+            'Filament',
+            'Resistive element',
+            'CO2 laser',
+        )
+    )
+    distance_to_source = Quantity(
+        type=float,
+        unit='meter',
+        shape=['*'],
+        # a_eln=ELNAnnotation(
+        #     defaultDisplayUnit='millimeter',
+        # ),
+    )
+
+
+class PVDPressure(ArchiveSection):
+    m_def = Section(
+        a_plot=dict(
+            x='process_time',
+            y='pressure',
+        ),
+    )
+    pressure = Quantity(
+        type=float,
+        unit='pascal',
+        shape=['*'],
+        # a_eln=ELNAnnotation(
+        #     defaultDisplayUnit='millibar',
+        # ),
+    )
+    process_time = Quantity(
+        type=float,
+        unit='second',
+        shape=['*'],
+        # a_eln=ELNAnnotation(
+        #     defaultDisplayUnit='second',
+        # ),
+    )
+
+
+class PVDGasFlow(ArchiveSection):
+    gas = Quantity(
+        type=Substance,
+    )
+    flow = Quantity(
+        type=float,
+        unit='meter ** 3 / second',
+        shape=['*'],
+    )
+    process_time = Quantity(
+        type=float,
+        unit='second',
+        shape=['*'],
+        # a_eln=ELNAnnotation(
+        #     defaultDisplayUnit='second',
+        # ),
+    )
+
+
+class PVDChamberEnvironment(ArchiveSection):
+    m_def = Section()
+    gas_flow = SubSection(
+        section_def=PVDGasFlow,
+        repeats=True,
+    )
+    pressure = SubSection(
+        section_def=PVDPressure,
+    )
+
+
+class PVDStep(ActivityStep):
+    '''
+    A step of any physical vapor deposition process.
+    '''
+    m_def = Section()
+    creates_new_thin_film = Quantity(
+        type=bool,
+        description='''
+        Whether or not this step creates a new thin film.
+        ''',
+        default=False,
+        a_eln=ELNAnnotation(
+            component='BoolEditQuantity',
+        ),
+    )
+    duration = Quantity(
+        type=float,
+        unit='second'
+    )
+    source = SubSection(
+        section_def=PVDSource,
+        repeats=True,
+    )
+    substrate = SubSection(
+        section_def=PVDSubstrate,
+        repeats=True,
+    )
+    environment = SubSection(
+        section_def=PVDChamberEnvironment,
+    )
+
+    def normalize(self, archive, logger: BoundLogger) -> None:
+        '''
+        The normalizer for the `PVDStep` class.
+
+        Args:
+            archive (EntryArchive): The archive containing the section that is being
+            normalized.
+            logger (BoundLogger): A structlog logger.
+        '''
+        super(PVDStep, self).normalize(archive, logger)
 
 
 class PhysicalVaporDeposition(SampleDeposition):
@@ -41,9 +321,25 @@ class PhysicalVaporDeposition(SampleDeposition):
      - physical vapor deposition
     '''
     m_def = Section(
-        links=[
-            "http://purl.obolibrary.org/obo/CHMO_0001356"
-        ],)
+        links=["http://purl.obolibrary.org/obo/CHMO_0001356"],
+        a_plot=[
+            dict(
+                x='steps/:/environment/pressure/process_time',
+                y='steps/:/environment/pressure/pressure',
+            ),
+            dict(
+                x='steps/:/source/:/evaporation_source/power/process_time',
+                y='steps/:/source/:/evaporation_source/power/power',
+            ),
+        ],
+    )
+    steps = SubSection(
+        description='''
+        The steps of the deposition process.
+        ''',
+        section_def=PVDStep,
+        repeats=True,
+    )
 
     def normalize(self, archive, logger: BoundLogger) -> None:
         '''
@@ -55,6 +351,70 @@ class PhysicalVaporDeposition(SampleDeposition):
             logger (BoundLogger): A structlog logger.
         '''
         super(PhysicalVaporDeposition, self).normalize(archive, logger)
+
+
+class PLDTarget(Ensemble):
+    target_id = SubSection(
+        section_def = SampleID,
+    )
+
+
+class PLDTargetSource(PVDMaterialSource):
+    material = Quantity(
+        description='''
+        The material that is being evaporated.
+        ''',
+        type=PLDTarget,
+        a_eln=ELNAnnotation(
+            label='Target',
+        ),
+    )
+
+
+class PLDLaser(PVDEvaporationSource):
+    wavelength = Quantity(
+        type=float,
+        unit='meter',
+        # a_eln=ELNAnnotation(
+        #     defaultDisplayUnit='nanometer',
+        # ),
+    )
+    repetition_rate = Quantity(
+        type=float,
+        unit='hertz',
+        # a_eln=ELNAnnotation(
+        #     defaultDisplayUnit='hertz',
+        # ),
+    )
+    spot_size = Quantity(
+        type=float,
+        unit='meter ** 2',
+        # a_eln=ELNAnnotation(
+        #     defaultDisplayUnit='millimeter ** 2',
+        # ),
+    )
+    pulses = Quantity(
+        description='''
+        The total number of laser pulses during the deposition step.
+        ''',
+        type=int,
+    )
+
+
+class PLDSource(PVDSource):
+    material_source = SubSection(
+        section_def=PLDTargetSource,
+    )
+    evaporation_source = SubSection(
+        section_def=PLDLaser,
+    )
+
+
+class PLDStep(PVDStep):
+    source = SubSection(
+        section_def=PLDSource,
+        repeats=True,
+    )
 
 
 class PulsedLaserDeposition(PhysicalVaporDeposition):
@@ -74,9 +434,19 @@ class PulsedLaserDeposition(PhysicalVaporDeposition):
      - pulsed-laser deposition
     '''
     m_def = Section(
-        links=[
-            "http://purl.obolibrary.org/obo/CHMO_0001363"
-        ],)
+        links=["http://purl.obolibrary.org/obo/CHMO_0001363"],
+    )
+    method = Quantity(
+        type=str,
+        default='Pulsed Laser Deposition'
+    )
+    steps = SubSection(
+        description='''
+        The steps of the deposition process.
+        ''',
+        section_def=PLDStep,
+        repeats=True,
+    )
 
     def normalize(self, archive, logger: BoundLogger) -> None:
         '''
@@ -102,9 +472,12 @@ class SputterDeposition(PhysicalVaporDeposition):
      - sputter coating
     '''
     m_def = Section(
-        links=[
-            "http://purl.obolibrary.org/obo/CHMO_0001364"
-        ],)
+        links=["http://purl.obolibrary.org/obo/CHMO_0001364"],
+    )
+    method = Quantity(
+        type=str,
+        default='Sputter Deposition'
+    )
 
     def normalize(self, archive, logger: BoundLogger) -> None:
         '''
@@ -134,9 +507,12 @@ class ThermalEvaporation(PhysicalVaporDeposition):
      - vacuum condensation
     '''
     m_def = Section(
-        links=[
-            "http://purl.obolibrary.org/obo/CHMO_0001360"
-        ],)
+        links=["http://purl.obolibrary.org/obo/CHMO_0001360"],
+    )
+    method = Quantity(
+        type=str,
+        default='Thermal Evaporation'
+    )
 
     def normalize(self, archive, logger: BoundLogger) -> None:
         '''
