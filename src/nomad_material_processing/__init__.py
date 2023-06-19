@@ -40,6 +40,12 @@ class ActivityStep(ArchiveSection):
     A step in an activity.
     '''
     m_def = Section()
+    name = Quantity(
+        type=str,
+        description='''
+        A short and descriptive name for this step.
+        '''
+    )
 
     def normalize(self, archive, logger: BoundLogger) -> None:
         '''
