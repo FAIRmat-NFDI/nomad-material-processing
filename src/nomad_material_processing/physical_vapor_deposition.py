@@ -286,7 +286,7 @@ class PVDStep(ActivityStep):
         type=float,
         unit='second'
     )
-    source = SubSection(
+    sources = SubSection(
         section_def=PVDSource,
         repeats=True,
     )
@@ -411,7 +411,7 @@ class PLDSource(PVDSource):
 
 
 class PLDStep(PVDStep):
-    source = SubSection(
+    sources = SubSection(
         section_def=PLDSource,
         repeats=True,
     )
@@ -489,6 +489,53 @@ class SputterDeposition(PhysicalVaporDeposition):
             logger (BoundLogger): A structlog logger.
         '''
         super(SputterDeposition, self).normalize(archive, logger)
+
+
+class ThermalEvaporationHeaterTemperature(ArchiveSection):
+    m_def = Section(
+        a_plot=dict(
+            x='process_time',
+            y='temperature',
+        ),
+    )
+    temperature = Quantity(
+        type=float,
+        unit='kelvin',
+        shape=['*'],
+        # a_eln=ELNAnnotation(
+        #     defaultDisplayUnit='celsius',
+        # ),
+    )
+    process_time = Quantity(
+        type=float,
+        unit='second',
+        shape=['*'],
+        # a_eln=ELNAnnotation(
+        #     defaultDisplayUnit='second',
+        # ),
+    )
+
+
+class ThermalEvaporationHeater(PVDEvaporationSource):
+    temperature = SubSection(
+        section_def=ThermalEvaporationHeaterTemperature,
+    )
+
+
+class ThermalEvaporationSource(PVDSource):
+    material_source = SubSection(
+        section_def=PVDMaterialSource,
+    )
+    evaporation_source = SubSection(
+        section_def=ThermalEvaporationHeater,
+    )
+
+
+class ThermalEvaporationStep(PVDStep):
+    sources = SubSection(
+        section_def=ThermalEvaporationSource,
+        repeats=True,
+    )
 
 
 class ThermalEvaporation(PhysicalVaporDeposition):
