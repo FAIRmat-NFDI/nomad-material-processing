@@ -55,31 +55,36 @@ class PVDMaterialEvaporationRate(ArchiveSection):
     )
     rate = Quantity(
         type=float,
-        unit='meter/second',
+        unit='mol/meter ** 2/second',
         shape=['*'],
-        # a_eln=ELNAnnotation(
-        #     defaultDisplayUnit='nanometer/second',
-        # ),
+        a_eln=ELNAnnotation(
+            defaultDisplayUnit='micromol/m ** 2/second',
+        ),
     )
     process_time = Quantity(
         type=float,
         unit='second',
         shape=['*'],
-        # a_eln=ELNAnnotation(
-        #     defaultDisplayUnit='second',
-        # ),
+        a_eln=ELNAnnotation(
+            defaultDisplayUnit='second',
+        ),
     )
     measurement_type = Quantity(
         type=MEnum(
             'Assumed',
-            'Quartz Microbalance',
+            'Quartz Crystal Microbalance',
             'RHEED',
         )
     )
 
 
 class PVDMaterialSource(ArchiveSection):
-    m_def = Section()
+    m_def = Section(
+        a_plot=dict(
+            x='rate/process_time',
+            y='rate/rate',
+        ),
+    )
     material = Quantity(
         description='''
         The material that is being evaporated.
@@ -102,17 +107,17 @@ class PVDSourcePower(ArchiveSection):
         type=float,
         unit='watt',
         shape=['*'],
-        # a_eln=ELNAnnotation(
-        #     defaultDisplayUnit='watt',
-        # ),
+        a_eln=ELNAnnotation(
+            defaultDisplayUnit='watt',
+        ),
     )
     process_time = Quantity(
         type=float,
         unit='second',
         shape=['*'],
-        # a_eln=ELNAnnotation(
-        #     defaultDisplayUnit='second',
-        # ),
+        a_eln=ELNAnnotation(
+            defaultDisplayUnit='second',
+        ),
     )
 
 
@@ -143,6 +148,12 @@ class PVDSource(ArchiveSection):
             ),
         ],
     )
+    name = Quantity(
+        type=str,
+        description='''
+        A short and descriptive name for this source.
+        '''
+    )
     material_source = SubSection(
         section_def=PVDMaterialSource,
     )
@@ -151,7 +162,7 @@ class PVDSource(ArchiveSection):
     )
 
 
-class PVDTemperature(ArchiveSection):
+class PVDSubstrateTemperature(ArchiveSection):
     m_def = Section(
         a_plot=dict(
             x='process_time',
@@ -162,17 +173,17 @@ class PVDTemperature(ArchiveSection):
         type=float,
         unit='kelvin',
         shape=['*'],
-        # a_eln=ELNAnnotation(
-        #     defaultDisplayUnit='celsius',
-        # ),
+        a_eln=ELNAnnotation(
+            defaultDisplayUnit='celsius',
+        ),
     )
     process_time = Quantity(
         type=float,
         unit='second',
         shape=['*'],
-        # a_eln=ELNAnnotation(
-        #     defaultDisplayUnit='second',
-        # ),
+        a_eln=ELNAnnotation(
+            defaultDisplayUnit='second',
+        ),
     )
     measurement_type = Quantity(
         type=MEnum(
@@ -183,7 +194,12 @@ class PVDTemperature(ArchiveSection):
 
 
 class PVDSubstrate(ArchiveSection):
-    m_def = Section()
+    m_def = Section(
+        a_plot=dict(
+            x='temperature/process_time',
+            y='temperature/temperature',
+        ),
+    )
     substrate = Quantity(
         description='''
         The thin film stack that is being evaporated on.
@@ -191,7 +207,7 @@ class PVDSubstrate(ArchiveSection):
         type=ThinFilmStack,
     )
     temperature = SubSection(
-        section_def=PVDTemperature,
+        section_def=PVDSubstrateTemperature,
     )
     heater = Quantity(
         type=MEnum(
@@ -223,17 +239,17 @@ class PVDPressure(ArchiveSection):
         type=float,
         unit='pascal',
         shape=['*'],
-        # a_eln=ELNAnnotation(
-        #     defaultDisplayUnit='millibar',
-        # ),
+        a_eln=ELNAnnotation(
+            defaultDisplayUnit='millibar',
+        ),
     )
     process_time = Quantity(
         type=float,
         unit='second',
         shape=['*'],
-        # a_eln=ELNAnnotation(
-        #     defaultDisplayUnit='second',
-        # ),
+        a_eln=ELNAnnotation(
+            defaultDisplayUnit='second',
+        ),
     )
 
 
@@ -257,7 +273,12 @@ class PVDGasFlow(ArchiveSection):
 
 
 class PVDChamberEnvironment(ArchiveSection):
-    m_def = Section()
+    m_def = Section(
+        a_plot=dict(
+            x='pressure/process_time',
+            y='pressure/pressure',
+        ),
+    )
     gas_flow = SubSection(
         section_def=PVDGasFlow,
         repeats=True,
@@ -502,27 +523,79 @@ class ThermalEvaporationHeaterTemperature(ArchiveSection):
         type=float,
         unit='kelvin',
         shape=['*'],
-        # a_eln=ELNAnnotation(
-        #     defaultDisplayUnit='celsius',
-        # ),
+        a_eln=ELNAnnotation(
+            defaultDisplayUnit='celsius',
+        ),
     )
     process_time = Quantity(
         type=float,
         unit='second',
         shape=['*'],
-        # a_eln=ELNAnnotation(
-        #     defaultDisplayUnit='second',
-        # ),
+        a_eln=ELNAnnotation(
+            defaultDisplayUnit='second',
+        ),
     )
 
 
 class ThermalEvaporationHeater(PVDEvaporationSource):
+    m_def = Section(
+        a_plot=dict(
+            x=[
+                'temperature/process_time',
+                'power/process_time',
+            ],
+            y=[
+                'temperature/temperature',
+                'power/power',
+            ],
+            lines=[
+                dict(
+                    mode= 'lines',
+                    line=dict(
+                        color='rgb(25, 46, 135)',
+                    ),
+                ),
+                dict(
+                    mode= 'lines',
+                    line=dict(
+                        color='rgb(0, 138, 104)',
+                    ),
+                ),
+            ],
+        ),
+    )
     temperature = SubSection(
         section_def=ThermalEvaporationHeaterTemperature,
     )
 
 
 class ThermalEvaporationSource(PVDSource):
+    m_def = Section(
+        a_plot=dict(
+            x=[
+                'material_source/rate/process_time',
+                'evaporation_source/temperature/process_time',
+            ],
+            y=[
+                'material_source/rate/rate',
+                'evaporation_source/temperature/temperature',
+            ],
+            lines=[
+                dict(
+                    mode= 'lines',
+                    line=dict(
+                        color='rgb(25, 46, 135)',
+                    ),
+                ),
+                dict(
+                    mode= 'lines',
+                    line=dict(
+                        color='rgb(0, 138, 104)',
+                    ),
+                ),
+            ],
+        ),
+    )
     material_source = SubSection(
         section_def=PVDMaterialSource,
     )
@@ -532,6 +605,22 @@ class ThermalEvaporationSource(PVDSource):
 
 
 class ThermalEvaporationStep(PVDStep):
+    m_def = Section(
+        a_plot=[
+            dict(
+                x='sources/:/material_source/rate/process_time',
+                y='sources/:/material_source/rate/rate',
+            ),
+            dict(
+                x='sources/:/evaporation_source/temperature/process_time',
+                y='sources/:/evaporation_source/temperature/temperature',
+            ),
+            dict(
+                x='sources/:/evaporation_source/power/process_time',
+                y='sources/:/evaporation_source/power/power',
+            ),
+        ],
+    )
     sources = SubSection(
         section_def=ThermalEvaporationSource,
         repeats=True,
@@ -555,6 +644,25 @@ class ThermalEvaporation(PhysicalVaporDeposition):
     '''
     m_def = Section(
         links=["http://purl.obolibrary.org/obo/CHMO_0001360"],
+        a_plot=[
+            dict(
+                x='steps/:/sources/:/material_source/rate/process_time',
+                y='steps/:/sources/:/material_source/rate/rate',
+            ),
+            # dict(
+            #     x='steps/:/sources/:/evaporation_source/temperature/process_time',
+            #     y='steps/:/sources/:/evaporation_source/temperature/temperature',
+            # ),
+            dict(
+                x='steps/:/environment/pressure/process_time',
+                y='steps/:/environment/pressure/pressure',
+                layout=dict(
+                    yaxis=dict(
+                        type='log',
+                    ),
+                ),
+            ),
+        ],
     )
     method = Quantity(
         type=str,
