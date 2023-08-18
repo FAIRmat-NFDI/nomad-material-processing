@@ -21,9 +21,8 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
 ]
 dependencies = [
-    "nomad-lab>=1.2.0-pre",
+    "nomad-lab>=1.2.1.dev",
     "pytest",
-    "typing-extensions==4.4.0",
     "structlog==22.3.0",
 ]
 
