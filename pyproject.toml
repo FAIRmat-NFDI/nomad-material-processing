@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nomad-material-processing"
-version = "0.0.1"
+version = "0.0.2"
 description = "A plugin for NOMAD containing base sections for material processing."
 readme = "README.md"
 authors = [
@@ -21,7 +21,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
 ]
 dependencies = [
-    "nomad-lab>=1.2.1.dev",
+    "nomad-lab==1.2.1.dev",
     "pytest",
     "structlog==22.3.0",
 ]
