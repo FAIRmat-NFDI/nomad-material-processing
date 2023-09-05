@@ -32,13 +32,13 @@ from nomad.datamodel.data import (
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
 )
-from nomad.datamodel.metainfo.eln import (
-    Ensemble,
-    SampleID,
-    Substance,
+from nomad.datamodel.metainfo.basesections import (
+    ActivityStep,
+    CompositeSystem,
+    PureSubstance,
+    ReadableIdentifiers,
 )
 from nomad_material_processing import (
-    ActivityStep,
     SampleDeposition,
     ThinFilmStack,
 )
@@ -89,7 +89,7 @@ class PVDMaterialSource(ArchiveSection):
         description='''
         The material that is being evaporated.
         ''',
-        type=Ensemble,
+        type=CompositeSystem,
     )
     rate = SubSection(
         section_def=PVDMaterialEvaporationRate,
@@ -255,7 +255,7 @@ class PVDPressure(ArchiveSection):
 
 class PVDGasFlow(ArchiveSection):
     gas = Quantity(
-        type=Substance,
+        type=PureSubstance,
     )
     flow = Quantity(
         type=float,
@@ -374,9 +374,9 @@ class PhysicalVaporDeposition(SampleDeposition):
         super(PhysicalVaporDeposition, self).normalize(archive, logger)
 
 
-class PLDTarget(Ensemble):
+class PLDTarget(CompositeSystem):
     target_id = SubSection(
-        section_def = SampleID,
+        section_def = ReadableIdentifiers,
     )
 
 

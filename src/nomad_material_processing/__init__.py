@@ -24,42 +24,15 @@ from nomad.metainfo import (
     Quantity,
     Section,
 )
-from nomad.datamodel.data import (
-    ArchiveSection,
-)
-from nomad.datamodel.metainfo.eln import (
-    Process,
-    Ensemble,
+from nomad.datamodel.metainfo.basesections import (
+    SynthesisMethod,
+    CompositeSystem,
 )
 
 m_package = Package(name='Material Processing')
 
 
-class ActivityStep(ArchiveSection):
-    '''
-    A step in an activity.
-    '''
-    m_def = Section()
-    name = Quantity(
-        type=str,
-        description='''
-        A short and descriptive name for this step.
-        '''
-    )
-
-    def normalize(self, archive, logger: BoundLogger) -> None:
-        '''
-        The normalizer for the `ActivityStep` class.
-
-        Args:
-            archive (EntryArchive): The archive containing the section that is being
-            normalized.
-            logger (BoundLogger): A structlog logger.
-        '''
-        super(ActivityStep, self).normalize(archive, logger)
-
-
-class Substrate(Ensemble, ArchiveSection):
+class Substrate(CompositeSystem):
     '''
     A thin free standing sheet of material. Not to be confused with the substrate role
     during a deposition, which can be a `Substrate` with `ThinFilm`(s) on it.
@@ -89,7 +62,7 @@ class Substrate(Ensemble, ArchiveSection):
         super(Substrate, self).normalize(archive, logger)
 
 
-class ThinFilm(Ensemble, ArchiveSection):
+class ThinFilm(CompositeSystem):
     '''
     A thin film of material which exists as part of a stack.
     '''
@@ -118,7 +91,7 @@ class ThinFilm(Ensemble, ArchiveSection):
         super(ThinFilm, self).normalize(archive, logger)
 
 
-class ThinFilmStack(Ensemble, ArchiveSection):
+class ThinFilmStack(CompositeSystem):
     '''
     A stack of `ThinFilm`(s). Typically deposited on a `Substrate`.
     '''
@@ -157,7 +130,7 @@ class ThinFilmStack(Ensemble, ArchiveSection):
         super(ThinFilmStack, self).normalize(archive, logger)
 
 
-class SampleDeposition(Process, ArchiveSection):
+class SampleDeposition(SynthesisMethod):
     '''
     The process of the settling of particles (atoms or molecules) from a solution,
     suspension or vapour onto a pre-existing surface, resulting in the growth of a
