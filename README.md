@@ -1,4 +1,6 @@
 # NOMAD's Material Processing Plugin
+This is a plugin for [NOMAD](https://nomad-lab.eu) which contains base sections for
+material processing.
 
 ## Getting started
 This code is currently under development and can be installed by cloning the repository:
