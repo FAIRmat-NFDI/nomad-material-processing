@@ -20,6 +20,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.9",
+    "License :: OSI Approved :: Apache Software License",
 ]
 dependencies = [
     "nomad-lab==1.2.1",
@@ -29,6 +30,10 @@ dependencies = [
 
 [project.license]
 file = "LICENSE"
+
+[project.urls]
+"Homepage" = "https://github.com/FAIRmat-NFDI/nomad-material-processing"
+"Bug Tracker" = "https://github.com/FAIRmat-NFDI/nomad-material-processing/issues"
 
 [tool.setuptools.packages.find]
 where = [
