@@ -1,12 +1,13 @@
 [build-system]
 requires = [
     "setuptools>=61.0.0",
+    "setuptools-scm>=8.0",
 ]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "nomad-material-processing"
-version = "0.0.2"
+dynamic = ["version"]
 description = "A plugin for NOMAD containing base sections for material processing."
 readme = "README.md"
 authors = [
@@ -33,3 +34,5 @@ file = "LICENSE"
 where = [
     "src",
 ]
+
+[tool.setuptools_scm]
