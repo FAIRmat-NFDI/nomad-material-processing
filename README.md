@@ -1,3 +1,8 @@
+![](https://github.com/FAIRmat-NFDI/nomad-material-processing/actions/workflows/publish.yml/badge.svg)
+![](https://img.shields.io/pypi/pyversions/nomad-material-processing)
+![](https://img.shields.io/pypi/l/nomad-material-processing)
+![](https://img.shields.io/pypi/v/nomad-material-processing)
+
 # NOMAD's Material Processing Plugin
 This is a plugin for [NOMAD](https://nomad-lab.eu) which contains base sections for
 material processing.
