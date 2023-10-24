@@ -37,6 +37,9 @@ from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
     ELNComponentEnum,
 )
+from nomad.datamodel.metainfo.workflow import (
+    Link,
+)
 
 m_package = Package(name='Material Processing')
 
@@ -347,6 +350,16 @@ class SampleDeposition(SynthesisMethod):
             logger (BoundLogger): A structlog logger.
         '''
         super(SampleDeposition, self).normalize(archive, logger)
+        tasks = []
+        previous = None
+        for step in self.steps:
+            task = step.to_task()
+            task.outputs = [Link(name=step.name, section=step)]
+            if previous is not None:
+                task.inputs = [Link(name=previous.name, section=previous)]
+            tasks.append(task)
+            previous=step
+        archive.workflow2.tasks = tasks
 
 
 m_package.__init_metainfo__()
