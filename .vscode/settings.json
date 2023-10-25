@@ -1,5 +1,6 @@
 {
     "python.defaultInterpreterPath": ".pyenv/bin/python",
+    "python.terminal.activateEnvInCurrentTerminal": true,
     "editor.rulers": [
         90
     ],

@@ -16,9 +16,11 @@
 # limitations under the License.
 #
 
-from structlog.stdlib import (
-    BoundLogger,
-)
+from typing import TYPE_CHECKING
+
+import plotly.express as px
+import plotly.graph_objects as go
+
 from nomad.metainfo import (
     Package,
     Section,
@@ -28,6 +30,10 @@ from nomad.metainfo import (
 )
 from nomad.datamodel.data import (
     ArchiveSection,
+)
+from nomad.datamodel.metainfo.plot import (
+    PlotSection,
+    PlotlyFigure,
 )
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
@@ -43,10 +49,18 @@ from nomad_material_processing import (
     ThinFilmStack,
 )
 
+if TYPE_CHECKING:
+    from nomad.datamodel.datamodel import (
+        EntryArchive,
+    )
+    from structlog.stdlib import (
+        BoundLogger,
+    )
+
 m_package = Package(name='Physical Vapor Deposition')
 
 
-class PVDMaterialEvaporationRate(ArchiveSection):
+class PVDMaterialEvaporationRate(PlotSection):
     m_def = Section(
         a_plot=dict(
             x='process_time',
@@ -76,6 +90,27 @@ class PVDMaterialEvaporationRate(ArchiveSection):
             'RHEED',
         )
     )
+
+    # def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger'):
+    #     '''
+    #     The normalize function of the `PVDMaterialEvaporationRate` section. Will create
+    #     the plotly plot for this section.
+
+    #     Args:
+    #         archive (EntryArchive): The archive containing the section that is being
+    #         normalized.
+    #         logger (BoundLogger): A structlog logger.
+    #     '''
+    #     super().normalize(archive, logger)
+    #     figure = px.scatter(
+    #         x=self.process_time,
+    #         y=self.rate,
+    #         title="Evaporation Rate"
+    #     )
+    #     self.figures.append(PlotlyFigure(
+    #         label='Evaporation Rate',
+    #         figure=figure.to_plotly_json()
+    #     ))
 
 
 class PVDMaterialSource(ArchiveSection):
@@ -319,7 +354,7 @@ class PVDStep(ActivityStep):
         section_def=PVDChamberEnvironment,
     )
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
+    def normalize(self, archive, logger: 'BoundLogger') -> None:
         '''
         The normalizer for the `PVDStep` class.
 
@@ -331,7 +366,7 @@ class PVDStep(ActivityStep):
         super(PVDStep, self).normalize(archive, logger)
 
 
-class PhysicalVaporDeposition(SampleDeposition):
+class PhysicalVaporDeposition(SampleDeposition, PlotSection):
     '''
     A synthesis technique where vaporized molecules or atoms condense on a surface,
     forming a thin layer. The process is purely physical; no chemical reaction occurs
@@ -362,7 +397,7 @@ class PhysicalVaporDeposition(SampleDeposition):
         repeats=True,
     )
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
+    def normalize(self, archive, logger: 'BoundLogger') -> None:
         '''
         The normalizer for the `PhysicalVaporDeposition` class.
 
@@ -372,6 +407,36 @@ class PhysicalVaporDeposition(SampleDeposition):
             logger (BoundLogger): A structlog logger.
         '''
         super(PhysicalVaporDeposition, self).normalize(archive, logger)
+        fig = go.Figure()
+        for step in self.steps:
+            x = step.environment.pressure.process_time
+            fig.add_trace(go.Scatter(
+                x=x, 
+                y=step.environment.pressure.pressure,
+                name=step.name,
+                line=dict(color='royalblue', width=2),
+            ))
+            fig.add_vline(x=x[-1].magnitude)
+            fig.add_annotation(
+                text=step.name,
+                yref="paper",
+                x=(x[0]+(x[-1]-x[0])/2).magnitude,
+                y=0.7,
+                showarrow=False,
+                textangle=-90,
+            )
+        fig.update_layout(
+            title='Chamber Pressure',
+            xaxis_title='Process time / s',
+            yaxis_title='Chamber pressure / Pa',
+            margin=dict(t=30),
+        )
+        fig.update_yaxes(type="log")
+        fig.update_xaxes(fixedrange=False)
+        self.figures.append(PlotlyFigure(
+            label='Chamber Pressure',
+            figure=fig.to_plotly_json(),
+        ))
 
 
 class PLDTarget(CompositeSystem):
@@ -469,7 +534,7 @@ class PulsedLaserDeposition(PhysicalVaporDeposition):
         repeats=True,
     )
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
+    def normalize(self, archive, logger: 'BoundLogger') -> None:
         '''
         The normalizer for the `PulsedLaserDeposition` class.
 
@@ -500,7 +565,7 @@ class SputterDeposition(PhysicalVaporDeposition):
         default='Sputter Deposition'
     )
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
+    def normalize(self, archive, logger: 'BoundLogger') -> None:
         '''
         The normalizer for the `SputterDeposition` class.
 
@@ -669,7 +734,7 @@ class ThermalEvaporation(PhysicalVaporDeposition):
         default='Thermal Evaporation'
     )
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
+    def normalize(self, archive, logger: 'BoundLogger') -> None:
         '''
         The normalizer for the `ThermalEvaporation` class.
 
