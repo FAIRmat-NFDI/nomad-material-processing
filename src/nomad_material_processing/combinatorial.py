@@ -238,8 +238,18 @@ class ContinuousCombiSampleReference(CombinatorialSampleReference):
     m_def = Section(
         label_quantity='sample_number',
     )
-    reference = CombinatorialSampleReference.reference.m_copy()
-    reference.type = ContinuousCombiSample
+    reference = Quantity(
+        type=ContinuousCombiSample,
+        description='''
+        The reference to the combinatorial sample entry.
+        ''',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.ReferenceEditQuantity,
+            label='Sample Reference',
+        ),
+    )
+    # reference = CombinatorialSampleReference.reference.m_copy()
+    # reference.type = ContinuousCombiSample  # Specializing custom types is currently not supported.
     position = SubSection(
         section_def=CombinatorialSamplePosition,
         description='''
