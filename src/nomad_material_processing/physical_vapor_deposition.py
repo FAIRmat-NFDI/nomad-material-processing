@@ -31,6 +31,7 @@ from nomad.datamodel.data import (
 )
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
+    ELNComponentEnum,
 )
 from nomad.datamodel.metainfo.basesections import (
     ActivityStep,
@@ -388,6 +389,7 @@ class PLDTargetSource(PVDMaterialSource):
         type=PLDTarget,
         a_eln=ELNAnnotation(
             label='Target',
+            component=ELNComponentEnum.ReferenceEditQuantity
         ),
     )
 
