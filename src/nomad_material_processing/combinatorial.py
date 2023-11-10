@@ -130,23 +130,36 @@ class CombinatorialLibrary(Collection):
     A base section for any combinatorial library.
     '''
     m_def = Section()
-    lab_id = Quantity(
-        type=str,
-        description='''
+    # lab_id = Quantity(
+    #     type=str,
+    #     description='''
+    #     A unique human readable ID for the combinatorial library.
+    #     ''',
+    #     a_eln=ELNAnnotation(
+    #         component=ELNComponentEnum.StringEditQuantity,
+    #         label='Library ID'
+    #     ),
+    # )
+    lab_id = Collection.lab_id.m_copy()
+    lab_id.description = '''
         A unique human readable ID for the combinatorial library.
-        ''',
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.StringEditQuantity,
-            label='Library ID'
-        ),
-    )
-    samples = SubSection(
-        section_def=CombinatorialSampleReference,
-        description='''
+        '''
+    lab_id.m_annotations['eln'].label = 'Library ID'
+    entities = Collection.entities.m_copy()
+    entities.section_def = CombinatorialSampleReference
+    entities.description = '''
         All the investigated samples of the combinatorial library.
-        ''',
-        repeats=True,
+        '''
+    entities.m_annotations['eln'] = ELNAnnotation(
+        label='Samples'
     )
+    # samples = SubSection(
+    #     section_def=CombinatorialSampleReference,
+    #     description='''
+    #     All the investigated samples of the combinatorial library.
+    #     ''',
+    #     repeats=True,
+    # )
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         '''
