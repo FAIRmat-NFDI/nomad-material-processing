@@ -23,14 +23,164 @@ from nomad.metainfo import (
     Package,
     Quantity,
     Section,
+    SubSection,
 )
 from nomad.datamodel.metainfo.basesections import (
+    ElementalComposition,
     SynthesisMethod,
     CompositeSystem,
+)
+from nomad.datamodel.data import (
+    EntryData,
+    ArchiveSection,
+    Author
 )
 
 m_package = Package(name='Material Processing')
 
+
+class Geometry(ArchiveSection):
+    '''
+    Geometrical shape attributes of a system.
+    The children of this class represent concrete geometrical shapes.
+    '''
+    m_def = Section(
+    )
+    volume = Quantity(
+        type=float,
+        description='docs',
+        a_eln={
+            "component": "NumberEditQuantity"
+        },
+        unit="meter ** 3",
+    )
+
+
+class Parallelepiped(Geometry):
+    '''
+    Six-faced polyhedron with each pair of opposite faces parallel and equal in size, 
+    characterized by rectangular sides and parallelogram faces.
+    '''
+    m_def = Section(
+    )
+    height = Quantity(
+        type=float,
+        description='dimension z',
+        a_eln={
+            "component": "NumberEditQuantity",
+            "defaultDisplayUnit": "nanometer",
+            "label": "Height (z)",
+        },
+        unit="meter",
+    )
+    width = Quantity(
+        type=float,
+        description='dimension x',
+        a_eln={
+            "component": "NumberEditQuantity",
+            "defaultDisplayUnit": "millimeter",
+            "label": "Width (x)"
+        },
+        unit="meter",
+    )
+    length = Quantity(
+        type=float,
+        description='dimension y',
+        a_eln={
+            "component": "NumberEditQuantity",
+            "defaultDisplayUnit": "millimeter",
+            "label": "Length (y)"
+        },
+        unit="meter"
+    )
+    surface_area = Quantity(
+        type=float,
+        description='product of length and width, representing the total exposed area of the primary surface',
+        a_eln={
+            "component": "NumberEditQuantity",
+            "defaultDisplayUnit": "millimeter ** 2",
+            "label": "Surface Area (x*y)"
+        },
+        unit="meter ** 2",
+    )
+
+
+class Miscut(ArchiveSection):
+    '''
+    The miscut in a crystalline substrate refers to 
+    the intentional deviation from a specific crystallographic orientation, 
+    commonly expressed as the angular displacement of a crystal plane.
+    '''
+    angle = Quantity(
+        type=float,
+        description='angular displacement from crystallographic orientation of the substrate',
+        a_eln={
+            "component": "NumberEditQuantity",
+            "defaultDisplayUnit": "deg"
+        },
+        unit="deg",
+    )    
+    angle_deviation = Quantity(
+        type=float,
+        description='uncertainty on the angular displacement',
+        a_eln={
+            "component": "NumberEditQuantity",
+            "defaultDisplayUnit": "deg"
+        },
+        unit="deg",
+    )
+    orientation = Quantity(
+        type=str,
+        description='crystallographic orientation of the substrate in [hkl]',
+        a_eln={
+            "component": "StringEditQuantity"
+        }
+    )
+
+
+class Dopant(ElementalComposition):
+    '''
+    A dopant element in a crystalline structure 
+    is a foreign atom intentionally introduced into the crystal lattice.
+    '''
+    element = ElementalComposition.element.m_copy()
+    
+    doping_level = Quantity(
+        type=float,
+        description='Chemical doping level',
+        a_eln={
+            "component": "NumberEditQuantity",
+            "defaultDisplayUnit": "1 / cm ** 3"
+            },
+        unit="1 / m ** 3",
+    )
+
+
+class CrystalProperties(ArchiveSection):
+    '''
+    Characteristics arising from the ordered arrangement of atoms in a crystalline structure.
+    These properties are defined by factors such as crystal symmetry, lattice parameters, 
+    and the specific arrangement of atoms within the crystal lattice.
+    '''
+    
+    
+class SubstrateCrystalProperties(CrystalProperties):
+    '''
+    Crystallographic parameters such as orientation, miscut, and surface structure.
+    '''
+    orientation = Quantity(
+        type=str,
+        description='''Alignment of crystal lattice 
+            with respect to a vector normal to the surface
+            specified using Miller indices.''',
+        a_eln={
+            "component": "StringEditQuantity"
+        },
+    )
+    miscut = SubSection(
+        section_def=Miscut
+    )
+    
 
 class Substrate(CompositeSystem):
     '''
@@ -38,18 +188,24 @@ class Substrate(CompositeSystem):
     during a deposition, which can be a `Substrate` with `ThinFilm`(s) on it.
     '''
     m_def = Section()
-    thickness = Quantity(
-        type=float,
-        description='''
-        The (average) thickness of the substrate.
-        ''',
+    
+    supplier = Quantity(
+        type=str,
+        description='Supplier of the current substrate specimen',
         a_eln={
-            "component": "NumberEditQuantity",
-            "defaultDisplayUnit": "millimeter"
-        },
-        unit="meter",
+            "component": "StringEditQuantity"
+        }
     )
-
+    supplier_id = Quantity(
+        type=str,
+        description='''An ID string that is unique from the supplier.''',
+        a_eln=dict(component='StringEditQuantity', label="Supplier ID"),
+    )    
+    lab_id = Quantity(
+        type=str,
+        a_eln=dict(component='StringEditQuantity', label="Substrate ID"),
+    )
+    
     def normalize(self, archive, logger: BoundLogger) -> None:
         '''
         The normalizer for the `Substrate` class.
@@ -62,21 +218,32 @@ class Substrate(CompositeSystem):
         super(Substrate, self).normalize(archive, logger)
 
 
+class CrystallineSubstrate(Substrate):
+    '''
+    The substrate defined in this class is composed of periodic arrangement of atoms
+    and shows typical features of a crystal structure.
+    '''
+    m_def = Section()
+        
+    geometry = SubSection(
+        section_def=Geometry
+    )
+    crystal_properties = SubSection(
+        section_def=SubstrateCrystalProperties
+    )
+    dopants = SubSection(
+        section_def=Dopant
+    )
+    
+    
 class ThinFilm(CompositeSystem):
     '''
     A thin film of material which exists as part of a stack.
     '''
     m_def = Section()
-    thickness = Quantity(
-        type=float,
-        description='''
-        The (average) thickness of the thin film.
-        ''',
-        a_eln={
-            "component": "NumberEditQuantity",
-            "defaultDisplayUnit": "nanometer"
-        },
-        unit="meter",
+
+    geometry = SubSection(
+        section_def=Geometry
     )
 
     def normalize(self, archive, logger: BoundLogger) -> None:
