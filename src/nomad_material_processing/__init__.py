@@ -49,10 +49,10 @@ class Geometry(ArchiveSection):
     volume = Quantity(
         type=float,
         description='The volume of the geometric shape.',
-        a_eln={
-            "component": "NumberEditQuantity"
-        },
-        unit="meter ** 3",
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        )
+        unit='meter ** 3',
     )
 
 
@@ -65,17 +65,17 @@ class Parallelepiped(Geometry):
     )
     height = Quantity(
         type=float,
-        description='dimension z',
+        description='The z dimension of the parallelepiped.',
         a_eln={
             "component": "NumberEditQuantity",
             "defaultDisplayUnit": "nanometer",
             "label": "Height (z)",
         },
-        unit="meter",
+        unit='meter',
     )
     width = Quantity(
         type=float,
-        description='dimension x',
+        description='The x dimension of the parallelepiped.',
         a_eln={
             "component": "NumberEditQuantity",
             "defaultDisplayUnit": "millimeter",
