@@ -295,9 +295,9 @@ class ThinFilmStack(CompositeSystem):
         The substrate which the thin film layers of the thin film stack are deposited
         on.
         ''',
-        a_eln={
-            "component": "ReferenceEditQuantity"
-        },
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.ReferenceEditQuantity,
+        ),
     )
     layers = Quantity(
         type=ThinFilm,
@@ -305,9 +305,9 @@ class ThinFilmStack(CompositeSystem):
         An ordered list (starting at the substrate) of the thin films making up the
         thin film stacks.
         ''',
-        a_eln={
-            "component": "ReferenceEditQuantity"
-        },
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.ReferenceEditQuantity,
+        ),
         shape=["*"],
     )
 
