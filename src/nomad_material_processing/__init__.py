@@ -143,7 +143,6 @@ class Dopant(ElementalComposition):
     A dopant element in a crystalline structure 
     is a foreign atom intentionally introduced into the crystal lattice.
     '''
-    element = ElementalComposition.element.m_copy()
     
     doping_level = Quantity(
         type=float,
