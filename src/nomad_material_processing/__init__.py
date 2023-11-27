@@ -31,9 +31,7 @@ from nomad.datamodel.metainfo.basesections import (
     CompositeSystem,
 )
 from nomad.datamodel.data import (
-    EntryData,
     ArchiveSection,
-    Author
 )
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
