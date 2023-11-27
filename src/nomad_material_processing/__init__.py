@@ -129,7 +129,7 @@ class Miscut(ArchiveSection):
             label='Miscut Angle',
         ),
         unit='deg',
-    )    
+    )
     angle_deviation = Quantity(
         type=float,
         description='The ± uncertainty in the angular displacement.',
@@ -154,7 +154,6 @@ class Dopant(ElementalComposition):
     A dopant element in a crystalline structure 
     is a foreign atom intentionally introduced into the crystal lattice.
     '''
-    
     doping_level = Quantity(
         type=float,
         description='The chemical doping level.',
@@ -172,8 +171,8 @@ class CrystalProperties(ArchiveSection):
     These properties are defined by factors such as crystal symmetry, lattice parameters, 
     and the specific arrangement of atoms within the crystal lattice.
     '''
-    
-    
+
+
 class SubstrateCrystalProperties(CrystalProperties):
     '''
     Crystallographic parameters such as orientation, miscut, and surface structure.
@@ -196,7 +195,7 @@ class SubstrateCrystalProperties(CrystalProperties):
         orientation.
         ''',
     )
-    
+
 
 class Substrate(CompositeSystem):
     '''
@@ -204,7 +203,6 @@ class Substrate(CompositeSystem):
     during a deposition, which can be a `Substrate` with `ThinFilm`(s) on it.
     '''
     m_def = Section()
-    
     supplier = Quantity(
         type=str,
         description='The supplier of the current substrate specimen.',
@@ -220,7 +218,7 @@ class Substrate(CompositeSystem):
             component=ELNComponentEnum.StringEditQuantity,
             label='Supplier ID',
         ),
-    )    
+    )
     lab_id = Quantity(
         type=str,
         a_eln=ELNAnnotation(
@@ -228,7 +226,7 @@ class Substrate(CompositeSystem):
             label='Substrate ID',
         ),
     )
-    
+
     def normalize(self, archive, logger: BoundLogger) -> None:
         '''
         The normalizer for the `Substrate` class.
@@ -247,7 +245,6 @@ class CrystallineSubstrate(Substrate):
     and shows typical features of a crystal structure.
     '''
     m_def = Section()
-        
     geometry = SubSection(
         section_def=Geometry,
         description='Section containing the geometry of the substrate.',
@@ -263,8 +260,8 @@ class CrystallineSubstrate(Substrate):
         Repeating section containing information on any dopants in the substrate.
         ''',
     )
-    
-    
+
+
 class ThinFilm(CompositeSystem):
     '''
     A thin film of material which exists as part of a stack.
