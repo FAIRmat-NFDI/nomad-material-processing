@@ -81,17 +81,17 @@ class Parallelepiped(Geometry):
             "defaultDisplayUnit": "millimeter",
             "label": "Width (x)"
         },
-        unit="meter",
+        unit='meter',
     )
     length = Quantity(
         type=float,
-        description='dimension y',
-        a_eln={
-            "component": "NumberEditQuantity",
-            "defaultDisplayUnit": "millimeter",
-            "label": "Length (y)"
-        },
-        unit="meter"
+        description='The y dimension of the parallelepiped.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='millimeter',
+            label='Length (y)',
+        ),
+        unit='meter'
     )
     surface_area = Quantity(
         type=float,
