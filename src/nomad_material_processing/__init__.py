@@ -80,11 +80,11 @@ class Parallelepiped(Geometry):
     width = Quantity(
         type=float,
         description='The x dimension of the parallelepiped.',
-        a_eln={
-            "component": "NumberEditQuantity",
-            "defaultDisplayUnit": "millimeter",
-            "label": "Width (x)"
-        },
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='millimeter',
+            label='Width (x)',
+        ),
         unit='meter',
     )
     length = Quantity(
