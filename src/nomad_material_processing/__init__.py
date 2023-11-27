@@ -15,9 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-from structlog.stdlib import (
-    BoundLogger,
+from typing import (
+    TYPE_CHECKING,
 )
 from nomad.metainfo import (
     Package,
@@ -40,6 +39,14 @@ from nomad.datamodel.metainfo.annotations import (
 from nomad.datamodel.metainfo.workflow import (
     Link,
 )
+
+if TYPE_CHECKING:
+    from nomad.datamodel.datamodel import (
+        EntryArchive,
+    )
+    from structlog.stdlib import (
+        BoundLogger,
+    )
 
 m_package = Package(name='Material Processing')
 
@@ -229,17 +236,6 @@ class Substrate(CompositeSystem):
         ),
     )
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
-        '''
-        The normalizer for the `Substrate` class.
-
-        Args:
-            archive (EntryArchive): The archive containing the section that is being
-            normalized.
-            logger (BoundLogger): A structlog logger.
-        '''
-        super(Substrate, self).normalize(archive, logger)
-
 
 class CrystallineSubstrate(Substrate):
     '''
@@ -275,17 +271,6 @@ class ThinFilm(CompositeSystem):
         description='Section containing the geometry of the thin film.',
     )
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
-        '''
-        The normalizer for the `ThinFilm` class.
-
-        Args:
-            archive (EntryArchive): The archive containing the section that is being
-            normalized.
-            logger (BoundLogger): A structlog logger.
-        '''
-        super(ThinFilm, self).normalize(archive, logger)
-
 
 class ThinFilmStack(CompositeSystem):
     '''
@@ -314,17 +299,6 @@ class ThinFilmStack(CompositeSystem):
         shape=["*"],
     )
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
-        '''
-        The normalizer for the `ThinFilmStack` class.
-
-        Args:
-            archive (EntryArchive): The archive containing the section that is being
-            normalized.
-            logger (BoundLogger): A structlog logger.
-        '''
-        super(ThinFilmStack, self).normalize(archive, logger)
-
 
 class SampleDeposition(SynthesisMethod):
     '''
@@ -340,7 +314,7 @@ class SampleDeposition(SynthesisMethod):
             "http://purl.obolibrary.org/obo/CHMO_0001310"
         ],)
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         '''
         The normalizer for the `SampleDeposition` class.
 
