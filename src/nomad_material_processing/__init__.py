@@ -42,13 +42,13 @@ m_package = Package(name='Material Processing')
 class Geometry(ArchiveSection):
     '''
     Geometrical shape attributes of a system.
-    The children of this class represent concrete geometrical shapes.
+    Sections derived from `Geometry` represent concrete geometrical shapes.
     '''
     m_def = Section(
     )
     volume = Quantity(
         type=float,
-        description='docs',
+        description='The volume of the geometric shape.',
         a_eln={
             "component": "NumberEditQuantity"
         },
