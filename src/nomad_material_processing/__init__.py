@@ -96,12 +96,12 @@ class Parallelepiped(Geometry):
     surface_area = Quantity(
         type=float,
         description='product of length and width, representing the total exposed area of the primary surface',
-        a_eln={
-            "component": "NumberEditQuantity",
-            "defaultDisplayUnit": "millimeter ** 2",
-            "label": "Surface Area (x*y)"
-        },
-        unit="meter ** 2",
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='millimeter ** 2',
+            label='Surface Area (x*y)',
+        ),
+        unit='meter ** 2',
     )
 
 
@@ -113,28 +113,32 @@ class Miscut(ArchiveSection):
     '''
     angle = Quantity(
         type=float,
-        description='angular displacement from crystallographic orientation of the substrate',
-        a_eln={
-            "component": "NumberEditQuantity",
-            "defaultDisplayUnit": "deg"
-        },
-        unit="deg",
+        description='''
+        The angular displacement from the crystallographic orientation of the substrate.
+        ''',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='deg',
+            label='Miscut Angle',
+        ),
+        unit='deg',
     )    
     angle_deviation = Quantity(
         type=float,
-        description='uncertainty on the angular displacement',
+        description='The ± uncertainty in the angular displacement.',
         a_eln={
             "component": "NumberEditQuantity",
             "defaultDisplayUnit": "deg"
         },
-        unit="deg",
+        unit='deg',
     )
     orientation = Quantity(
         type=str,
-        description='crystallographic orientation of the substrate in [hkl]',
-        a_eln={
-            "component": "StringEditQuantity"
-        }
+        description='The direction of the miscut in Miller index, [hkl].',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+            label='Miscut Orientation [hkl]',
+        )
     )
 
 
@@ -146,12 +150,12 @@ class Dopant(ElementalComposition):
     
     doping_level = Quantity(
         type=float,
-        description='Chemical doping level',
-        a_eln={
-            "component": "NumberEditQuantity",
-            "defaultDisplayUnit": "1 / cm ** 3"
-            },
-        unit="1 / m ** 3",
+        description='The chemical doping level.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='1 / cm ** 3',
+        ),
+        unit='1 / m ** 3',
     )
 
 
@@ -169,9 +173,10 @@ class SubstrateCrystalProperties(CrystalProperties):
     '''
     orientation = Quantity(
         type=str,
-        description='''Alignment of crystal lattice 
-            with respect to a vector normal to the surface
-            specified using Miller indices.''',
+        description='''
+        Alignment of crystal lattice with respect to a vector normal to the surface 
+        specified using Miller indices.
+        ''',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
             label='Substrate Orientation (hkl)',
