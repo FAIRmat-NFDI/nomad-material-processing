@@ -131,10 +131,11 @@ class Miscut(ArchiveSection):
     angle_deviation = Quantity(
         type=float,
         description='The ± uncertainty in the angular displacement.',
-        a_eln={
-            "component": "NumberEditQuantity",
-            "defaultDisplayUnit": "deg"
-        },
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='deg',
+            label='± Miscut Angle Deviation',
+        ),
         unit='deg',
     )
     orientation = Quantity(
