@@ -35,6 +35,10 @@ from nomad.datamodel.data import (
     ArchiveSection,
     Author
 )
+from nomad.datamodel.metainfo.annotations import (
+    ELNAnnotation,
+    ELNComponentEnum,
+)
 
 m_package = Package(name='Material Processing')
 
@@ -48,10 +52,10 @@ class Geometry(ArchiveSection):
     )
     volume = Quantity(
         type=float,
-        description='The volume of the geometric shape.',
+        description='The measure of the amount of space occupied in 3D space.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-        )
+        ),
         unit='meter ** 3',
     )
 
