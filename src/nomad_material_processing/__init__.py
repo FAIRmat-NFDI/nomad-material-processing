@@ -172,12 +172,17 @@ class SubstrateCrystalProperties(CrystalProperties):
         description='''Alignment of crystal lattice 
             with respect to a vector normal to the surface
             specified using Miller indices.''',
-        a_eln={
-            "component": "StringEditQuantity"
-        },
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+            label='Substrate Orientation (hkl)',
+        ),
     )
     miscut = SubSection(
-        section_def=Miscut
+        section_def=Miscut,
+        description='''
+        Section describing any miscut of the substrate with respect to the substrate
+        orientation.
+        ''',
     )
     
 
@@ -190,19 +195,26 @@ class Substrate(CompositeSystem):
     
     supplier = Quantity(
         type=str,
-        description='Supplier of the current substrate specimen',
-        a_eln={
-            "component": "StringEditQuantity"
-        }
+        description='The supplier of the current substrate specimen.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+            label='Name of Supplier',
+        )
     )
     supplier_id = Quantity(
         type=str,
-        description='''An ID string that is unique from the supplier.''',
-        a_eln=dict(component='StringEditQuantity', label="Supplier ID"),
+        description='An ID string that is unique from the supplier.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+            label='Supplier ID',
+        ),
     )    
     lab_id = Quantity(
         type=str,
-        a_eln=dict(component='StringEditQuantity', label="Substrate ID"),
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+            label='Substrate ID',
+        ),
     )
     
     def normalize(self, archive, logger: BoundLogger) -> None:
@@ -225,13 +237,19 @@ class CrystallineSubstrate(Substrate):
     m_def = Section()
         
     geometry = SubSection(
-        section_def=Geometry
+        section_def=Geometry,
+        description='Section containing the geometry of the substrate.',
     )
     crystal_properties = SubSection(
-        section_def=SubstrateCrystalProperties
+        section_def=SubstrateCrystalProperties,
+        description='Section containing the crystal properties of the substrate.',
     )
     dopants = SubSection(
-        section_def=Dopant
+        section_def=Dopant,
+        repeats=True,
+        description='''
+        Repeating section containing information on any dopants in the substrate.
+        ''',
     )
     
     
@@ -242,7 +260,8 @@ class ThinFilm(CompositeSystem):
     m_def = Section()
 
     geometry = SubSection(
-        section_def=Geometry
+        section_def=Geometry,
+        description='Section containing the geometry of the thin film.',
     )
 
     def normalize(self, archive, logger: BoundLogger) -> None:
