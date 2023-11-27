@@ -95,7 +95,10 @@ class Parallelepiped(Geometry):
     )
     surface_area = Quantity(
         type=float,
-        description='product of length and width, representing the total exposed area of the primary surface',
+        description='''
+        The product of length and width, representing the total exposed area of the
+        primary surface.
+        ''',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
             defaultDisplayUnit='millimeter ** 2',
