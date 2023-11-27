@@ -70,11 +70,11 @@ class Parallelepiped(Geometry):
     height = Quantity(
         type=float,
         description='The z dimension of the parallelepiped.',
-        a_eln={
-            "component": "NumberEditQuantity",
-            "defaultDisplayUnit": "nanometer",
-            "label": "Height (z)",
-        },
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='millimeter',
+            label='Height (z)',
+        ),
         unit='meter',
     )
     width = Quantity(
