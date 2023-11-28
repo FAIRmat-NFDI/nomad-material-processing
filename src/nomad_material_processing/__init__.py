@@ -15,10 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-from structlog.stdlib import (
-    BoundLogger,
+from typing import (
+    TYPE_CHECKING,
 )
+import numpy as np
 from nomad.metainfo import (
     Package,
     Quantity,
@@ -37,6 +37,17 @@ from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
     ELNComponentEnum,
 )
+from nomad.datamodel.metainfo.workflow import (
+    Link,
+)
+
+if TYPE_CHECKING:
+    from nomad.datamodel.datamodel import (
+        EntryArchive,
+    )
+    from structlog.stdlib import (
+        BoundLogger,
+    )
 
 m_package = Package(name='Material Processing')
 
@@ -226,17 +237,6 @@ class Substrate(CompositeSystem):
         ),
     )
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
-        '''
-        The normalizer for the `Substrate` class.
-
-        Args:
-            archive (EntryArchive): The archive containing the section that is being
-            normalized.
-            logger (BoundLogger): A structlog logger.
-        '''
-        super(Substrate, self).normalize(archive, logger)
-
 
 class CrystallineSubstrate(Substrate):
     '''
@@ -272,17 +272,6 @@ class ThinFilm(CompositeSystem):
         description='Section containing the geometry of the thin film.',
     )
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
-        '''
-        The normalizer for the `ThinFilm` class.
-
-        Args:
-            archive (EntryArchive): The archive containing the section that is being
-            normalized.
-            logger (BoundLogger): A structlog logger.
-        '''
-        super(ThinFilm, self).normalize(archive, logger)
-
 
 class ThinFilmStack(CompositeSystem):
     '''
@@ -311,17 +300,6 @@ class ThinFilmStack(CompositeSystem):
         shape=["*"],
     )
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
-        '''
-        The normalizer for the `ThinFilmStack` class.
-
-        Args:
-            archive (EntryArchive): The archive containing the section that is being
-            normalized.
-            logger (BoundLogger): A structlog logger.
-        '''
-        super(ThinFilmStack, self).normalize(archive, logger)
-
 
 class SampleDeposition(SynthesisMethod):
     '''
@@ -337,7 +315,30 @@ class SampleDeposition(SynthesisMethod):
             "http://purl.obolibrary.org/obo/CHMO_0001310"
         ],)
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
+    def is_serial(self) -> bool:
+        '''
+        Method for determining if the steps are serial. Can be overwritten by sub class.
+        Default behavior is to return True if all steps start after the previous one.
+
+        Returns:
+            bool: Whether or not the steps are serial.
+        '''
+        start_times = []
+        durations = []
+        for step in self.steps:
+            if step.start_time is None or step.duration is None:
+                return False
+            start_times.append(step.start_time.timestamp())
+            durations.append(step.duration.to('s').magnitude)
+        start_times = np.array(start_times)
+        durations = np.array(durations)
+        end_times = start_times + durations
+        diffs = start_times[1:] - end_times[:-1]
+        if np.any(diffs < 0):
+            return False
+        return True
+
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         '''
         The normalizer for the `SampleDeposition` class.
 
@@ -346,7 +347,17 @@ class SampleDeposition(SynthesisMethod):
             normalized.
             logger (BoundLogger): A structlog logger.
         '''
-        super(SampleDeposition, self).normalize(archive, logger)
+        if self.is_serial():
+            tasks = []
+            previous = None
+            for step in self.steps:
+                task = step.to_task()
+                task.outputs = [Link(name=step.name, section=step)]
+                if previous is not None:
+                    task.inputs = [Link(name=previous.name, section=previous)]
+                tasks.append(task)
+                previous=step
+            archive.workflow2.tasks = tasks
 
 
 m_package.__init_metainfo__()
