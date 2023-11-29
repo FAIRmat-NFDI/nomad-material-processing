@@ -347,6 +347,7 @@ class SampleDeposition(SynthesisMethod):
             normalized.
             logger (BoundLogger): A structlog logger.
         '''
+        super().normalize(archive, logger)
         if self.is_serial():
             tasks = []
             previous = None
