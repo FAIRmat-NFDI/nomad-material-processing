@@ -353,9 +353,9 @@ class SampleDeposition(SynthesisMethod):
             previous = None
             for step in self.steps:
                 task = step.to_task()
-                task.outputs = [Link(name=step.name, section=step)]
+                task.outputs.append(Link(name=step.name, section=step))
                 if previous is not None:
-                    task.inputs = [Link(name=previous.name, section=previous)]
+                    task.inputs.append(Link(name=previous.name, section=previous))
                 tasks.append(task)
                 previous=step
             archive.workflow2.tasks = tasks
