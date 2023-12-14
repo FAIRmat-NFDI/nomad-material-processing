@@ -41,6 +41,7 @@ from nomad.datamodel.metainfo.basesections import (
 from nomad_material_processing import (
     SampleDeposition,
     ThinFilmStack,
+    ThinFilm,
 )
 
 if TYPE_CHECKING:
@@ -213,6 +214,12 @@ class PVDSubstrate(ArchiveSection):
         The thin film stack that is being evaporated on.
         ''',
         type=ThinFilmStack,
+    )
+    thin_film = Quantity(
+        description='''
+        The thin film that is being created during this step.
+        ''',
+        type=ThinFilm,
     )
     temperature = SubSection(
         section_def=PVDSubstrateTemperature,
