@@ -15,9 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-from structlog.stdlib import (
-    BoundLogger,
+from typing import (
+    TYPE_CHECKING,
 )
 from nomad.metainfo import (
     Package,
@@ -26,6 +25,14 @@ from nomad.metainfo import (
 from nomad_material_processing import (
     SampleDeposition,
 )
+
+if TYPE_CHECKING:
+    from nomad.datamodel.datamodel import (
+        EntryArchive,
+    )
+    from structlog.stdlib import (
+        BoundLogger,
+    )
 
 m_package = Package(name='Epitaxy')
 
@@ -41,7 +48,7 @@ class Epitaxy(SampleDeposition):
             "http://purl.obolibrary.org/obo/CHMO_0001336"
         ],)
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         '''
         The normalizer for the `Epitaxy` class.
 
@@ -69,7 +76,7 @@ class MolecularBeamEpitaxy(Epitaxy):
             "http://purl.obolibrary.org/obo/CHMO_0001341"
         ],)
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         '''
         The normalizer for the `MolecularBeamEpitaxy` class.
 
@@ -99,7 +106,7 @@ class VaporPhaseEpitaxy(Epitaxy):
             "http://purl.obolibrary.org/obo/CHMO_0001346"
         ],)
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         '''
         The normalizer for the `VaporPhaseEpitaxy` class.
 
@@ -134,7 +141,7 @@ class MetalOrganicVaporPhaseEpitaxy(VaporPhaseEpitaxy):
             "http://purl.obolibrary.org/obo/CHMO_0001348"
         ],)
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         '''
         The normalizer for the `MetalOrganicVaporPhaseEpitaxy` class.
 

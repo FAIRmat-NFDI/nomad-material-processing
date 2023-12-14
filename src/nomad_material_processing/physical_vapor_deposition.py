@@ -15,9 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-from structlog.stdlib import (
-    BoundLogger,
+from typing import (
+    TYPE_CHECKING,
 )
 from nomad.metainfo import (
     Package,
@@ -43,6 +42,14 @@ from nomad_material_processing import (
     SampleDeposition,
     ThinFilmStack,
 )
+
+if TYPE_CHECKING:
+    from nomad.datamodel.datamodel import (
+        EntryArchive,
+    )
+    from structlog.stdlib import (
+        BoundLogger,
+    )
 
 m_package = Package(name='Physical Vapor Deposition')
 
@@ -320,7 +327,7 @@ class PVDStep(ActivityStep):
         section_def=PVDChamberEnvironment,
     )
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         '''
         The normalizer for the `PVDStep` class.
 
@@ -363,7 +370,7 @@ class PhysicalVaporDeposition(SampleDeposition):
         repeats=True,
     )
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         '''
         The normalizer for the `PhysicalVaporDeposition` class.
 
@@ -471,7 +478,7 @@ class PulsedLaserDeposition(PhysicalVaporDeposition):
         repeats=True,
     )
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         '''
         The normalizer for the `PulsedLaserDeposition` class.
 
@@ -502,7 +509,7 @@ class SputterDeposition(PhysicalVaporDeposition):
         default='Sputter Deposition'
     )
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         '''
         The normalizer for the `SputterDeposition` class.
 
@@ -671,7 +678,7 @@ class ThermalEvaporation(PhysicalVaporDeposition):
         default='Thermal Evaporation'
     )
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         '''
         The normalizer for the `ThermalEvaporation` class.
 
