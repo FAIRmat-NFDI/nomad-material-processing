@@ -35,7 +35,7 @@ from nomad.datamodel.metainfo.annotations import (
 from nomad.datamodel.metainfo.basesections import (
     ActivityStep,
     CompositeSystem,
-    PureSubstance,
+    PureSubstanceSection,
     ReadableIdentifiers,
 )
 from nomad_material_processing import (
@@ -269,8 +269,8 @@ class PVDPressure(ArchiveSection):
 
 
 class PVDGasFlow(ArchiveSection):
-    gas = Quantity(
-        type=PureSubstance,
+    gas = SubSection(
+        section_def=PureSubstanceSection,
     )
     flow = Quantity(
         type=float,
