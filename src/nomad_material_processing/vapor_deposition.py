@@ -52,60 +52,57 @@ if TYPE_CHECKING:
         BoundLogger,
     )
 
-m_package = Package(name='Vapor Deposition')
+m_package = Package(name="Vapor Deposition")
 
 
 class MaterialEvaporationRate(ArchiveSection):
     m_def = Section(
         a_plot=dict(
-            x='process_time',
-            y='rate',
+            x="process_time",
+            y="rate",
         ),
     )
     rate = Quantity(
         type=float,
-        unit='mol/meter ** 2/second',
-        shape=['*'],
-        a_eln=ELNAnnotation(
-            defaultDisplayUnit='micromol/m ** 2/second',
-        ),
+        unit="mol/meter ** 2/second",
+        shape=["*"],
     )
-    flow = Quantity(   ############### I need this, let's discuss if it must be here or in CVD module
+    flow = Quantity(  ############### I need this, let's discuss if it must be here or in CVD module
         type=float,
         a_eln=ELNAnnotation(
-            defaultDisplayUnit='micromol/m ** 2/second',
+            defaultDisplayUnit="cm ** 3 / minute",
         ),
         unit="cm ** 3 / minute",
     )
-    process_time = Quantity(
+    duration = Quantity(  #### It was process_time. let's use the same name used elsewhere in our base classes
         type=float,
-        unit='second',
-        shape=['*'],
+        unit="second",
+        shape=["*"],
         a_eln=ELNAnnotation(
-            defaultDisplayUnit='second',
+            defaultDisplayUnit="second",
         ),
     )
     measurement_type = Quantity(
         type=MEnum(
-            'Assumed',
-            'Quartz Crystal Microbalance',
-            'RHEED',
-            'Mass Flow Controller', ######################### added 
+            "Assumed",
+            "Quartz Crystal Microbalance",
+            "RHEED",
+            "Mass Flow Controller",  ######################### added
         )
     )
 
 
-class MaterialSource(ArchiveSection):
+class SourceMaterial(ArchiveSection):
     m_def = Section(
         a_plot=dict(
-            x='rate/process_time',
-            y='rate/rate',
+            x="rate/process_time",
+            y="rate/rate",
         ),
     )
     material = Quantity(
-        description='''
+        description="""
         The material that is being evaporated.
-        ''',
+        """,
         type=CompositeSystem,
     )
     rate = SubSection(
@@ -116,118 +113,119 @@ class MaterialSource(ArchiveSection):
 class SourcePower(ArchiveSection):
     m_def = Section(
         a_plot=dict(
-            x='process_time',
-            y='power',
+            x="process_time",
+            y="power",
         ),
     )
     power = Quantity(
         type=float,
-        unit='watt',
-        shape=['*'],
+        unit="watt",
+        shape=["*"],
         a_eln=ELNAnnotation(
-            defaultDisplayUnit='watt',
+            defaultDisplayUnit="watt",
         ),
     )
     process_time = Quantity(
         type=float,
-        unit='second',
-        shape=['*'],
+        unit="second",
+        shape=["*"],
         a_eln=ELNAnnotation(
-            defaultDisplayUnit='second',
+            defaultDisplayUnit="second",
         ),
     )
 
 
-class EvaporationSource(ArchiveSection):
+class SourceEvaporation(ArchiveSection):
     m_def = Section(
         a_plot=dict(
-            x='power/process_time',
-            y='power/power',
+            x="power/process_time",
+            y="power/power",
         ),
     )
     power = SubSection(
-        section_def=SourcePower,   ##### I'll check better which are the parametrs recorded for CVD souces, and, consequantly, what can remain here and what will go to PVD and CVD
-    )
+        section_def=SourcePower,  ##### I'll check better which are the parametrs recorded for CVD souces, and, consequantly, what can remain here and what will go to PVD and CVD
+    )            ##################### question is: why to make a SoucePower class ? ?  
 
 
-class Source(ArchiveSection):
+class VaporDepositionSource(ArchiveSection):
     m_def = Section(
         a_plot=[
             dict(
                 x=[
-                    'evaporation_source/power/process_time',
-                    'material_source/rate/process_time',
+                    "evaporation_source/power/process_time",
+                    "material_source/rate/process_time",
                 ],
                 y=[
-                    'evaporation_source/power/power',
-                    'material_source/rate/rate',
-                ]
+                    "evaporation_source/power/power",
+                    "material_source/rate/rate",
+                ],
             ),
         ],
     )
     name = Quantity(
         type=str,
-        description='''
+        description="""
         A short and descriptive name for this source.
-        '''
+        """,
     )
     material_source = SubSection(
-        section_def=MaterialSource,
+        section_def=SourceMaterial,
     )
     evaporation_source = SubSection(
-        section_def=EvaporationSource,
+        section_def=SourceEvaporation,
     )
-
 
 
 class SubstrateTemperature(ArchiveSection):
     m_def = Section(
         a_plot=dict(
-            x='process_time',
-            y='temperature',
+            x="process_time",
+            y="temperature",
         ),
     )
     temperature = Quantity(
         type=float,
-        unit='kelvin',
-        shape=['*'],
+        unit="kelvin",
+        shape=["*"],
         a_eln=ELNAnnotation(
-            defaultDisplayUnit='celsius',
+            defaultDisplayUnit="celsius",
         ),
     )
     process_time = Quantity(
         type=float,
-        unit='second',
-        shape=['*'],
+        unit="second",
+        shape=["*"],
         a_eln=ELNAnnotation(
-            defaultDisplayUnit='second',
+            defaultDisplayUnit="second",
         ),
     )
     measurement_type = Quantity(
         type=MEnum(
-            'Heater thermocouple',
-            'Pyrometer',
+            "Heater thermocouple",
+            "Pyrometer",
         )
     )
 
 
 class Substrate(ArchiveSection):
     m_def = Section(
-        a_plot=dict(
-            x='temperature/process_time',
-            y='temperature/temperature',
-        ),
+        a_plotly_graph_object={
+            "data": {"x": "temperature/duration", "y": "temperature/temperature"},
+            "layout": {"title": {"text": "Plotly Graph Object"}},
+            "label": "Plotly Graph Object",
+            "index": 1,
+        },
     )
-    substrate = Quantity(
-        description='''
+    substrate_specimen = Quantity(  ############ my humble proposal
+        description="""
         The thin film stack that is being evaporated on.
-        ''',
+        """,
         type=ThinFilmStack,
     )
     thin_film = Quantity(
-        description='''
+        description="""
         The thin film that is being created during this step.
-        ''',
+        """,
         type=ThinFilm,
     )
     temperature = SubSection(
@@ -235,45 +233,36 @@ class Substrate(ArchiveSection):
     )
     heater = Quantity(
         type=MEnum(
-            'No heating',
-            'Halogen lamp',
-            'Filament',
-            'Resistive element',
-            'CO2 laser',
+            "No heating",
+            "Halogen lamp",
+            "Filament",
+            "Resistive element",
+            "CO2 laser",
         )
     )
     distance_to_source = Quantity(
         type=float,
-        unit='meter',
-        shape=['*'],
-        # a_eln=ELNAnnotation(
-        #     defaultDisplayUnit='millimeter',
-        # ),
+        unit="meter",
+        shape=["*"],
     )
 
 
 class Pressure(ArchiveSection):
     m_def = Section(
         a_plot=dict(
-            x='process_time',
-            y='pressure',
+            x="process_time",
+            y="pressure",
         ),
     )
     pressure = Quantity(
         type=float,
-        unit='pascal',
-        shape=['*'],
-        a_eln=ELNAnnotation(
-            defaultDisplayUnit='millibar',
-        ),
+        unit="pascal",
+        shape=["*"],
     )
     process_time = Quantity(
         type=float,
-        unit='second',
-        shape=['*'],
-        a_eln=ELNAnnotation(
-            defaultDisplayUnit='second',
-        ),
+        unit="second",
+        shape=["*"],
     )
 
 
@@ -283,24 +272,21 @@ class GasFlow(ArchiveSection):
     )
     flow = Quantity(
         type=float,
-        unit='meter ** 3 / second',
-        shape=['*'],
+        unit="meter ** 3 / second",
+        shape=["*"],
     )
     process_time = Quantity(
         type=float,
-        unit='second',
-        shape=['*'],
-        # a_eln=ELNAnnotation(
-        #     defaultDisplayUnit='second',
-        # ),
+        unit="second",
+        shape=["*"],  #################### why is this an array ?
     )
 
 
 class ChamberEnvironment(ArchiveSection):
     m_def = Section(
         a_plot=dict(
-            x='pressure/process_time',
-            y='pressure/pressure',
+            x="pressure/process_time",
+            y="pressure/pressure",
         ),
     )
     gas_flow = SubSection(
@@ -312,27 +298,28 @@ class ChamberEnvironment(ArchiveSection):
     )
 
 
-class VaporDepositionStep(ActivityStep): # physical vapor deposition
-    '''
-    A step of any physical vapor deposition process.
-    '''
+class VaporDepositionStep(ActivityStep):
+    """
+    A step of any vapor deposition process.
+    """
+
     m_def = Section()
-    creates_new_thin_film = Quantity(
+    creates_new_thin_film = Quantity(  ########## let's discuss together: how should the normalization work when we reprocess
         type=bool,
-        description='''
+        description="""
         Whether or not this step creates a new thin film.
-        ''',
+        """,
         default=False,
         a_eln=ELNAnnotation(
-            component='BoolEditQuantity',
+            component="BoolEditQuantity",
         ),
     )
     duration = Quantity(
-        type=float,
-        unit='second'
+        type=float, 
+        unit="second"
     )
     sources = SubSection(
-        section_def=Source,
+        section_def=VaporDepositionSource,
         repeats=True,
     )
     substrate = SubSection(
@@ -343,58 +330,65 @@ class VaporDepositionStep(ActivityStep): # physical vapor deposition
         section_def=ChamberEnvironment,
     )
 
-    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
-        '''
+    def normalize(self, archive: "EntryArchive", logger: "BoundLogger") -> None:
+        """
         The normalizer for the `PVDStep` class.
 
         Args:
             archive (EntryArchive): The archive containing the section that is being
             normalized.
             logger (BoundLogger): A structlog logger.
-        '''
+        """
         super(VaporDepositionStep, self).normalize(archive, logger)
 
 
-class VaporDeposition(SampleDeposition):   # physical vapor deposition
-    '''
-    A synthesis technique where vaporized molecules or atoms condense on a surface,
-    forming a thin layer. The process is purely physical; no chemical reaction occurs
-    at the surface. [database_cross_reference: https://orcid.org/0000-0002-0640-0422]
+class VaporDeposition(SampleDeposition):
+    """
+    VaporDeposition is a general class that encompasses both Physical Vapor Deposition (PVD) and Chemical Vapor Deposition (CVD).
+    It involves the deposition of material from a vapor phase to a solid thin film or coating onto a substrate.
+    -   material sources:
+        Both PVD and CVD involve a source material that is transformed into a vapor phase.
+        In PVD, the source material is physically evaporated or sputtered from a solid target.
+        In CVD, gaseous precursors undergo chemical reactions to produce a solid material on the substrate.
+    -   substrate:
+        The substrate is the material onto which the thin film is deposited.
+    -   environment:
+        The process typically takes place in a controlled environment.
+        Temperature control is critical in both processes.
+        PVD often involves heating the source material to its evaporation or sputtering temperature.
+        CVD may require specific temperatures to facilitate the chemical reactions between precursors and substrate.
+    """
 
-    Synonyms:
-     - PVD
-     - physical vapor deposition
-    '''
     m_def = Section(
-        links=["http://purl.obolibrary.org/obo/CHMO_0001356"],
+        links=[],  ########################### let's link this to the proces CHMO
         a_plot=[
             dict(
-                x='steps/:/environment/pressure/process_time',
-                y='steps/:/environment/pressure/pressure',
+                x="steps/:/environment/pressure/process_time",
+                y="steps/:/environment/pressure/pressure",
             ),
             dict(
-                x='steps/:/source/:/evaporation_source/power/process_time',
-                y='steps/:/source/:/evaporation_source/power/power',
+                x="steps/:/source/:/evaporation_source/power/process_time",
+                y="steps/:/source/:/evaporation_source/power/power",
             ),
         ],
     )
     steps = SubSection(
-        description='''
+        description="""
         The steps of the deposition process.
-        ''',
+        """,
         section_def=VaporDepositionStep,
         repeats=True,
     )
 
-    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
-        '''
-        The normalizer for the `PhysicalVaporDeposition` class.
+    def normalize(self, archive: "EntryArchive", logger: "BoundLogger") -> None:
+        """
+        The normalizer for the `VaporDeposition` class.
 
         Args:
             archive (EntryArchive): The archive containing the section that is being
             normalized.
             logger (BoundLogger): A structlog logger.
-        '''
+        """
         super(VaporDeposition, self).normalize(archive, logger)
 
 
