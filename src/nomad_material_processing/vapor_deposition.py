@@ -65,7 +65,10 @@ class MaterialEvaporationRate(ArchiveSection):
     rate = Quantity(
         type=float,
         unit="mol/meter ** 2/second",
-        shape=["*"],
+        shape=["*"], ############ why is it an array? 
+        # a_eln=ELNAnnotation(
+        #     defaultDisplayUnit="micromol/m ** 2/second",
+        # ),
     )
     flow = Quantity(  ############### I need this, let's discuss if it must be here or in CVD module
         type=float,

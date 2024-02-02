@@ -48,6 +48,7 @@ from nomad_material_processing.vapor_deposition import (
     VaporDepositionSource,
     Substrate,
     VaporDepositionStep,
+    VaporDeposition,
 )
 
 if TYPE_CHECKING:
@@ -121,7 +122,7 @@ class PVDSource(VaporDepositionSource):
         section_def=PVDMaterialSource,
     )
     evaporation_source = SubSection(
-        section_def=SourceEvaporation,
+        section_def=PVDEvaporationSource,
     )
 
 
@@ -187,7 +188,7 @@ class PVDStep(VaporDepositionStep):
         super(PVDStep, self).normalize(archive, logger)
 
 
-class PhysicalVaporDeposition(SampleDeposition):
+class PhysicalVaporDeposition(VaporDeposition):
     """
     A synthesis technique where vaporized molecules or atoms condense on a surface,
     forming a thin layer. The process is purely physical; no chemical reaction occurs
@@ -237,7 +238,7 @@ class PLDTarget(CompositeSystem):
     )
 
 
-class PLDTargetSource(PVDSourceMaterial):
+class PLDTargetSource(PVDMaterialSource):
     material = Quantity(
         description="""
         The material that is being evaporated.
