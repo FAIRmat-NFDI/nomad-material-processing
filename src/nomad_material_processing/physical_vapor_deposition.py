@@ -44,11 +44,9 @@ from nomad_material_processing import (
 from nomad_material_processing.vapor_deposition import (
     MaterialEvaporationRate,
     SourceMaterial,
-    SourcePower,
     SourceEvaporation,
     VaporDepositionSource,
     Substrate,
-    ChamberEnvironment,
     VaporDepositionStep,
 )
 
@@ -79,26 +77,8 @@ class PVDMaterialEvaporationRate(MaterialEvaporationRate):
         ),
     )
 
-    # The following quantities sits now in the parent class!!
 
-    # process_time = Quantity(
-    #     type=float,
-    #     unit='second',
-    #     shape=['*'],
-    #     a_eln=ELNAnnotation(
-    #         defaultDisplayUnit='second',
-    #     ),
-    # )
-    # measurement_type = Quantity(
-    #     type=MEnum(
-    #         'Assumed',
-    #         'Quartz Crystal Microbalance',
-    #         'RHEED',
-    #     )
-    # )
-
-
-class PVDSourceMaterial(SourceMaterial):
+class PVDMaterialSource(SourceMaterial):
     m_def = Section(
         a_plot=dict(
             x="rate/process_time",
@@ -110,14 +90,10 @@ class PVDSourceMaterial(SourceMaterial):
         section_def=PVDMaterialEvaporationRate,
     )
 
-    # The following quantities sits now in the parent class!!
 
-    # material = Quantity(
-    #     description='''
-    #     The material that is being evaporated.
-    #     ''',
-    #     type=CompositeSystem,
-    # )
+# TODO remove this placeholder class and use the parent one
+class PVDEvaporationSource(SourceEvaporation):
+    pass
 
 
 class PVDSource(VaporDepositionSource):
@@ -142,11 +118,16 @@ class PVDSource(VaporDepositionSource):
         """,
     )
     material_source = SubSection(
-        section_def=PVDSourceMaterial,
+        section_def=PVDMaterialSource,
     )
     evaporation_source = SubSection(
         section_def=SourceEvaporation,
     )
+
+
+# TODO remove this placeholder class and use the parent one
+class PVDSubstrate(Substrate):
+    pass
 
 
 class PVDPressure(ArchiveSection):
@@ -160,17 +141,11 @@ class PVDPressure(ArchiveSection):
         type=float,
         unit="pascal",
         shape=["*"],
-        a_eln=ELNAnnotation(
-            defaultDisplayUnit="millibar",
-        ),
     )
     process_time = Quantity(
         type=float,
         unit="second",
         shape=["*"],
-        a_eln=ELNAnnotation(
-            defaultDisplayUnit="second",
-        ),
     )
 
 
@@ -187,9 +162,6 @@ class PVDGasFlow(ArchiveSection):
         type=float,
         unit="second",
         shape=["*"],
-        # a_eln=ELNAnnotation(
-        #     defaultDisplayUnit='second',
-        # ),
     )
 
 
@@ -202,30 +174,6 @@ class PVDStep(VaporDepositionStep):
         section_def=PVDSource,
         repeats=True,
     )
-
-    # The following quantities and subsections sits now in the parent class!!
-
-    # creates_new_thin_film = Quantity(
-    #     type=bool,
-    #     description='''
-    #     Whether or not this step creates a new thin film.
-    #     ''',
-    #     default=False,
-    #     a_eln=ELNAnnotation(
-    #         component='BoolEditQuantity',
-    #     ),
-    # )
-    # duration = Quantity(
-    #     type=float,
-    #     unit='second'
-    # )
-    # substrate = SubSection(
-    #     section_def=Substrate,
-    #     repeats=True,
-    # )
-    # environment = SubSection(
-    #     section_def=ChamberEnvironment, ############# same here
-    # )
 
     def normalize(self, archive: "EntryArchive", logger: "BoundLogger") -> None:
         """
