@@ -40,6 +40,7 @@ from nomad.datamodel.metainfo.basesections import (
 )
 from nomad_material_processing import (
     SampleDeposition,
+    ThinFilmStackReference,
     ThinFilmStack,
     ThinFilm,
 )
@@ -219,12 +220,6 @@ class Substrate(ArchiveSection):
             "index": 1,
         },
     )
-    substrate_specimen = Quantity(  ############ my humble proposal
-        description="""
-        The thin film stack that is being evaporated on.
-        """,
-        type=ThinFilmStack,
-    )
     thin_film = Quantity(
         description="""
         The thin film that is being created during this step.
@@ -246,7 +241,15 @@ class Substrate(ArchiveSection):
     distance_to_source = Quantity(
         type=float,
         unit="meter",
-        shape=["*"],
+        #shape=["*"],    ############################### why is it an array? this is a process parameter equal inside the chamber
+    )
+
+    substrate_specimen = SubSection(
+        description="""
+        The thin film stack that is being evaporated on.
+        """,
+        section_def=ThinFilmStackReference, 
+        repeats=True, 
     )
 
 
@@ -326,8 +329,8 @@ class VaporDepositionStep(ActivityStep):
         repeats=True,
     )
     substrate = SubSection(
-        section_def=Substrate,  #### in next commit, I will think and refine better this name and/or structure
-        repeats=True,
+        section_def=Substrate,  
+        #repeats=True, ############################### why is it an array? let's make the substrate inside an array or??
     )
     environment = SubSection(
         section_def=ChamberEnvironment,
