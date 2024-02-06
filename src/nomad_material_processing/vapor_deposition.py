@@ -42,6 +42,7 @@ from nomad_material_processing import (
     SampleDeposition,
     ThinFilmStackReference,
     ThinFilmStack,
+    ThinFilmReference,
     ThinFilm,
 )
 
@@ -226,6 +227,17 @@ class Substrate(ArchiveSection):
         """,
         type=ThinFilm,
     )
+
+
+    # layers = SubSection(
+    #     description="""
+    #     An ordered list (starting at the substrate) of the thin films making up the
+    #     thin film stacks.
+    #     """,
+    #     section_def=ThinFilmReference,
+    #     repeats=True,
+    # )
+
     temperature = SubSection(
         section_def=SubstrateTemperature,
     )
@@ -241,7 +253,11 @@ class Substrate(ArchiveSection):
     distance_to_source = Quantity(
         type=float,
         unit="meter",
-        #shape=["*"],    ############################### why is it an array? this is a process parameter equal inside the chamber
+        description="""
+        The distance between the substrate and the source.
+        It is an arry because multiple sources can be used.
+        """,
+        shape=["*"],
     )
 
     substrate_specimen = SubSection(
@@ -249,7 +265,7 @@ class Substrate(ArchiveSection):
         The thin film stack that is being evaporated on.
         """,
         section_def=ThinFilmStackReference, 
-        repeats=True, 
+        #repeats=True, 
     )
 
 

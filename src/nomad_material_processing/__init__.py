@@ -288,12 +288,6 @@ class ThinFilmReference(CompositeSystemReference):
     """
 
     m_def = Section()
-    lab_id = Quantity(
-        type=str,
-        a_eln=ELNAnnotation(
-            component="StringEditQuantity",
-        ),
-    )
     reference = Quantity(
         type=ThinFilm,
         a_eln=ELNAnnotation(
@@ -326,18 +320,13 @@ class ThinFilmStack(CompositeSystem):
     A stack of `ThinFilm`(s). Typically deposited on a `Substrate`.
     """
 
-    m_def = Section()
-    # layers = Quantity(
-    #     type=ThinFilm,
-    #     description='''
-    #     An ordered list (starting at the substrate) of the thin films making up the
-    #     thin film stacks.
-    #     ''',
-    #     a_eln=ELNAnnotation(
-    #         component=ELNComponentEnum.ReferenceEditQuantity,
-    #     ),
-    #     shape=["*"],
-    # )
+    m_def = Section(
+        a_eln=ELNAnnotation(
+            hide=[
+                "components",
+            ],
+        ),
+    )
     layers = SubSection(
         description="""
         An ordered list (starting at the substrate) of the thin films making up the
@@ -352,13 +341,9 @@ class ThinFilmStack(CompositeSystem):
         on.
         """,
         section_def=SubstrateReference,
-        repeats=True,
     )
-    ####################################################################################
-
-
-########  !!! Here I see layers and substarte. What about components subsection present in CompositeSystem class?  ####TODO
-####################################################################################
+    
+    #TODO normalizer that populates the components section
 
 
 class ThinFilmStackReference(CompositeSystemReference):
@@ -370,13 +355,13 @@ class ThinFilmStackReference(CompositeSystemReference):
     lab_id = Quantity(
         type=str,
         a_eln=ELNAnnotation(
-            component="StringEditQuantity",
+            component=ELNComponentEnum.StringEditQuantity,
         ),
     )
     reference = Quantity(
         type=ThinFilmStack,
         a_eln=ELNAnnotation(
-            component="ReferenceEditQuantity",
+            component=ELNComponentEnum.ReferenceEditQuantity,
         ),
     )
 
