@@ -350,11 +350,8 @@ class VaporDeposition(SampleDeposition):
        The substrate is the material onto which the thin film is deposited.
      - environment:
        The process typically takes place in a controlled environment.
-       Temperature control is critical in both processes.
-       PVD often involves heating the source material to its evaporation or sputtering
-       temperature.
-       CVD may require specific temperatures to facilitate the chemical reactions between
-       precursors and substrate.
+       The deposition is usually affected by the pressure in the chamber.
+       For some processes additional background gasses are also added.
     """
 
     m_def = Section(
