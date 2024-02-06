@@ -46,7 +46,7 @@ from nomad_material_processing.vapor_deposition import (
     SourceMaterial,
     SourceEvaporation,
     VaporDepositionSource,
-    Substrate,
+    SubstrateSetup,
     VaporDepositionStep,
     VaporDeposition,
 )
@@ -127,7 +127,7 @@ class PVDSource(VaporDepositionSource):
 
 
 # TODO remove this placeholder class and use the parent one
-class PVDSubstrate(Substrate):
+class PVDSubstrate(SubstrateSetup):
     pass
 
 

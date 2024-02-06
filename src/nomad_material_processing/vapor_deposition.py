@@ -46,6 +46,8 @@ from nomad_material_processing import (
     ThinFilm,
 )
 
+from nomad.datamodel.metainfo.plot import PlotSection, PlotlyFigure
+
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import (
         EntryArchive,
@@ -171,7 +173,7 @@ class SubstrateTemperature(ArchiveSection):
     )
     temperature = Quantity(
         type=float,
-        unit="kelvin",
+        unit="kelvin", ########### the unit can change from user to user ###############
         shape=["*"],
     )
     process_time = Quantity(
@@ -187,20 +189,31 @@ class SubstrateTemperature(ArchiveSection):
     )
 
 
-class Substrate(ArchiveSection):
+class SubstrateSetup(PlotSection, ArchiveSection):
     m_def = Section(
         a_plotly_graph_object={
-            "data": {"x": "temperature/duration", "y": "temperature/temperature"},
+            "data": {"x": "temperature/process_time", "y": "temperature/temperature"},
             "layout": {"title": {"text": "Plotly Graph Object"}},
             "label": "Plotly Graph Object",
             "index": 1,
         },
     )
+
+    # which of the folllwoing two?
+
     thin_film = Quantity(
         description="""
         The thin film that is being created during this step.
         """,
         type=ThinFilm,
+    )
+    layers = SubSection(
+        description="""
+        An ordered list (starting at the substrate) of the thin films making up the
+        thin film stacks.
+        """,
+        section_def=ThinFilmReference,
+        repeats=True,
     )
     temperature = SubSection(
         section_def=SubstrateTemperature,
@@ -308,8 +321,8 @@ class VaporDepositionStep(ActivityStep):
         repeats=True,
     )
     substrate = SubSection(
-        section_def=Substrate,  
-        #repeats=True, ############################### why is it an array? let's make the substrate inside an array or??
+        section_def=SubstrateSetup,  
+        repeats=True,
     )
     environment = SubSection(
         section_def=ChamberEnvironment,
