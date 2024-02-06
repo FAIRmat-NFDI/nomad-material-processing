@@ -355,7 +355,10 @@ class VaporDeposition(SampleDeposition):
     """
 
     m_def = Section(
-        links=[],  ########################### let's link this to the proces CHMO
+        links=[
+                http://purl.obolibrary.org/obo/CHMO_0001314,
+                http://purl.obolibrary.org/obo/CHMO_0001356,
+        ],
         a_plot=[
             dict(
                 x="steps/:/environment/pressure/process_time",
