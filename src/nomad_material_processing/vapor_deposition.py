@@ -263,7 +263,7 @@ class GasFlow(ArchiveSection):
     process_time = Quantity(
         type=float,
         unit="second",
-        shape=["*"],  #################### why is this an array ?
+        shape=["*"],
     )
 
 
