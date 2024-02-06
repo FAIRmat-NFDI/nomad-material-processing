@@ -67,7 +67,7 @@ class MaterialEvaporationRate(ArchiveSection):
     rate = Quantity(
         type=float,
         unit="mol/meter ** 2/second",
-        shape=["*"], ############ why is it an array? 
+        shape=["*"]
     )
     flow = Quantity(  ############### I need this, let's discuss if it must be here or in CVD module
         type=float,
