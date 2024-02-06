@@ -296,7 +296,7 @@ class VaporDepositionStep(ActivityStep):
     """
 
     m_def = Section()
-    creates_new_thin_film = Quantity(  ########## let's discuss together: how should the normalization work when we reprocess
+    creates_new_thin_film = Quantity(
         type=bool,
         description="""
         Whether or not this step creates a new thin film.
