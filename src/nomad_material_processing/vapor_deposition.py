@@ -69,14 +69,7 @@ class MaterialEvaporationRate(ArchiveSection):
         unit="mol/meter ** 2/second",
         shape=["*"]
     )
-    flow = Quantity(  ############### I need this, let's discuss if it must be here or in CVD module
-        type=float,
-        a_eln=ELNAnnotation(
-            defaultDisplayUnit="cm ** 3 / minute",
-        ),
-        unit="cm ** 3 / minute",
-    )
-    duration = Quantity(  #### It was process_time. let's use the same name used elsewhere in our base classes
+    process_time = Quantity(
         type=float,
         unit="second",
         shape=["*"],
@@ -86,7 +79,7 @@ class MaterialEvaporationRate(ArchiveSection):
             "Assumed",
             "Quartz Crystal Microbalance",
             "RHEED",
-            "Mass Flow Controller",  ######################### added
+            "Mass Flow Controller",
         )
     )
 
@@ -128,7 +121,7 @@ class SourcePower(ArchiveSection):
     )
 
 
-class SourceEvaporation(ArchiveSection):
+class EvaporationSource(ArchiveSection):
     m_def = Section(
         a_plot=dict(
             x="power/process_time",
@@ -136,8 +129,8 @@ class SourceEvaporation(ArchiveSection):
         ),
     )
     power = SubSection(
-        section_def=SourcePower,  ##### I'll check better which are the parametrs recorded for CVD souces, and, consequantly, what can remain here and what will go to PVD and CVD
-    )            ##################### question is: why to make a SoucePower class ? ?  
+        section_def=SourcePower,
+    )
 
 
 class VaporDepositionSource(ArchiveSection):
