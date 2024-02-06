@@ -68,9 +68,6 @@ class MaterialEvaporationRate(ArchiveSection):
         type=float,
         unit="mol/meter ** 2/second",
         shape=["*"], ############ why is it an array? 
-        # a_eln=ELNAnnotation(
-        #     defaultDisplayUnit="micromol/m ** 2/second",
-        # ),
     )
     flow = Quantity(  ############### I need this, let's discuss if it must be here or in CVD module
         type=float,
@@ -83,9 +80,6 @@ class MaterialEvaporationRate(ArchiveSection):
         type=float,
         unit="second",
         shape=["*"],
-        a_eln=ELNAnnotation(
-            defaultDisplayUnit="second",
-        ),
     )
     measurement_type = Quantity(
         type=MEnum(
@@ -126,17 +120,11 @@ class SourcePower(ArchiveSection):
         type=float,
         unit="watt",
         shape=["*"],
-        a_eln=ELNAnnotation(
-            defaultDisplayUnit="watt",
-        ),
     )
     process_time = Quantity(
         type=float,
         unit="second",
         shape=["*"],
-        a_eln=ELNAnnotation(
-            defaultDisplayUnit="second",
-        ),
     )
 
 
@@ -192,17 +180,11 @@ class SubstrateTemperature(ArchiveSection):
         type=float,
         unit="kelvin",
         shape=["*"],
-        a_eln=ELNAnnotation(
-            defaultDisplayUnit="celsius",
-        ),
     )
     process_time = Quantity(
         type=float,
         unit="second",
         shape=["*"],
-        a_eln=ELNAnnotation(
-            defaultDisplayUnit="second",
-        ),
     )
     measurement_type = Quantity(
         type=MEnum(
@@ -227,17 +209,6 @@ class Substrate(ArchiveSection):
         """,
         type=ThinFilm,
     )
-
-
-    # layers = SubSection(
-    #     description="""
-    #     An ordered list (starting at the substrate) of the thin films making up the
-    #     thin film stacks.
-    #     """,
-    #     section_def=ThinFilmReference,
-    #     repeats=True,
-    # )
-
     temperature = SubSection(
         section_def=SubstrateTemperature,
     )
@@ -254,18 +225,17 @@ class Substrate(ArchiveSection):
         type=float,
         unit="meter",
         description="""
-        The distance between the substrate and the source.
-        It is an arry because multiple sources can be used.
+        The distance between the substrate and all the sources.
+        In the case of multiple sources, the distances are listed in the same order as the
+        sources are listed in the parent `VaporDepositionStep` section.
         """,
         shape=["*"],
     )
-
     substrate_specimen = SubSection(
         description="""
         The thin film stack that is being evaporated on.
         """,
-        section_def=ThinFilmStackReference, 
-        #repeats=True, 
+        section_def=ThinFilmStackReference,
     )
 
 
@@ -366,19 +336,25 @@ class VaporDepositionStep(ActivityStep):
 
 class VaporDeposition(SampleDeposition):
     """
-    VaporDeposition is a general class that encompasses both Physical Vapor Deposition (PVD) and Chemical Vapor Deposition (CVD).
-    It involves the deposition of material from a vapor phase to a solid thin film or coating onto a substrate.
-    -   material sources:
-        Both PVD and CVD involve a source material that is transformed into a vapor phase.
-        In PVD, the source material is physically evaporated or sputtered from a solid target.
-        In CVD, gaseous precursors undergo chemical reactions to produce a solid material on the substrate.
-    -   substrate:
-        The substrate is the material onto which the thin film is deposited.
-    -   environment:
-        The process typically takes place in a controlled environment.
-        Temperature control is critical in both processes.
-        PVD often involves heating the source material to its evaporation or sputtering temperature.
-        CVD may require specific temperatures to facilitate the chemical reactions between precursors and substrate.
+    VaporDeposition is a general class that encompasses both Physical Vapor Deposition
+    (PVD) and Chemical Vapor Deposition (CVD).
+    It involves the deposition of material from a vapor phase to a solid thin film or
+    coating onto a substrate.
+     - material sources:
+       Both PVD and CVD involve a source material that is transformed into a vapor phase.
+       In PVD, the source material is physically evaporated or sputtered from a solid
+       target.
+       In CVD, gaseous precursors undergo chemical reactions to produce a solid material
+       on the substrate.
+     - substrate:
+       The substrate is the material onto which the thin film is deposited.
+     - environment:
+       The process typically takes place in a controlled environment.
+       Temperature control is critical in both processes.
+       PVD often involves heating the source material to its evaporation or sputtering
+       temperature.
+       CVD may require specific temperatures to facilitate the chemical reactions between
+       precursors and substrate.
     """
 
     m_def = Section(
