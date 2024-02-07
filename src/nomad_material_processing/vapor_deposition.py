@@ -111,18 +111,10 @@ class EvaporationSource(ArchiveSection):
 
 class VaporDepositionSource(ArchiveSection):
     m_def = Section(
-        a_plot=[
-            dict(
-                x=[
-                    "evaporation_source/power/process_time",
-                    "material_source/rate/process_time",
-                ],
-                y=[
-                    "evaporation_source/power/power",
-                    "material_source/rate/rate",
-                ],
-            ),
-        ],
+        a_plot=dict(
+            x="deposition_rate/process_time",
+            y="deposition_rate/rate",
+        ),
     )
     name = Quantity(
         type=str,
