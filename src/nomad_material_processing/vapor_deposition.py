@@ -30,23 +30,19 @@ from nomad.datamodel.data import (
 )
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
-    ELNComponentEnum,
 )
 from nomad.datamodel.metainfo.basesections import (
     ActivityStep,
-    CompositeSystem,
     PureSubstanceSection,
-    ReadableIdentifiers,
+    CompositeSystemReference,
 )
 from nomad_material_processing import (
     SampleDeposition,
     ThinFilmStackReference,
-    ThinFilmStack,
     ThinFilmReference,
-    ThinFilm,
 )
 
-from nomad.datamodel.metainfo.plot import PlotSection, PlotlyFigure
+from nomad.datamodel.metainfo.plot import PlotSection
 
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import (
@@ -59,7 +55,32 @@ if TYPE_CHECKING:
 m_package = Package(name="Vapor Deposition")
 
 
-class MaterialEvaporationRate(ArchiveSection):
+class VaporRate(ArchiveSection):
+    m_def = Section(
+        a_plot=dict(
+            x="process_time",
+            y="rate",
+        ),
+    )
+    rate = Quantity(
+        type=float,
+        unit="mol/second",
+        shape=["*"],
+    )
+    process_time = Quantity(
+        type=float,
+        unit="second",
+        shape=["*"],
+    )
+    measurement_type = Quantity(
+        type=MEnum(
+            "Assumed",
+            "Mass Flow Controller",
+        )
+    )
+
+
+class DepositionRate(ArchiveSection):
     m_def = Section(
         a_plot=dict(
             x="process_time",
@@ -69,7 +90,7 @@ class MaterialEvaporationRate(ArchiveSection):
     rate = Quantity(
         type=float,
         unit="mol/meter ** 2/second",
-        shape=["*"]
+        shape=["*"],
     )
     process_time = Quantity(
         type=float,
@@ -80,59 +101,12 @@ class MaterialEvaporationRate(ArchiveSection):
         type=MEnum(
             "Assumed",
             "Quartz Crystal Microbalance",
-            "RHEED",
-            "Mass Flow Controller",
         )
     )
 
 
-class SourceMaterial(ArchiveSection):
-    m_def = Section(
-        a_plot=dict(
-            x="rate/process_time",
-            y="rate/rate",
-        ),
-    )
-    material = Quantity(
-        description="""
-        The material that is being evaporated.
-        """,
-        type=CompositeSystem,
-    )
-    rate = SubSection(
-        section_def=MaterialEvaporationRate,
-    )
-
-
-class SourcePower(ArchiveSection):
-    m_def = Section(
-        a_plot=dict(
-            x="process_time",
-            y="power",
-        ),
-    )
-    power = Quantity(
-        type=float,
-        unit="watt",
-        shape=["*"],
-    )
-    process_time = Quantity(
-        type=float,
-        unit="second",
-        shape=["*"],
-    )
-
-
 class EvaporationSource(ArchiveSection):
-    m_def = Section(
-        a_plot=dict(
-            x="power/process_time",
-            y="power/power",
-        ),
-    )
-    power = SubSection(
-        section_def=SourcePower,
-    )
+    pass
 
 
 class VaporDepositionSource(ArchiveSection):
@@ -156,11 +130,56 @@ class VaporDepositionSource(ArchiveSection):
         A short and descriptive name for this source.
         """,
     )
-    material_source = SubSection(
-        section_def=SourceMaterial,
+    material = SubSection(
+        section_def=CompositeSystemReference,
+        description="""
+        The source of the material that is being evaporated.
+        Example: A sputtering target, a powder in a crucible, etc.
+        """,
     )
-    evaporation_source = SubSection(
+    vapor_source = SubSection(
         section_def=EvaporationSource,
+        description="""
+        Example: A heater, a filament, a laser, a bubbler, etc.
+        """,
+    )
+    deposition_rate = SubSection(
+        section_def=DepositionRate,
+        description="""
+        The deposition rate of the material onto the substrate (mol/area/time).
+        """,
+    )
+    vapor_rate = SubSection(
+        section_def=VaporRate,
+        description="""
+        The rate of the material being evaporated (mol/time).
+        """,
+    )
+
+
+class GrowthRate(ArchiveSection):
+    m_def = Section(
+        a_plot=dict(
+            x="process_time",
+            y="rate",
+        ),
+    )
+    rate = Quantity(
+        type=float,
+        unit="meter/second",
+        shape=["*"],
+    )
+    process_time = Quantity(
+        type=float,
+        unit="second",
+        shape=["*"],
+    )
+    measurement_type = Quantity(
+        type=MEnum(
+            "Assumed",
+            "RHEED",
+            "Reflectance",
+        )
     )
 
 
@@ -173,7 +192,7 @@ class SubstrateTemperature(ArchiveSection):
     )
     temperature = Quantity(
         type=float,
-        unit="kelvin", ########### the unit can change from user to user ###############
+        unit="kelvin",
         shape=["*"],
     )
     process_time = Quantity(
@@ -185,11 +204,12 @@ class SubstrateTemperature(ArchiveSection):
         type=MEnum(
             "Heater thermocouple",
             "Pyrometer",
+            "Assumed",
         )
     )
 
 
-class SubstrateSetup(PlotSection, ArchiveSection):
+class SampleParameters(PlotSection, ArchiveSection):
     m_def = Section(
         a_plotly_graph_object={
             "data": {"x": "temperature/process_time", "y": "temperature/temperature"},
@@ -198,46 +218,23 @@ class SubstrateSetup(PlotSection, ArchiveSection):
             "index": 1,
         },
     )
-
-    # which of the folllwoing two?
-
-    thin_film = Quantity(
+    growth_rate = SubSection(
+        section_def=GrowthRate,
         description="""
-        The thin film that is being created during this step.
+        The growth rate of the thin film (length/time).
+        Measured by in-situ RHEED or Reflection or assumed.
         """,
-        type=ThinFilm,
-    )
-    layers = SubSection(
-        description="""
-        An ordered list (starting at the substrate) of the thin films making up the
-        thin film stacks.
-        """,
-        section_def=ThinFilmReference,
-        repeats=True,
     )
     temperature = SubSection(
         section_def=SubstrateTemperature,
     )
-    heater = Quantity(
-        type=MEnum(
-            "No heating",
-            "Halogen lamp",
-            "Filament",
-            "Resistive element",
-            "CO2 laser",
-        )
-    )
-    distance_to_source = Quantity(
-        type=float,
-        unit="meter",
+    layer = SubSection(
         description="""
-        The distance between the substrate and all the sources.
-        In the case of multiple sources, the distances are listed in the same order as the
-        sources are listed in the parent `VaporDepositionStep` section.
+        The thin film that is being created during this step.
         """,
-        shape=["*"],
+        section_def=ThinFilmReference,
     )
-    substrate_specimen = SubSection(
+    substrate = SubSection(
         description="""
         The thin film stack that is being evaporated on.
         """,
@@ -265,6 +262,12 @@ class Pressure(ArchiveSection):
 
 
 class GasFlow(ArchiveSection):
+    m_def = Section(
+        a_plot=dict(
+            x="process_time",
+            y="flow",
+        ),
+    )
     gas = SubSection(
         section_def=PureSubstanceSection,
     )
@@ -280,6 +283,10 @@ class GasFlow(ArchiveSection):
     )
 
 
+class SubstrateHeater(ArchiveSection):
+    pass
+
+
 class ChamberEnvironment(ArchiveSection):
     m_def = Section(
         a_plot=dict(
@@ -293,6 +300,9 @@ class ChamberEnvironment(ArchiveSection):
     )
     pressure = SubSection(
         section_def=Pressure,
+    )
+    heater = SubSection(
+        section_def=SubstrateHeater,
     )
 
 
@@ -313,15 +323,15 @@ class VaporDepositionStep(ActivityStep):
         ),
     )
     duration = Quantity(
-        type=float, 
-        unit="second"
+        type=float,
+        unit="second",
     )
     sources = SubSection(
         section_def=VaporDepositionSource,
         repeats=True,
     )
-    substrate = SubSection(
-        section_def=SubstrateSetup,  
+    sample_parameters = SubSection(
+        section_def=SampleParameters,
         repeats=True,
     )
     environment = SubSection(
@@ -330,7 +340,7 @@ class VaporDepositionStep(ActivityStep):
 
     def normalize(self, archive: "EntryArchive", logger: "BoundLogger") -> None:
         """
-        The normalizer for the `PVDStep` class.
+        The normalizer for the `VaporDepositionStep` class.
 
         Args:
             archive (EntryArchive): The archive containing the section that is being
@@ -362,17 +372,13 @@ class VaporDeposition(SampleDeposition):
 
     m_def = Section(
         links=[
-                'http://purl.obolibrary.org/obo/CHMO_0001314',
-                'http://purl.obolibrary.org/obo/CHMO_0001356',
+            "http://purl.obolibrary.org/obo/CHMO_0001314",
+            "http://purl.obolibrary.org/obo/CHMO_0001356",
         ],
         a_plot=[
             dict(
                 x="steps/:/environment/pressure/process_time",
                 y="steps/:/environment/pressure/pressure",
-            ),
-            dict(
-                x="steps/:/source/:/evaporation_source/power/process_time",
-                y="steps/:/source/:/evaporation_source/power/power",
             ),
         ],
     )
