@@ -160,7 +160,7 @@ class VaporDepositionSource(ArchiveSection):
         section_def=SourceMaterial,
     )
     evaporation_source = SubSection(
-        section_def=SourceEvaporation,
+        section_def=EvaporationSource,
     )
 
 
@@ -362,8 +362,8 @@ class VaporDeposition(SampleDeposition):
 
     m_def = Section(
         links=[
-                http://purl.obolibrary.org/obo/CHMO_0001314,
-                http://purl.obolibrary.org/obo/CHMO_0001356,
+                'http://purl.obolibrary.org/obo/CHMO_0001314',
+                'http://purl.obolibrary.org/obo/CHMO_0001356',
         ],
         a_plot=[
             dict(

@@ -44,7 +44,7 @@ from nomad_material_processing import (
 from nomad_material_processing.vapor_deposition import (
     MaterialEvaporationRate,
     SourceMaterial,
-    SourceEvaporation,
+    EvaporationSource,
     VaporDepositionSource,
     SubstrateSetup,
     VaporDepositionStep,
@@ -100,7 +100,7 @@ class CVDSourceMaterial(SourceMaterial):
 
 
 # TODO remove this placeholder class and use the parent one
-class CVDSourceEvaporation(SourceEvaporation):
+class CVDEvaporationSource(EvaporationSource):
     pass
 
 
@@ -129,7 +129,7 @@ class CVDSource(VaporDepositionSource):
         section_def=CVDSourceMaterial,
     )
     evaporation_source = SubSection(
-        section_def=CVDSourceEvaporation,
+        section_def=CVDEvaporationSource,
     )
 
 

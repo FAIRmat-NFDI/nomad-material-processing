@@ -44,7 +44,7 @@ from nomad_material_processing import (
 from nomad_material_processing.vapor_deposition import (
     MaterialEvaporationRate,
     SourceMaterial,
-    SourceEvaporation,
+    EvaporationSource,
     VaporDepositionSource,
     SubstrateSetup,
     VaporDepositionStep,
@@ -93,7 +93,7 @@ class PVDMaterialSource(SourceMaterial):
 
 
 # TODO remove this placeholder class and use the parent one
-class PVDEvaporationSource(SourceEvaporation):
+class PVDEvaporationSource(EvaporationSource):
     pass
 
 
@@ -250,7 +250,7 @@ class PLDTargetSource(PVDMaterialSource):
     )
 
 
-class PLDLaser(SourceEvaporation):
+class PLDLaser(EvaporationSource):
     wavelength = Quantity(
         type=float,
         unit="meter",
@@ -391,7 +391,7 @@ class ThermalEvaporationHeaterTemperature(ArchiveSection):
     )
 
 
-class ThermalEvaporationHeater(SourceEvaporation):
+class ThermalEvaporationHeater(EvaporationSource):
     m_def = Section(
         a_plot=dict(
             x=[
