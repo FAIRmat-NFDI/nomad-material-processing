@@ -111,7 +111,7 @@ class PVDSource(VaporDepositionSource):
     )
 
 
-class PVDSubstrate(SampleParameters):
+class PVDSampleParameters(SampleParameters):
     heater = Quantity(
         description="""
         What is the substrate heated by.
@@ -143,6 +143,10 @@ class PVDStep(VaporDepositionStep):
 
     sources = SubSection(
         section_def=PVDSource,
+        repeats=True,
+    )
+    sample_parameters = SubSection(
+        section_def=PVDSampleParameters,
         repeats=True,
     )
 
@@ -224,7 +228,7 @@ class PLDTargetReference(CompositeSystemReference):
     )
 
 
-class PLDLaser(EvaporationSource):
+class PLDLaser(PVDEvaporationSource):
     wavelength = Quantity(
         type=float,
         unit="meter",
@@ -276,7 +280,7 @@ class PLDSource(PVDSource):
     )
 
 
-class PLDStep(VaporDepositionStep):
+class PLDStep(PVDStep):
     sources = SubSection(
         section_def=PLDSource,
         repeats=True,
@@ -378,7 +382,7 @@ class ThermalEvaporationHeaterTemperature(ArchiveSection):
     )
 
 
-class ThermalEvaporationHeater(EvaporationSource):
+class ThermalEvaporationHeater(PVDEvaporationSource):
     m_def = Section(
         a_plot=dict(
             x=[
@@ -442,7 +446,7 @@ class ThermalEvaporationSource(PVDSource):
     )
 
 
-class ThermalEvaporationStep(VaporDepositionStep):
+class ThermalEvaporationStep(PVDStep):
     m_def = Section(
         a_plot=[
             dict(
