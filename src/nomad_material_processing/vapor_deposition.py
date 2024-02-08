@@ -135,16 +135,16 @@ class VaporDepositionSource(ArchiveSection):
         Example: A heater, a filament, a laser, a bubbler, etc.
         """,
     )
-    deposition_rate = SubSection(
-        section_def=DepositionRate,
-        description="""
-        The deposition rate of the material onto the substrate (mol/area/time).
-        """,
-    )
     vapor_rate = SubSection(
         section_def=VaporRate,
         description="""
         The rate of the material being evaporated (mol/time).
+        """,
+    )
+    deposition_rate = SubSection(
+        section_def=DepositionRate,
+        description="""
+        The deposition rate of the material onto the substrate (mol/area/time).
         """,
     )
 
