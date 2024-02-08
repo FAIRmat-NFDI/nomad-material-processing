@@ -34,19 +34,14 @@ from nomad.datamodel.metainfo.annotations import (
 )
 from nomad.datamodel.metainfo.basesections import (
     CompositeSystem,
-    PureSubstanceSection,
+    CompositeSystemReference,
     ReadableIdentifiers,
-)
-from nomad_material_processing import (
-    SampleDeposition,
 )
 
 from nomad_material_processing.vapor_deposition import (
-    MaterialEvaporationRate,
-    SourceMaterial,
     EvaporationSource,
     VaporDepositionSource,
-    SubstrateSetup,
+    SampleParameters,
     VaporDepositionStep,
     VaporDeposition,
 )
@@ -62,39 +57,35 @@ if TYPE_CHECKING:
 m_package = Package(name="Physical Vapor Deposition")
 
 
-class PVDMaterialEvaporationRate(MaterialEvaporationRate):
+class SourcePower(ArchiveSection):
     m_def = Section(
         a_plot=dict(
             x="process_time",
-            y="rate",
+            y="power",
         ),
     )
-    rate = Quantity(
+    power = Quantity(
         type=float,
-        unit="mol/meter ** 2/second",
+        unit="watt",
         shape=["*"],
-        a_eln=ELNAnnotation(
-            defaultDisplayUnit="micromol/m ** 2/second",
-        ),
+    )
+    process_time = Quantity(
+        type=float,
+        unit="second",
+        shape=["*"],
     )
 
 
-class PVDMaterialSource(SourceMaterial):
+class PVDEvaporationSource(EvaporationSource):
     m_def = Section(
         a_plot=dict(
-            x="rate/process_time",
-            y="rate/rate",
+            x="power/process_time",
+            y="power/power",
         ),
     )
-
-    rate = SubSection(
-        section_def=PVDMaterialEvaporationRate,
+    power = SubSection(
+        section_def=SourcePower,
     )
-
-
-# TODO remove this placeholder class and use the parent one
-class PVDEvaporationSource(EvaporationSource):
-    pass
 
 
 class PVDSource(VaporDepositionSource):
@@ -112,56 +103,35 @@ class PVDSource(VaporDepositionSource):
             ),
         ],
     )
-    name = Quantity(
-        type=str,
+    vapor_source = SubSection(
+        section_def=PVDEvaporationSource,
         description="""
-        A short and descriptive name for this source.
+        Example: A heater, a filament, a laser, etc.
         """,
     )
-    material_source = SubSection(
-        section_def=PVDMaterialSource,
-    )
-    evaporation_source = SubSection(
-        section_def=PVDEvaporationSource,
-    )
 
 
-# TODO remove this placeholder class and use the parent one
-class PVDSubstrate(SubstrateSetup):
-    pass
-
-
-class PVDPressure(ArchiveSection):
-    m_def = Section(
-        a_plot=dict(
-            x="process_time",
-            y="pressure",
+class PVDSubstrate(SampleParameters):
+    heater = Quantity(
+        description="""
+        What is the substrate heated by.
+        """,
+        type=MEnum(
+            "No heating",
+            "Halogen lamp",
+            "Filament",
+            "Resistive element",
+            "CO2 laser",
         ),
     )
-    pressure = Quantity(
+    distance_to_source = Quantity(
         type=float,
-        unit="pascal",
-        shape=["*"],
-    )
-    process_time = Quantity(
-        type=float,
-        unit="second",
-        shape=["*"],
-    )
-
-
-class PVDGasFlow(ArchiveSection):
-    gas = SubSection(
-        section_def=PureSubstanceSection,
-    )
-    flow = Quantity(
-        type=float,
-        unit="meter ** 3 / second",
-        shape=["*"],
-    )
-    process_time = Quantity(
-        type=float,
-        unit="second",
+        unit="meter",
+        description="""
+        The distance between the substrate and all the sources.
+        In the case of multiple sources, the distances are listed in the same order as the
+        sources are listed in the parent `VaporDepositionStep` section.
+        """,
         shape=["*"],
     )
 
@@ -238,14 +208,18 @@ class PLDTarget(CompositeSystem):
     )
 
 
-class PLDTargetSource(PVDMaterialSource):
-    material = Quantity(
-        description="""
-        The material that is being evaporated.
-        """,
+class PLDTargetReference(CompositeSystemReference):
+    lab_id = Quantity(
+        type=str,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+            label="Target ID",
+        ),
+    )
+    reference = Quantity(
         type=PLDTarget,
         a_eln=ELNAnnotation(
-            label="Target", component=ELNComponentEnum.ReferenceEditQuantity
+            component=ELNComponentEnum.ReferenceEditQuantity,
         ),
     )
 
@@ -254,38 +228,51 @@ class PLDLaser(EvaporationSource):
     wavelength = Quantity(
         type=float,
         unit="meter",
-        # a_eln=ELNAnnotation(
-        #     defaultDisplayUnit='nanometer',
-        # ),
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit="nanometer",
+        ),
     )
     repetition_rate = Quantity(
         type=float,
         unit="hertz",
-        # a_eln=ELNAnnotation(
-        #     defaultDisplayUnit='hertz',
-        # ),
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit="hertz",
+        ),
     )
     spot_size = Quantity(
         type=float,
         unit="meter ** 2",
-        # a_eln=ELNAnnotation(
-        #     defaultDisplayUnit='millimeter ** 2',
-        # ),
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit="millimeter ** 2",
+        ),
     )
     pulses = Quantity(
         description="""
         The total number of laser pulses during the deposition step.
         """,
         type=int,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
     )
 
 
 class PLDSource(PVDSource):
-    material_source = SubSection(
-        section_def=PLDTargetSource,
+    material = SubSection(
+        section_def=PLDTargetReference,
+        description="""
+        The source of the material that is being evaporated.
+        Example: A sputtering target, a powder in a crucible, etc.
+        """,
     )
-    evaporation_source = SubSection(
+    vapor_source = SubSection(
         section_def=PLDLaser,
+        description="""
+        Section containing the details of the laser source.
+        """,
     )
 
 
@@ -316,7 +303,10 @@ class PulsedLaserDeposition(PhysicalVaporDeposition):
     m_def = Section(
         links=["http://purl.obolibrary.org/obo/CHMO_0001363"],
     )
-    method = Quantity(type=str, default="Pulsed Laser Deposition")
+    method = Quantity(
+        type=str,
+        default="Pulsed Laser Deposition",
+    )
     steps = SubSection(
         description="""
         The steps of the deposition process.
@@ -352,7 +342,10 @@ class SputterDeposition(PhysicalVaporDeposition):
     m_def = Section(
         links=["http://purl.obolibrary.org/obo/CHMO_0001364"],
     )
-    method = Quantity(type=str, default="Sputter Deposition")
+    method = Quantity(
+        type=str,
+        default="Sputter Deposition",
+    )
 
     def normalize(self, archive: "EntryArchive", logger: "BoundLogger") -> None:
         """
@@ -377,17 +370,11 @@ class ThermalEvaporationHeaterTemperature(ArchiveSection):
         type=float,
         unit="kelvin",
         shape=["*"],
-        a_eln=ELNAnnotation(
-            defaultDisplayUnit="celsius",
-        ),
     )
     process_time = Quantity(
         type=float,
         unit="second",
         shape=["*"],
-        a_eln=ELNAnnotation(
-            defaultDisplayUnit="second",
-        ),
     )
 
 
@@ -427,12 +414,12 @@ class ThermalEvaporationSource(PVDSource):
     m_def = Section(
         a_plot=dict(
             x=[
-                "material_source/rate/process_time",
-                "evaporation_source/temperature/process_time",
+                "deposition_rate/process_time",
+                "vapor_source/temperature/process_time",
             ],
             y=[
-                "material_source/rate/rate",
-                "evaporation_source/temperature/temperature",
+                "deposition_rate/rate",
+                "vapor_source/temperature/temperature",
             ],
             lines=[
                 dict(
@@ -450,10 +437,7 @@ class ThermalEvaporationSource(PVDSource):
             ],
         ),
     )
-    material_source = SubSection(
-        section_def=PVDSourceMaterial,
-    )
-    evaporation_source = SubSection(
+    vapor_source = SubSection(
         section_def=ThermalEvaporationHeater,
     )
 
@@ -462,16 +446,16 @@ class ThermalEvaporationStep(VaporDepositionStep):
     m_def = Section(
         a_plot=[
             dict(
-                x="sources/:/material_source/rate/process_time",
-                y="sources/:/material_source/rate/rate",
+                x="sources/:/deposition_rate/process_time",
+                y="sources/:/deposition_rate/rate",
             ),
             dict(
-                x="sources/:/evaporation_source/temperature/process_time",
-                y="sources/:/evaporation_source/temperature/temperature",
+                x="sources/:/vapor_source/temperature/process_time",
+                y="sources/:/vapor_source/temperature/temperature",
             ),
             dict(
-                x="sources/:/evaporation_source/power/process_time",
-                y="sources/:/evaporation_source/power/power",
+                x="sources/:/vapor_source/power/process_time",
+                y="sources/:/vapor_source/power/power",
             ),
         ],
     )
@@ -501,13 +485,13 @@ class ThermalEvaporation(PhysicalVaporDeposition):
         links=["http://purl.obolibrary.org/obo/CHMO_0001360"],
         a_plot=[
             dict(
-                x="steps/:/sources/:/material_source/rate/process_time",
-                y="steps/:/sources/:/material_source/rate/rate",
+                x="steps/:/sources/:/deposition_rate/process_time",
+                y="steps/:/sources/:/deposition_rate/rate",
             ),
-            # dict(
-            #     x='steps/:/sources/:/evaporation_source/temperature/process_time',
-            #     y='steps/:/sources/:/evaporation_source/temperature/temperature',
-            # ),
+            dict(
+                x="steps/:/sources/:/vapor_source/temperature/process_time",
+                y="steps/:/sources/:/vapor_source/temperature/temperature",
+            ),
             dict(
                 x="steps/:/environment/pressure/process_time",
                 y="steps/:/environment/pressure/pressure",
@@ -519,7 +503,17 @@ class ThermalEvaporation(PhysicalVaporDeposition):
             ),
         ],
     )
-    method = Quantity(type=str, default="Thermal Evaporation")
+    method = Quantity(
+        type=str,
+        default="Thermal Evaporation",
+    )
+    steps = SubSection(
+        description="""
+        The steps of the deposition process.
+        """,
+        section_def=ThermalEvaporationStep,
+        repeats=True,
+    )
 
     def normalize(self, archive: "EntryArchive", logger: "BoundLogger") -> None:
         """
