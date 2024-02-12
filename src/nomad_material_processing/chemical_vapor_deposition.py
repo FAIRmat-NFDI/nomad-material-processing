@@ -33,6 +33,7 @@ from nomad.datamodel.metainfo.annotations import (
     ELNComponentEnum,
 )
 from nomad.datamodel.metainfo.basesections import (
+    ActivityStep,
     CompositeSystem,
     PureSubstanceSection,
     ReadableIdentifiers,
@@ -46,10 +47,11 @@ from nomad_material_processing.vapor_deposition import (
     DepositionRate,
     EvaporationSource,
     VaporDepositionSource,
-    SubstrateSetup,
     VaporDepositionStep,
     VaporDeposition,
 )
+
+from nomad.datamodel.metainfo.plot import PlotSection, PlotlyFigure
 
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import (
@@ -66,29 +68,30 @@ class CVDEvaporationSource(EvaporationSource):
     pass
 
 
-class Bubbler(CVDEvaporationSource):
+class CVDBubbler(CVDEvaporationSource):
     """
-    Delivers precursor materials to the reaction chamber. 
-    It serves as a mechanism for introducing volatile liquid or solid precursors into the gas phase, 
+    Delivers precursor materials to the reaction chamber.
+    It serves as a mechanism for introducing volatile liquid or solid precursors into the gas phase,
     where they can react and deposit onto a substrate surface to form thin films or coatings.
 
     Key components:
         - Bubbler Vessel: This vessel holds the precursor material.
         - Heating Element: To facilitate vaporization.
-        - Gas Inlet and Outlet: Gas delivery system via gas inlet and outlet ports. 
+        - Gas Inlet and Outlet: Gas delivery system via gas inlet and outlet ports.
         - Temperature Control: Maintain the vapor pressure of the precursor at the desired level.
 
     Operation:
         - Loading Precursor: The precursor material is loaded into the bubbler vessel
         - Heating: The heating element is activated to form a vapor phase above the liquid or solid.
         - Gas Flow: Carrier gas is bubbled through the precursor material.
-        - Transport: The precursor vapor is delivered to the reaction chamber. 
-          The precursor undergoes decomposition or reaction on the substrate surface, 
+        - Transport: The precursor vapor is delivered to the reaction chamber.
+          The precursor undergoes decomposition or reaction on the substrate surface,
           leading to thin film growth.
-    """ 
+    """
+
     temperature = Quantity(
         type=float,
-        description="Temperature of the bubbler, used to calculate the precursor paartial pressure.",
+        description="Temperature of the bubbler, used to calculate the precursor partial pressure.",
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
             defaultDisplayUnit="mbar",
@@ -141,6 +144,7 @@ class Bubbler(CVDEvaporationSource):
         unit="cm ** 3 / minute",
     )
 
+
 class CVDVaporRate(VaporRate):
     m_def = Section(
         a_plot=dict(
@@ -180,6 +184,7 @@ class CVDVaporRate(VaporRate):
         )
     )
 
+
 class CVDSource(VaporDepositionSource):
     m_def = Section(
         a_plot=dict(
@@ -200,101 +205,10 @@ class CVDSource(VaporDepositionSource):
         """,
     )
     vapor_rate = SubSection(
-        section_def=VaporRate,
+        section_def=CVDVaporRate,
         description="""
         The rate of the material being evaporated (mol/time).
         """,
-    )
-    deposition_rate = SubSection(
-        section_def=DepositionRate,
-        description="""
-        The deposition rate of the material onto the substrate (mol/area/time).
-        """,
-    )
-
-
-class GrowthRate(ArchiveSection):
-    m_def = Section(
-        a_plot=dict(
-            x="process_time",
-            y="rate",
-        ),
-    )
-    rate = Quantity(
-        type=float,
-        unit="meter/second",
-        shape=["*"],
-    )
-    process_time = Quantity(
-        type=float,
-        unit="second",
-        shape=["*"],
-    )
-    measurement_type = Quantity(
-        type=MEnum(
-            "Assumed",
-            "RHEED",
-            "Reflectance",
-        )
-    )
-
-
-class SubstrateTemperature(ArchiveSection):
-    m_def = Section(
-        a_plot=dict(
-            x="process_time",
-            y="temperature",
-        ),
-    )
-    temperature = Quantity(
-        type=float,
-        unit="kelvin",
-        shape=["*"],
-    )
-    process_time = Quantity(
-        type=float,
-        unit="second",
-        shape=["*"],
-    )
-    measurement_type = Quantity(
-        type=MEnum(
-            "Heater thermocouple",
-            "Pyrometer",
-            "Assumed",
-        )
-    )
-
-
-class SampleParameters(PlotSection, ArchiveSection):
-    m_def = Section(
-        a_plotly_graph_object={
-            "data": {"x": "temperature/process_time", "y": "temperature/temperature"},
-            "layout": {"title": {"text": "Plotly Graph Object"}},
-            "label": "Plotly Graph Object",
-            "index": 1,
-        },
-    )
-    growth_rate = SubSection(
-        section_def=GrowthRate,
-        description="""
-        The growth rate of the thin film (length/time).
-        Measured by in-situ RHEED or Reflection or assumed.
-        """,
-    )
-    temperature = SubSection(
-        section_def=SubstrateTemperature,
-    )
-    layer = SubSection(
-        description="""
-        The thin film that is being created during this step.
-        """,
-        section_def=ThinFilmReference,
-    )
-    substrate = SubSection(
-        description="""
-        The thin film stack that is being evaporated on.
-        """,
-        section_def=ThinFilmStackReference,
     )
 
 
@@ -360,102 +274,6 @@ class ChamberEnvironment(ArchiveSection):
     heater = SubSection(
         section_def=SubstrateHeater,
     )
-
-
-class VaporDepositionStep(ActivityStep):
-    """
-    A step of any vapor deposition process.
-    """
-
-    m_def = Section()
-    creates_new_thin_film = Quantity(
-        type=bool,
-        description="""
-        Whether or not this step creates a new thin film.
-        """,
-        default=False,
-        a_eln=ELNAnnotation(
-            component="BoolEditQuantity",
-        ),
-    )
-    duration = Quantity(
-        type=float,
-        unit="second",
-    )
-    sources = SubSection(
-        section_def=VaporDepositionSource,
-        repeats=True,
-    )
-    sample_parameters = SubSection(
-        section_def=SampleParameters,
-        repeats=True,
-    )
-    environment = SubSection(
-        section_def=ChamberEnvironment,
-    )
-
-    def normalize(self, archive: "EntryArchive", logger: "BoundLogger") -> None:
-        """
-        The normalizer for the `VaporDepositionStep` class.
-
-        Args:
-            archive (EntryArchive): The archive containing the section that is being
-            normalized.
-            logger (BoundLogger): A structlog logger.
-        """
-        super(VaporDepositionStep, self).normalize(archive, logger)
-
-
-class VaporDeposition(SampleDeposition):
-    """
-    VaporDeposition is a general class that encompasses both Physical Vapor Deposition
-    (PVD) and Chemical Vapor Deposition (CVD).
-    It involves the deposition of material from a vapor phase to a solid thin film or
-    coating onto a substrate.
-     - material sources:
-       Both PVD and CVD involve a source material that is transformed into a vapor phase.
-       In PVD, the source material is physically evaporated or sputtered from a solid
-       target.
-       In CVD, gaseous precursors undergo chemical reactions to produce a solid material
-       on the substrate.
-     - substrate:
-       The substrate is the material onto which the thin film is deposited.
-     - environment:
-       The process typically takes place in a controlled environment.
-       The deposition is usually affected by the pressure in the chamber.
-       For some processes additional background gasses are also added.
-    """
-
-    m_def = Section(
-        links=[
-            "http://purl.obolibrary.org/obo/CHMO_0001314",
-            "http://purl.obolibrary.org/obo/CHMO_0001356",
-        ],
-        a_plot=[
-            dict(
-                x="steps/:/environment/pressure/process_time",
-                y="steps/:/environment/pressure/pressure",
-            ),
-        ],
-    )
-    steps = SubSection(
-        description="""
-        The steps of the deposition process.
-        """,
-        section_def=VaporDepositionStep,
-        repeats=True,
-    )
-
-    def normalize(self, archive: "EntryArchive", logger: "BoundLogger") -> None:
-        """
-        The normalizer for the `VaporDeposition` class.
-
-        Args:
-            archive (EntryArchive): The archive containing the section that is being
-            normalized.
-            logger (BoundLogger): A structlog logger.
-        """
-        super(VaporDeposition, self).normalize(archive, logger)
 
 
 m_package.__init_metainfo__()

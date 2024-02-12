@@ -42,7 +42,7 @@ from nomad_material_processing import (
     ThinFilmReference,
 )
 
-from nomad.datamodel.metainfo.plot import PlotSection
+from nomad.datamodel.metainfo.plot import PlotSection, PlotlyFigure
 
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import (
@@ -177,10 +177,10 @@ class GrowthRate(ArchiveSection):
 
 class SubstrateTemperature(ArchiveSection):
     m_def = Section(
-        a_plot=dict(
-            x="process_time",
-            y="temperature",
-        ),
+        # a_plot=dict(
+        #     x="process_time",
+        #     y="temperature",
+        # ),
     )
     temperature = Quantity(
         type=float,
@@ -204,10 +204,49 @@ class SubstrateTemperature(ArchiveSection):
 class SampleParameters(PlotSection, ArchiveSection):
     m_def = Section(
         a_plotly_graph_object={
-            "data": {"x": "temperature/process_time", "y": "temperature/temperature"},
-            "layout": {"title": {"text": "Plotly Graph Object"}},
-            "label": "Plotly Graph Object",
+            "label": "Measured Temperatures",
             "index": 1,
+            "dragmode": "pan",
+            "data": {
+                "type": "scattergl",
+                "line": {"width": 2},
+                "marker": {"size": 2},
+                "mode": "lines+markers",
+                "name": "Temperature",
+                "x": "#temperature/process_time",
+                "y": "#temperature/temperature",
+            },
+            "layout": {
+                "title": {"text": "Measured Temperature"},
+                "xaxis": {
+                    "showticklabels": True,
+                    "fixedrange": True,
+                    "ticks": "",
+                    "title": {"text": "Process time [s]"},
+                    "showline": True,
+                    "linewidth": 1,
+                    "linecolor": "black",
+                    "mirror": True,
+                },
+                "yaxis": {
+                    "showticklabels": True,
+                    "fixedrange": True,
+                    "ticks": "",
+                    "title": {"text": "Temperature [°C]"},
+                    "showline": True,
+                    "linewidth": 1,
+                    "linecolor": "black",
+                    "mirror": True,
+                },
+                "showlegend": False,
+            },
+            "config": {
+                "displayModeBar": False,
+                "scrollZoom": False,
+                "responsive": False,
+                "displaylogo": False,
+                "dragmode": False,
+            },
         },
     )
     growth_rate = SubSection(
