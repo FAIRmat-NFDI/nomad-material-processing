@@ -363,9 +363,9 @@ class ThinFilmStack(CompositeSystem):
         self.components = []
         if self.layers:
             self.components = [
-                SystemComponent(system=layer.reference) for layer in self.layers
+                SystemComponent(system=layer.reference) for layer in self.layers if layer.reference
             ]
-        if self.substrate:
+        if self.substrate.reference:
             self.components.append(SystemComponent(system=self.substrate.reference))
         super().normalize(archive, logger)
 
