@@ -36,13 +36,14 @@ from nomad.datamodel.metainfo.basesections import (
     PureSubstanceSection,
     CompositeSystemReference,
 )
+from nomad.datamodel.metainfo.plot import (
+    PlotSection,
+)
 from nomad_material_processing import (
     SampleDeposition,
     ThinFilmStackReference,
     ThinFilmReference,
 )
-
-from nomad.datamodel.metainfo.plot import PlotSection, PlotlyFigure
 
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import (
@@ -76,31 +77,6 @@ class VaporRate(ArchiveSection):
         type=MEnum(
             "Assumed",
             "Mass Flow Controller",
-        )
-    )
-
-
-class DepositionRate(ArchiveSection):
-    m_def = Section(
-        a_plot=dict(
-            x="process_time",
-            y="rate",
-        ),
-    )
-    rate = Quantity(
-        type=float,
-        unit="mol/meter ** 2/second",
-        shape=["*"],
-    )
-    process_time = Quantity(
-        type=float,
-        unit="second",
-        shape=["*"],
-    )
-    measurement_type = Quantity(
-        type=MEnum(
-            "Assumed",
-            "Quartz Crystal Microbalance",
         )
     )
 
@@ -139,12 +115,6 @@ class VaporDepositionSource(ArchiveSection):
         section_def=VaporRate,
         description="""
         The rate of the material being evaporated (mol/time).
-        """,
-    )
-    deposition_rate = SubSection(
-        section_def=DepositionRate,
-        description="""
-        The deposition rate of the material onto the substrate (mol/area/time).
         """,
     )
 

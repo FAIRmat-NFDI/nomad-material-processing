@@ -88,6 +88,31 @@ class PVDEvaporationSource(EvaporationSource):
     )
 
 
+class ImpingingFlux(ArchiveSection):
+    m_def = Section(
+        a_plot=dict(
+            x="process_time",
+            y="rate",
+        ),
+    )
+    rate = Quantity(
+        type=float,
+        unit="mol/meter ** 2/second",
+        shape=["*"],
+    )
+    process_time = Quantity(
+        type=float,
+        unit="second",
+        shape=["*"],
+    )
+    measurement_type = Quantity(
+        type=MEnum(
+            "Assumed",
+            "Quartz Crystal Microbalance",
+        )
+    )
+
+
 class PVDSource(VaporDepositionSource):
     m_def = Section(
         a_plot=[
@@ -108,6 +133,13 @@ class PVDSource(VaporDepositionSource):
         description="""
         Example: A heater, a filament, a laser, etc.
         """,
+    )
+    impinging_flux = SubSection(
+        section_def=ImpingingFlux,
+        description="""
+        The deposition rate of the material onto the substrate (mol/area/time).
+        """,
+        repeats=True,
     )
 
 
