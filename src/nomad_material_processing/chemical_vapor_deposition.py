@@ -44,7 +44,6 @@ from nomad_material_processing import (
 
 from nomad_material_processing.vapor_deposition import (
     VaporRate,
-    DepositionRate,
     EvaporationSource,
     VaporDepositionSource,
     VaporDepositionStep,
