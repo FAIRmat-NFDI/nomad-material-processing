@@ -39,6 +39,10 @@ from nomad.datamodel.metainfo.basesections import (
 from nomad.datamodel.metainfo.plot import (
     PlotSection,
 )
+from nomad.datamodel.metainfo.workflow import (
+    Link,
+    Task,
+)
 from nomad_material_processing import (
     SampleDeposition,
     ThinFilmStackReference,
@@ -338,6 +342,31 @@ class VaporDepositionStep(ActivityStep):
     environment = SubSection(
         section_def=ChamberEnvironment,
     )
+
+    def to_task(self) -> Task:
+        """
+        Returns the task description of this activity step.
+
+        Returns:
+            Task: The activity step as a workflow task.
+        """
+        inputs = [
+            Link(
+                name=source.material.name,
+                section=source.material.reference,
+            )
+            for source in self.sources
+            if source.material is not None and source.material.reference is not None
+        ]
+        outputs = [
+            Link(
+                name=parameters.layer.name,
+                section=parameters.layer.reference,
+            )
+            for parameters in self.sample_parameters
+            if parameters.layer is not None and parameters.layer.reference is not None
+        ]
+        return Task(name=self.name, inputs=inputs, outputs=outputs)
 
     def normalize(self, archive: "EntryArchive", logger: "BoundLogger") -> None:
         """
