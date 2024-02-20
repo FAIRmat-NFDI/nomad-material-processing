@@ -95,6 +95,15 @@ class ImpingingFlux(ArchiveSection):
             y="rate",
         ),
     )
+    measurement_type = Quantity(
+        type=MEnum(
+            "Assumed",
+            "Quartz Crystal Microbalance",
+        ),
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.EnumEditQuantity,
+        ),
+    )
     rate = Quantity(
         type=float,
         unit="mol/meter ** 2/second",
@@ -104,12 +113,6 @@ class ImpingingFlux(ArchiveSection):
         type=float,
         unit="second",
         shape=["*"],
-    )
-    measurement_type = Quantity(
-        type=MEnum(
-            "Assumed",
-            "Quartz Crystal Microbalance",
-        )
     )
 
 
@@ -154,6 +157,9 @@ class PVDSampleParameters(SampleParameters):
             "Filament",
             "Resistive element",
             "CO2 laser",
+        ),
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.EnumEditQuantity,
         ),
     )
     distance_to_source = Quantity(

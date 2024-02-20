@@ -30,6 +30,7 @@ from nomad.datamodel.data import (
 )
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
+    ELNComponentEnum,
 )
 from nomad.datamodel.metainfo.basesections import (
     ActivityStep,
@@ -67,6 +68,15 @@ class VaporRate(ArchiveSection):
             y="rate",
         ),
     )
+    measurement_type = Quantity(
+        type=MEnum(
+            "Assumed",
+            "Mass Flow Controller",
+        ),
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.EnumEditQuantity,
+        ),
+    )
     rate = Quantity(
         type=float,
         unit="mol/second",
@@ -76,12 +86,6 @@ class VaporRate(ArchiveSection):
         type=float,
         unit="second",
         shape=["*"],
-    )
-    measurement_type = Quantity(
-        type=MEnum(
-            "Assumed",
-            "Mass Flow Controller",
-        )
     )
 
 
@@ -130,6 +134,16 @@ class GrowthRate(ArchiveSection):
             y="rate",
         ),
     )
+    measurement_type = Quantity(
+        type=MEnum(
+            "Assumed",
+            "RHEED",
+            "Reflectance",
+        ),
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.EnumEditQuantity,
+        ),
+    )
     rate = Quantity(
         type=float,
         unit="meter/second",
@@ -140,13 +154,6 @@ class GrowthRate(ArchiveSection):
         unit="second",
         shape=["*"],
     )
-    measurement_type = Quantity(
-        type=MEnum(
-            "Assumed",
-            "RHEED",
-            "Reflectance",
-        )
-    )
 
 
 class SubstrateTemperature(ArchiveSection):
@@ -154,6 +161,16 @@ class SubstrateTemperature(ArchiveSection):
         a_plot=dict(
             x="process_time",
             y="temperature",
+        ),
+    )
+    measurement_type = Quantity(
+        type=MEnum(
+            "Heater thermocouple",
+            "Pyrometer",
+            "Assumed",
+        ),
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.EnumEditQuantity,
         ),
     )
     temperature = Quantity(
@@ -165,13 +182,6 @@ class SubstrateTemperature(ArchiveSection):
         type=float,
         unit="second",
         shape=["*"],
-    )
-    measurement_type = Quantity(
-        type=MEnum(
-            "Heater thermocouple",
-            "Pyrometer",
-            "Assumed",
-        )
     )
 
 

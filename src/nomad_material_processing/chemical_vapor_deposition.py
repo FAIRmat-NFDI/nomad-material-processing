@@ -151,6 +151,15 @@ class CVDVaporRate(VaporRate):
             y="rate",
         ),
     )
+    measurement_type = Quantity(
+        type=MEnum(
+            "Assumed",
+            "Mass Flow Controller",
+        ),
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.EnumEditQuantity,
+        ),
+    )
     mass_flow_controller = Quantity(
         type=float,
         description="Flux of material with mass flow controller.",
@@ -175,12 +184,6 @@ class CVDVaporRate(VaporRate):
         type=float,
         unit="second",
         shape=["*"],
-    )
-    measurement_type = Quantity(
-        type=MEnum(
-            "Assumed",
-            "Mass Flow Controller",
-        )
     )
 
 
