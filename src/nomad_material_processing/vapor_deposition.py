@@ -151,10 +151,10 @@ class GrowthRate(ArchiveSection):
 
 class SubstrateTemperature(ArchiveSection):
     m_def = Section(
-        # a_plot=dict(
-        #     x="process_time",
-        #     y="temperature",
-        # ),
+        a_plot=dict(
+            x="process_time",
+            y="temperature",
+        ),
     )
     temperature = Quantity(
         type=float,
