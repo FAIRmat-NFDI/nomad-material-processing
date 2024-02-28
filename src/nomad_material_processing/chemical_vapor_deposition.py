@@ -25,29 +25,16 @@ from nomad.metainfo import (
     Quantity,
     MEnum,
 )
-from nomad.datamodel.data import (
-    ArchiveSection,
-)
+
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
     ELNComponentEnum,
-)
-from nomad.datamodel.metainfo.basesections import (
-    ActivityStep,
-    CompositeSystem,
-    PureSubstanceSection,
-    ReadableIdentifiers,
-)
-from nomad_material_processing import (
-    SampleDeposition,
 )
 
 from nomad_material_processing.vapor_deposition import (
     VaporRate,
     EvaporationSource,
     VaporDepositionSource,
-    VaporDepositionStep,
-    VaporDeposition,
 )
 
 from nomad.datamodel.metainfo.plot import PlotSection, PlotlyFigure
