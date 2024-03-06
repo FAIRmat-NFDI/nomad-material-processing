@@ -450,4 +450,27 @@ class SampleDeposition(SynthesisMethod):
             archive.workflow2.tasks = tasks
 
 
+class TimeSeries(ArchiveSection):
+    m_def = Section(
+        a_plot=dict(
+            x="process_time",
+            y="pressure",
+        ),
+    )
+    set_value = Quantity(
+        type=float,
+        description="The value scalar set for this parameter.",
+    )
+    value = Quantity(
+        type=float,
+        description="The value array detected in time for this parameter.",
+        shape=["*"],
+    )
+    time = Quantity(
+        type=float,
+        description="The time array when parameter is detected.",
+        shape=["*"],
+    )
+
+
 m_package.__init_metainfo__()

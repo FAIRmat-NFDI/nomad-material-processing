@@ -34,13 +34,17 @@ from nomad.datamodel.metainfo.annotations import (
 from nomad.datamodel.data import (
     ArchiveSection,
 )
+from nomad.datamodel.metainfo.plot import PlotSection, PlotlyFigure
+
 from nomad_material_processing.vapor_deposition import (
     VaporRate,
     EvaporationSource,
     VaporDepositionSource,
 )
+from nomad_material_processing import (
+    TimeSeries,
+)
 
-from nomad.datamodel.metainfo.plot import PlotSection, PlotlyFigure
 
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import (
@@ -53,25 +57,7 @@ if TYPE_CHECKING:
 m_package = Package(name="Chemical Vapor Deposition")
 
 
-class TimeSeries(ArchiveSection):
-    m_def = Section(
-        a_plot=dict(
-            x="process_time",
-            y="pressure",
-        ),
-    )
-    set_value = Quantity(
-        type=float,
-        description="FILL THE DESCRIPTION",
-    )
-    value = Quantity(
-        type=float,
-        shape=["*"],
-    )
-    time = Quantity(
-        type=float,
-        shape=["*"],
-    )
+
 
 class CVDPressure(TimeSeries):
     m_def = Section(
