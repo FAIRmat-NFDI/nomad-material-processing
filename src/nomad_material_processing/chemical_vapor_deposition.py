@@ -45,9 +45,7 @@ from nomad_material_processing import (
 from nomad_material_processing.vapor_deposition import (
     EvaporationSource,
     VaporDepositionSource,
-)
-from nomad_material_processing import (
-    TimeSeries,
+
 )
 
 
@@ -103,6 +101,8 @@ class Temperature(TimeSeries):
         unit="kelvin",
     )
 
+    m_def = Section(label_quantity="set_value")
+
 
 class Rotation(TimeSeries):
     """
@@ -143,19 +143,30 @@ class Pressure(TimeSeries):
     )
     set_value = Quantity(
         type=float,
-        description="FILL THE DESCRIPTION",
-        a_eln={"component": "NumberEditQuantity", "defaultDisplayUnit": "mbar"},
+        description="The value scalar set for this parameter.",
+        a_eln=ELNAnnotation(
+            component="NumberEditQuantity",
+            defaultDisplayUnit="mbar",
+        ),
         unit="pascal",
     )
     value = Quantity(
         type=float,
+        description="FILL THE DESCRIPTION",
+        a_eln=ELNAnnotation(
+            component="NumberEditQuantity",
+            defaultDisplayUnit="mbar",
+        ),
         unit="pascal",
-        shape=["*"],
     )
     time = Quantity(
         type=float,
+        description="The time array when parameter is detected.",
+        a_eln=ELNAnnotation(
+            component="NumberEditQuantity",
+            defaultDisplayUnit="minute",
+        ),
         unit="second",
-        shape=["*"],
     )
 
 

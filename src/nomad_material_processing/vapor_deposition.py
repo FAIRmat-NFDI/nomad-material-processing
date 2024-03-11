@@ -48,6 +48,7 @@ from nomad_material_processing import (
     SampleDeposition,
     ThinFilmStackReference,
     ThinFilmReference,
+    TimeSeries,
 )
 
 if TYPE_CHECKING:
@@ -156,13 +157,18 @@ class GrowthRate(ArchiveSection):
     )
 
 
-class SubstrateTemperature(ArchiveSection):
+class Temperature(TimeSeries): 
+    """
+    Generic Temperature monitoring
+    """
+
     m_def = Section(
+        label_quantity="set_value",
         a_plot=dict(
             x="process_time",
             y="temperature",
         ),
-    )
+        )
     measurement_type = Quantity(
         type=MEnum(
             "Heater thermocouple",
@@ -173,15 +179,32 @@ class SubstrateTemperature(ArchiveSection):
             component=ELNComponentEnum.EnumEditQuantity,
         ),
     )
-    temperature = Quantity(
+    set_value = Quantity(
         type=float,
+        description="The value scalar set for this parameter.",
+        a_eln=ELNAnnotation(
+            component="NumberEditQuantity",
+            defaultDisplayUnit="celsius",
+        ),
         unit="kelvin",
-        shape=["*"],
     )
-    process_time = Quantity(
+    value = Quantity(
         type=float,
+        description="The value array detected in time for temperature.",
+        a_eln=ELNAnnotation(
+            component="NumberEditQuantity",
+            defaultDisplayUnit="celsius",
+        ),
+        unit="kelvin",
+    )
+    time = Quantity(
+        type=float,
+        description="The time array when parameter is detected.",
+        a_eln=ELNAnnotation(
+            component="NumberEditQuantity",
+            defaultDisplayUnit="minute",
+        ),
         unit="second",
-        shape=["*"],
     )
 
 
@@ -240,8 +263,8 @@ class SampleParameters(PlotSection, ArchiveSection):
         Measured by in-situ RHEED or Reflection or assumed.
         """,
     )
-    temperature = SubSection(
-        section_def=SubstrateTemperature,
+    substrate_temperature = SubSection(
+        section_def=Temperature,
     )
     layer = SubSection(
         description="""
