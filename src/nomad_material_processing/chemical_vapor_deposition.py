@@ -36,6 +36,12 @@ from nomad.datamodel.data import (
 )
 from nomad.datamodel.metainfo.plot import PlotSection, PlotlyFigure
 
+from nomad.datamodel.metainfo.basesections import (
+    PubChemPureSubstanceSection,
+)
+from nomad_material_processing import (
+    TimeSeries,
+)
 from nomad_material_processing.vapor_deposition import (
     VaporRate,
     EvaporationSource,
@@ -43,6 +49,8 @@ from nomad_material_processing.vapor_deposition import (
 )
 from nomad_material_processing import (
     TimeSeries,
+    GasFlow,
+
 )
 
 
@@ -84,12 +92,131 @@ class CVDPressure(TimeSeries):
     )
 
 
+class Temperature(TimeSeries): 
+    """
+    Generic Temperature monitoring
+    """
+
+    m_def = Section(
+        label_quantity="set_value",
+        a_plot=dict(
+            x="process_time",
+            y="temperature",
+        ),
+        )
+    measurement_type = Quantity(
+        type=MEnum(
+            "Heater thermocouple",
+            "Pyrometer",
+            "Assumed",
+        ),
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.EnumEditQuantity,
+        ),
+    )
+    set_value = Quantity(
+        type=float,
+        description="The value scalar set for this parameter.",
+        a_eln=ELNAnnotation(
+            component="NumberEditQuantity",
+            defaultDisplayUnit="celsius",
+        ),
+        unit="kelvin",
+    )
+    value = Quantity(
+        type=float,
+        description="The value array detected in time for temperature.",
+        a_eln=ELNAnnotation(
+            component="NumberEditQuantity",
+            defaultDisplayUnit="celsius",
+        ),
+        unit="kelvin",
+    )
+    time = Quantity(
+        type=float,
+        description="The time array when parameter is detected.",
+        a_eln=ELNAnnotation(
+            component="NumberEditQuantity",
+            defaultDisplayUnit="minute",
+        ),
+        unit="second",
+    )
+
+
+class Rotation(TimeSeries):
+    """
+    Rotation
+    """
+
+    m_def = Section(label_quantity="set_value")
+    
+    set_value = Quantity(
+        type=float,
+        description="The value scalar set for this parameter.",
+        a_eln=ELNAnnotation(
+            component="NumberEditQuantity",
+            defaultDisplayUnit="rpm",
+        ),
+        unit="rpm",
+    )
+    value = Quantity(
+        type=float,
+        description="FILL THE DESCRIPTION",
+        a_eln=ELNAnnotation(
+            component="NumberEditQuantity",
+            defaultDisplayUnit="rpm",
+        ),
+        unit="rpm",
+    )
+    time = Quantity(
+        type=float,
+        description="The time array when parameter is detected.",
+        a_eln=ELNAnnotation(
+            component="NumberEditQuantity",
+            defaultDisplayUnit="minute",
+        ),
+        unit="second",
+    )
+
+
+class CVDGasFlow(TimeSeries): # from GAS FLOW in VD module
+    """
+    Gas Flow
+    """
+
+    set_value = Quantity(
+        type=float,
+        description="The value scalar set for this parameter.",
+        a_eln=ELNAnnotation(
+            component="NumberEditQuantity",
+            defaultDisplayUnit="meter ** 3 / second",
+        ),
+        unit="meter ** 3 / second",
+    )
+    value = Quantity(
+        type=float,
+        description="FILL THE DESCRIPTION",
+        a_eln=ELNAnnotation(
+            component="NumberEditQuantity",
+            defaultDisplayUnit="meter ** 3 / second",
+        ),
+        unit="meter ** 3 / second",
+    )
+    time = Quantity(
+        type=float,
+        description="The time array when parameter is detected.",
+        a_eln=ELNAnnotation(
+            component="NumberEditQuantity",
+            defaultDisplayUnit="minute",
+        ),
+        unit="second",
+    )
 
 class CVDEvaporationSource(EvaporationSource):
     pass
 
 
-class CVDBubbler(CVDEvaporationSource):
+class BubblerEvaporator(CVDEvaporationSource):
     """
     Delivers precursor materials to the reaction chamber.
     It serves as a mechanism for introducing volatile liquid or solid precursors into the gas phase,
@@ -166,6 +293,31 @@ class CVDBubbler(CVDEvaporationSource):
     )
 
 
+class FlashEvaporator(CVDEvaporationSource):
+    """
+    Flash Evaporator Unit: It typically comprises a reservoir where the metalorganic precursor, often in liquid form, is stored.
+
+    Components:
+
+    - Heating Mechanism.
+    - Carrier Gas Inlet.
+    - Precursor Delivery Pathway.
+    - Temperature Control System.
+
+    Operation:
+
+    - Loading of Precursor.
+    - Vaporization Process.
+    - Carrier Gas Introduction.
+    - Transport to Reaction Chamber.
+    - Temperature Regulation.
+    """
+
+    pressure = SubSection(
+        section_def=Pressure,
+    )
+
+
 class CVDVaporRate(VaporRate):
     m_def = Section(
         a_plot=dict(
@@ -220,6 +372,21 @@ class CVDSource(VaporDepositionSource):
         type=str,
         description="""
         A short and descriptive name for this source.
+        """,
+    )
+    carrier_gas = SubSection(
+        section_def=PubChemPureSubstanceSection,
+    )
+    carrier_push_valve = SubSection(
+        section_def=CVDGasFlow,
+        description="""
+        The flow of the push valve.
+        """,
+    )
+    carrier_purge_valve = SubSection(
+        section_def=CVDGasFlow,
+        description="""
+        The flow of the purge valve.
         """,
     )
     vapor_source = SubSection(
