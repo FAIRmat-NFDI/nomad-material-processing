@@ -451,25 +451,54 @@ class SampleDeposition(SynthesisMethod):
 
 
 class TimeSeries(ArchiveSection):
+    """
+    A time series of data during a process step.
+    This is an abstract class and should not be used directly.
+    Instead, it should be derived and the the units of the `value` and `set_value` should
+    be specified.
+    """
     m_def = Section(
         a_plot=dict(
-            x="process_time",
-            y="pressure",
+            x=["time", "set_time"],
+            y=["value", "set_value"],
         ),
     )
     set_value = Quantity(
         type=float,
-        description="The value scalar set for this parameter.",
+        description="The set value(s) (i.e. the intended values) set.",
         shape=["*"],
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit="s",
+            label="Set value",
+        ),
+    )
+    set_time = Quantity(
+        type=float,
+        unit="s",
+        description="""
+        The process time when each of the set values were set.
+        If this is empty and only one set value is present, it is assumed that the value
+        was set at the start of the process step.
+        If two set values are present, it is assumed that a linear ramp between the two 
+        values was set.
+        """,
+        shape=["*"],
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit="s",
+            label="Set time",
+        ),
     )
     value = Quantity(
         type=float,
-        description="The value array detected in time for this parameter.",
+        description="The observed value as a function of time.",
         shape=["*"],
     )
     time = Quantity(
         type=float,
-        description="The time array when parameter is detected.",
+        unit="s",
+        description="The process time when each of the values were recorded.",
         shape=["*"],
     )
 
