@@ -96,8 +96,8 @@ class Temperature(TimeSeries):
     m_def = Section(
         label_quantity="set_value",
         a_plot=dict(
-            x="process_time",
-            y="temperature",
+            x="time",
+            y="value",
         ),
     )
     measurement_type = Quantity(
@@ -210,7 +210,12 @@ class CVDGasFlow(TimeSeries):  # from GAS FLOW in VD module
 
 
 class CVDEvaporationSource(EvaporationSource):
-    pass
+    pressure = SubSection(
+        section_def=Pressure,
+    )
+    temperature = SubSection(
+        section_def=Temperature,
+    )
 
 
 class BubblerEvaporator(CVDEvaporationSource):
@@ -234,32 +239,8 @@ class BubblerEvaporator(CVDEvaporationSource):
           leading to thin film growth.
     """
 
-    temperature = Quantity(
-        type=float,
-        description="Temperature of the bubbler, used to calculate the precursor partial pressure.",
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="mbar",
-        ),
-        unit="mbar",
-    )
-    pressure = Quantity(
-        type=float,
-        description="The back-pressur ein the tube carrying the bubbler material.",
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="mbar",
-        ),
-        unit="mbar",
-    )
-    partial_pressure = Quantity(
-        type=float,
-        description="Calculated with the August-Antoine equation: 1.33322*10^[(A-B)/T].",
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="mbar",
-        ),
-        unit="mbar",
+    partial_pressure = SubSection(
+        section_def=Pressure,
     )
     dilution = Quantity(
         type=float,
@@ -310,9 +291,7 @@ class FlashEvaporator(CVDEvaporationSource):
     - Temperature Regulation.
     """
 
-    pressure = SubSection(
-        section_def=Pressure,
-    )
+    pass
 
 
 class CVDVaporRate(VaporRate):
