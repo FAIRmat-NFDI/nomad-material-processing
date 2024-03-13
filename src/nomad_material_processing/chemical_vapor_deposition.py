@@ -49,8 +49,6 @@ from nomad_material_processing.vapor_deposition import (
 )
 from nomad_material_processing import (
     TimeSeries,
-    GasFlow,
-
 )
 
 
@@ -65,9 +63,7 @@ if TYPE_CHECKING:
 m_package = Package(name="Chemical Vapor Deposition")
 
 
-
-
-class CVDPressure(TimeSeries):
+class Pressure(TimeSeries):
     m_def = Section(
         a_plot=dict(
             x="process_time",
@@ -92,7 +88,7 @@ class CVDPressure(TimeSeries):
     )
 
 
-class Temperature(TimeSeries): 
+class Temperature(TimeSeries):
     """
     Generic Temperature monitoring
     """
@@ -103,7 +99,7 @@ class Temperature(TimeSeries):
             x="process_time",
             y="temperature",
         ),
-        )
+    )
     measurement_type = Quantity(
         type=MEnum(
             "Heater thermocouple",
@@ -149,7 +145,7 @@ class Rotation(TimeSeries):
     """
 
     m_def = Section(label_quantity="set_value")
-    
+
     set_value = Quantity(
         type=float,
         description="The value scalar set for this parameter.",
@@ -179,7 +175,7 @@ class Rotation(TimeSeries):
     )
 
 
-class CVDGasFlow(TimeSeries): # from GAS FLOW in VD module
+class CVDGasFlow(TimeSeries):  # from GAS FLOW in VD module
     """
     Gas Flow
     """
@@ -211,6 +207,7 @@ class CVDGasFlow(TimeSeries): # from GAS FLOW in VD module
         ),
         unit="second",
     )
+
 
 class CVDEvaporationSource(EvaporationSource):
     pass
