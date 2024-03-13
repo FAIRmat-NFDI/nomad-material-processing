@@ -43,7 +43,6 @@ from nomad_material_processing import (
     TimeSeries,
 )
 from nomad_material_processing.vapor_deposition import (
-    VaporRate,
     EvaporationSource,
     VaporDepositionSource,
 )
@@ -66,8 +65,8 @@ m_package = Package(name="Chemical Vapor Deposition")
 class Pressure(TimeSeries):
     m_def = Section(
         a_plot=dict(
-            x="process_time",
-            y="pressure",
+            x="time",
+            y="value",
         ),
     )
     set_value = Quantity(
@@ -294,13 +293,7 @@ class FlashEvaporator(CVDEvaporationSource):
     pass
 
 
-class CVDVaporRate(VaporRate):
-    m_def = Section(
-        a_plot=dict(
-            x="process_time",
-            y="rate",
-        ),
-    )
+class VaporRate(TimeSeries):  # from VAPOR RATE in VD module
     measurement_type = Quantity(
         type=MEnum(
             "Assumed",
@@ -310,16 +303,7 @@ class CVDVaporRate(VaporRate):
             component=ELNComponentEnum.EnumEditQuantity,
         ),
     )
-    mass_flow_controller = Quantity(
-        type=float,
-        description="Flux of material with mass flow controller.",
-        a_eln={
-            "component": "NumberEditQuantity",
-            "defaultDisplayUnit": "cm ** 3 / minute",
-        },
-        unit="cm ** 3 / minute",
-    )
-    rate = Quantity(
+    set_value = Quantity(
         type=float,
         description="FILL THE DESCRIPTION",
         a_eln=ELNAnnotation(
@@ -330,7 +314,50 @@ class CVDVaporRate(VaporRate):
         unit="mol / minute",
         label="Molar flux",
     )
-    process_time = Quantity(
+    value = Quantity(
+        type=float,
+        description="FILL THE DESCRIPTION",
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit="mol / minute",
+        ),
+        shape=["*"],
+        unit="mol / minute",
+        label="Molar flux",
+    )
+    time = Quantity(
+        type=float,
+        unit="second",
+        shape=["*"],
+    )
+
+
+class MassFlowController(TimeSeries):
+    """
+    A Mass Flow Controller (MFC) in chemical vapor deposition regulates
+    gas flow rates into the reaction chamber,
+    ensuring consistent conditions for thin film deposition.
+    """
+
+    set_value = Quantity(
+        type=float,
+        description="Flux of material with mass flow controller.",
+        a_eln={
+            "component": "NumberEditQuantity",
+            "defaultDisplayUnit": "cm ** 3 / minute",
+        },
+        unit="cm ** 3 / minute",
+    )
+    value = Quantity(
+        type=float,
+        description="Flux of material with mass flow controller.",
+        a_eln={
+            "component": "NumberEditQuantity",
+            "defaultDisplayUnit": "cm ** 3 / minute",
+        },
+        unit="cm ** 3 / minute",
+    )
+    time = Quantity(
         type=float,
         unit="second",
         shape=["*"],
@@ -338,12 +365,6 @@ class CVDVaporRate(VaporRate):
 
 
 class CVDSource(VaporDepositionSource):
-    m_def = Section(
-        a_plot=dict(
-            x="deposition_rate/process_time",
-            y="deposition_rate/rate",
-        ),
-    )
     name = Quantity(
         type=str,
         description="""
@@ -372,7 +393,7 @@ class CVDSource(VaporDepositionSource):
         """,
     )
     vapor_rate = SubSection(
-        section_def=CVDVaporRate,
+        section_def=VaporRate,
         description="""
         The rate of the material being evaporated (mol/time).
         """,
