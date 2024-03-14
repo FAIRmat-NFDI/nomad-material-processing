@@ -460,6 +460,7 @@ class TimeSeries(ArchiveSection):
     set_value = Quantity(
         type=float,
         description="The value scalar set for this parameter.",
+        shape=["*"],
     )
     value = Quantity(
         type=float,
