@@ -62,31 +62,6 @@ if TYPE_CHECKING:
 m_package = Package(name="Chemical Vapor Deposition")
 
 
-class Pressure(TimeSeries):
-    m_def = Section(
-        a_plot=dict(
-            x="time",
-            y="value",
-        ),
-    )
-    set_value = Quantity(
-        type=float,
-        description="FILL THE DESCRIPTION",
-        a_eln={"component": "NumberEditQuantity", "defaultDisplayUnit": "mbar"},
-        unit="pascal",
-    )
-    value = Quantity(
-        type=float,
-        unit="pascal",
-        shape=["*"],
-    )
-    time = Quantity(
-        type=float,
-        unit="second",
-        shape=["*"],
-    )
-
-
 class Temperature(TimeSeries):
     """
     Generic Temperature monitoring
@@ -127,15 +102,6 @@ class Temperature(TimeSeries):
         ),
         unit="kelvin",
     )
-    time = Quantity(
-        type=float,
-        description="The time array when parameter is detected.",
-        a_eln=ELNAnnotation(
-            component="NumberEditQuantity",
-            defaultDisplayUnit="minute",
-        ),
-        unit="second",
-    )
 
 
 class Rotation(TimeSeries):
@@ -163,20 +129,158 @@ class Rotation(TimeSeries):
         ),
         unit="rpm",
     )
+
+
+class Pressure(TimeSeries):
+    """
+    Generic Pressure monitoring
+    """
+    m_def = Section(
+        a_plot=dict(
+            x="time",
+            y="value",
+        ),
+    )
+    set_value = Quantity(
+        type=float,
+        description="FILL THE DESCRIPTION",
+        a_eln={"component": "NumberEditQuantity", "defaultDisplayUnit": "mbar"},
+        unit="pascal",
+    )
+    value = Quantity(
+        type=float,
+        unit="pascal",
+        shape=["*"],
+    )
     time = Quantity(
         type=float,
-        description="The time array when parameter is detected.",
-        a_eln=ELNAnnotation(
-            component="NumberEditQuantity",
-            defaultDisplayUnit="minute",
-        ),
         unit="second",
+        shape=["*"],
     )
 
 
-class CVDGasFlow(TimeSeries):  # from GAS FLOW in VD module
+class PartialVaporPressure(Pressure):
     """
-    Gas Flow
+    The Partial Vapor Pressure (or Equilibrium Vapor Pressure), p, is the pressure exerted 
+    by a vapor in thermodynamic equilibrium with its condensed phases (solid or liquid) 
+    at a given temperature in a closed system. 
+    
+    It can be approximately calculated by the semiempirical Antoine equation.
+    It is a relation between the vapor pressure and temperature of pure substances.
+    log10(p) = A - [B / (T + C)]
+    https://en.wikipedia.org/wiki/Vapor_pressure
+    The August-Antoine equation is a simplified version of the Antoine equation,
+    sometimes used to calculate Partial Vapor Pressure. 
+    This assumes a temperature-independent heat of vaporization, i.e., C = 0. 
+    https://en.wikipedia.org/wiki/Antoine_equation
+    """
+    set_value = Quantity(
+        type=float,
+        description="FILL THE DESCRIPTION",
+        a_eln={"component": "NumberEditQuantity", "defaultDisplayUnit": "mbar"},
+        unit="pascal",
+    )
+    value = Quantity(
+        type=float,
+        unit="pascal",
+        shape=["*"],
+    )
+    time = Quantity(
+        type=float,
+        unit="second",
+        shape=["*"],
+    )
+
+
+class MassFlowRate(TimeSeries):
+    """
+    Mass flow rate is the mass of a substance which passes per unit of time.
+
+    It is measured with a Mass Flow Controller (MFC).
+    It is a mass flow meter (i.e. the sensor) 
+    combined with control valve and feedback electronics between sensor and valve. 
+    Why would you control mass flow instead of volume flow?
+    Simply because in many research and production processes, 
+    the important variable is mass and not volume.
+
+    To meet users' preferences for expressing compressible gas flow as volume flow anyway, 
+    conditions are agreed upon under which mass flow is converted into volume flow.
+    These "normal" reference conditions are a temperature of 0 celsius
+    and an absolute pressure of 1 atm.
+    For this reason, the unit of this class are sccm - 
+    standard cubic centimeters per minute.
+    """
+    measurement_type = Quantity(
+        type=str,
+        default="Mass Flow Controller",
+    )
+    set_value = Quantity(
+        type=float,
+        description="Mass flow rate set with mass flow controller.",
+        a_eln={
+            "component": "NumberEditQuantity",
+            "defaultDisplayUnit": "cm ** 3 / minute",
+        },
+        unit="cm ** 3 / minute",
+        shape=["*"],
+    )
+    value = Quantity(
+        type=float,
+        description="Mass flow rate read with mass flow controller.",
+        a_eln={
+            "component": "NumberEditQuantity",
+            "defaultDisplayUnit": "cm ** 3 / minute",
+        },
+        unit="cm ** 3 / minute",
+        shape=["*"],
+    )
+
+
+class MolarFlowRate(TimeSeries):  # from VAPOR RATE in VD module
+    """
+    Molar flow rate is the amount of a substance which passes per unit of time.
+
+    The article cited below explains the equation used in MOVPE to calculate the molar flow rate.
+
+    F_r = F_c*P_r / (P_0 - P_r)
+
+    where:
+
+    F_r is the molar flow rate,
+    F_c is the carrier gas flow rate,
+    P_r is the partial vapor pressure of the precursor,
+    P_0 is the total pressure exiting the bubbler.
+
+    Reference:
+    Journal of Vacuum Science & Technology A 8, 800 (1990); doi: 10.1116/1.576921
+
+    """
+    set_value = Quantity(
+        type=float,
+        description="Set molar flow rate",
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit="mol / minute",
+        ),
+        shape=["*"],
+        unit="mol / minute",
+        label="Molar flux",
+    )
+    value = Quantity(
+        type=float,
+        description="Read molar flow rate",
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit="mol / minute",
+        ),
+        shape=["*"],
+        unit="mol / minute",
+    )
+
+
+class VolumeFlowRate(TimeSeries):  # from GAS FLOW in VD module
+    """
+    the volume of fluid that is passing through a given cross sectional area per unit time
     """
 
     set_value = Quantity(
@@ -205,6 +309,77 @@ class CVDGasFlow(TimeSeries):  # from GAS FLOW in VD module
             defaultDisplayUnit="minute",
         ),
         unit="second",
+    )
+
+
+class VaporRate(TimeSeries):  # from VAPOR RATE in VD module
+    measurement_type = Quantity(
+        type=MEnum(
+            "Assumed",
+            "Mass Flow Controller",
+        ),
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.EnumEditQuantity,
+        ),
+    )
+    set_value = Quantity(
+        type=float,
+        description="FILL THE DESCRIPTION",
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit="mol / minute",
+        ),
+        shape=["*"],
+        unit="mol / minute",
+        label="Molar flux",
+    )
+    value = Quantity(
+        type=float,
+        description="FILL THE DESCRIPTION",
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit="mol / minute",
+        ),
+        shape=["*"],
+        unit="mol / minute",
+    )
+    time = Quantity(
+        type=float,
+        unit="second",
+        shape=["*"],
+    )
+
+
+class MassFlowController(TimeSeries):
+    """
+    Mass flow rate is the mass of a substance which passes per unit of time.
+    It is measured with a Mass Flow Controller (MFC).
+
+    When the parameter recorded is not yet better specified, we use this class.
+    """
+
+    set_value = Quantity(
+        type=float,
+        description="Flux of material with mass flow controller.",
+        a_eln={
+            "component": "NumberEditQuantity",
+            "defaultDisplayUnit": "cm ** 3 / minute",
+        },
+        unit="cm ** 3 / minute",
+    )
+    value = Quantity(
+        type=float,
+        description="Flux of material with mass flow controller.",
+        a_eln={
+            "component": "NumberEditQuantity",
+            "defaultDisplayUnit": "cm ** 3 / minute",
+        },
+        unit="cm ** 3 / minute",
+    )
+    time = Quantity(
+        type=float,
+        unit="second",
+        shape=["*"],
     )
 
 
@@ -238,8 +413,15 @@ class BubblerEvaporator(CVDEvaporationSource):
           leading to thin film growth.
     """
 
-    partial_pressure = SubSection(
-        section_def=Pressure,
+    precursor_partial_pressure = SubSection(
+        section_def=PartialVaporPressure,
+    )
+
+    carrier_gas_flow = SubSection(
+        section_def=MassFlowRate,
+        description="""
+        The rate of the carrier gas entering the.
+        """,
     )
     dilution = Quantity(
         type=float,
@@ -293,77 +475,6 @@ class FlashEvaporator(CVDEvaporationSource):
     pass
 
 
-class VaporRate(TimeSeries):  # from VAPOR RATE in VD module
-    measurement_type = Quantity(
-        type=MEnum(
-            "Assumed",
-            "Mass Flow Controller",
-        ),
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.EnumEditQuantity,
-        ),
-    )
-    set_value = Quantity(
-        type=float,
-        description="FILL THE DESCRIPTION",
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="mol / minute",
-        ),
-        shape=["*"],
-        unit="mol / minute",
-        label="Molar flux",
-    )
-    value = Quantity(
-        type=float,
-        description="FILL THE DESCRIPTION",
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="mol / minute",
-        ),
-        shape=["*"],
-        unit="mol / minute",
-        label="Molar flux",
-    )
-    time = Quantity(
-        type=float,
-        unit="second",
-        shape=["*"],
-    )
-
-
-class MassFlowController(TimeSeries):
-    """
-    A Mass Flow Controller (MFC) in chemical vapor deposition regulates
-    gas flow rates into the reaction chamber,
-    ensuring consistent conditions for thin film deposition.
-    """
-
-    set_value = Quantity(
-        type=float,
-        description="Flux of material with mass flow controller.",
-        a_eln={
-            "component": "NumberEditQuantity",
-            "defaultDisplayUnit": "cm ** 3 / minute",
-        },
-        unit="cm ** 3 / minute",
-    )
-    value = Quantity(
-        type=float,
-        description="Flux of material with mass flow controller.",
-        a_eln={
-            "component": "NumberEditQuantity",
-            "defaultDisplayUnit": "cm ** 3 / minute",
-        },
-        unit="cm ** 3 / minute",
-    )
-    time = Quantity(
-        type=float,
-        unit="second",
-        shape=["*"],
-    )
-
-
 class CVDSource(VaporDepositionSource):
     name = Quantity(
         type=str,
@@ -375,13 +486,13 @@ class CVDSource(VaporDepositionSource):
         section_def=PubChemPureSubstanceSection,
     )
     carrier_push_valve = SubSection(
-        section_def=CVDGasFlow,
+        section_def=VolumeFlowRate,
         description="""
         The flow of the push valve.
         """,
     )
     carrier_purge_valve = SubSection(
-        section_def=CVDGasFlow,
+        section_def=VolumeFlowRate,
         description="""
         The flow of the purge valve.
         """,
