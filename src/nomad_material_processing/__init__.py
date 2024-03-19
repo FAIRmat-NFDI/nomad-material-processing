@@ -456,6 +456,16 @@ class TimeSeries(ArchiveSection):
     This is an abstract class and should not be used directly.
     Instead, it should be derived and the the units of the `value` and `set_value` should
     be specified.
+
+    For example, a derived class could be `Temperature` with `value` in Kelvin:
+    ```python
+    class Temperature(TimeSeries):
+        value = TimeSeries.value.m_copy()
+        value.unit = "kelvin"
+        set_value = TimeSeries.set_value.m_copy()
+        set_value.unit = "kelvin"
+        set_value.a_eln.defaultDisplayUnit = "celsius"
+    ```
     """
     m_def = Section(
         a_plot=dict(
@@ -469,7 +479,6 @@ class TimeSeries(ArchiveSection):
         shape=["*"],
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="s",
             label="Set value",
         ),
     )
