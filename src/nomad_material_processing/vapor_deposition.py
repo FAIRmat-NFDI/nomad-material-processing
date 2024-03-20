@@ -273,6 +273,12 @@ class VolumetricFlowRate(TimeSeries):
             y=["value", "set_value"],
         ),
     )
+    measurement_type = Quantity(
+        type=MEnum(
+            "Mass Flow Controller",
+            "Other",
+        ),
+    )
     gas = SubSection(
         section_def=PureSubstanceSection,
     )
