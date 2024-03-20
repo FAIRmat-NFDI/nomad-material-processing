@@ -35,7 +35,7 @@ from nomad.datamodel.metainfo.annotations import (
 from nomad.datamodel.metainfo.basesections import (
     ActivityStep,
     PureSubstanceSection,
-    CompositeSystemReference,
+    Component,
 )
 from nomad.datamodel.metainfo.plot import (
     PlotSection,
@@ -100,7 +100,7 @@ class VaporDepositionSource(ArchiveSection):
         """,
     )
     material = SubSection(
-        section_def=CompositeSystemReference,
+        section_def=Component,
         description="""
         The source of the material that is being evaporated.
         Example: A sputtering target, a powder in a crucible, etc.
@@ -112,7 +112,7 @@ class VaporDepositionSource(ArchiveSection):
         Example: A heater, a filament, a laser, a bubbler, etc.
         """,
     )
-    vapor_rate = SubSection(
+    vapor_flow_rate = SubSection(
         section_def=MolarFlowRate,
         description="""
         The rate of the material being evaporated (mol/time).
@@ -276,17 +276,33 @@ class VolumetricFlowRate(TimeSeries):
     measurement_type = Quantity(
         type=MEnum(
             "Mass Flow Controller",
+            "Flow Meter",
             "Other",
         ),
-    )
-    gas = SubSection(
-        section_def=PureSubstanceSection,
     )
     value = TimeSeries.value.m_copy()
     value.unit = "meter ** 3 / second"
     set_value = TimeSeries.set_value.m_copy()
     set_value.unit = "meter ** 3 / second"
     set_value.a_eln.defaultDisplayUnit = "centimeter ** 3 / minute"
+
+
+class GasFlow(ArchiveSection):
+    """
+    Section describing the flow of a gas.
+    """
+    m_def = Section(
+        a_plot=dict(
+            x=["flow/time", "flow/set_time"],
+            y=["flow/value", "flow/set_value"],
+        ),
+    )
+    gas = SubSection(
+        section_def=PureSubstanceSection,
+    )
+    flow_rate = SubSection(
+        section_def=VolumetricFlowRate,
+    )
 
 
 class SubstrateHeater(ArchiveSection):
@@ -301,7 +317,7 @@ class ChamberEnvironment(ArchiveSection):
         ),
     )
     gas_flow = SubSection(
-        section_def=VolumetricFlowRate,
+        section_def=GasFlow,
         repeats=True,
     )
     pressure = SubSection(
