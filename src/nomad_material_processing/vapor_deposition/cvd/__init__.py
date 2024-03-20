@@ -144,7 +144,6 @@ class BubblerMolarFlowRate(MolarFlowRate):
 
     """
     value = MolarFlowRate.value.m_copy()
-    value.a_eln.defaultDisplayUnit = "mol/minute"
     set_value = MolarFlowRate.set_value.m_copy()
     set_value.a_eln.defaultDisplayUnit = "mol/minute"
 

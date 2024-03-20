@@ -144,7 +144,7 @@ class GrowthRate(TimeSeries):
     set_value.a_eln.defaultDisplayUnit = "nm/second"
 
 
-class Temperature(TimeSeries): 
+class Temperature(TimeSeries):
     """
     Generic Temperature monitoring
     """
@@ -249,6 +249,7 @@ class Pressure(TimeSeries):
     """
     The pressure during the deposition process.
     """
+
     m_def = Section(
         a_plot=dict(
             x=["time", "set_time"],
@@ -267,6 +268,7 @@ class VolumetricFlowRate(TimeSeries):
     The volumetric flow rate of a gas at standard conditions, i.e. the equivalent rate
     at a temperature of 0 °C (273.15 K) and a pressure of 1 atm (101325 Pa).
     """
+
     m_def = Section(
         a_plot=dict(
             x=["time", "set_time"],
@@ -291,6 +293,7 @@ class GasFlow(ArchiveSection):
     """
     Section describing the flow of a gas.
     """
+
     m_def = Section(
         a_plot=dict(
             x=["flow/time", "flow/set_time"],
@@ -367,14 +370,24 @@ class VaporDepositionStep(ActivityStep):
         Returns:
             Task: The activity step as a workflow task.
         """
-        inputs = [
-            Link(
-                name=source.material.name,
-                section=source.material.reference,
-            )
-            for source in self.sources
-            if source.material is not None and source.material.reference is not None
-        ]
+        inputs = []
+        for source in self.sources:
+            if source.material is not None and hasattr(source.material, "system"):
+                inputs.append(
+                    Link(
+                        name=getattr(source.material, "name", None),
+                        section=getattr(source.material, "system", None),
+                    )
+                )
+            elif source.material is not None and hasattr(
+                source.material, "pure_substance"
+            ):
+                inputs.append(
+                    Link(
+                        name=getattr(source.material, "substance_name", None),
+                        section=getattr(source.material, "pure_substance", None),
+                    )
+                )
         outputs = [
             Link(
                 name=parameters.layer.name,
