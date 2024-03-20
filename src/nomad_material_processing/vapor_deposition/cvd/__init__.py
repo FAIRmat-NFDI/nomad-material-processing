@@ -156,6 +156,14 @@ class CVDEvaporationSource(EvaporationSource):
     temperature = SubSection(
         section_def=Temperature,
     )
+    total_flow_rate = SubSection(
+        section_def=VolumetricFlowRate,
+        description="""
+        The total flow rate exiting the source. 
+        It can be the sum of precursor and carrier gas or only a gas, 
+        depending on the nature of the source.
+        """,
+    )
 
 
 class BubblerEvaporator(CVDEvaporationSource):
@@ -182,11 +190,19 @@ class BubblerEvaporator(CVDEvaporationSource):
     precursor_partial_pressure = SubSection(
         section_def=PartialVaporPressure,
     )
-
-    carrier_gas_flow = SubSection(
+    carrier_gas = SubSection(
+        section_def=PubChemPureSubstanceSection,
+    )
+    carrier_push_flow_rate = SubSection(
         section_def=VolumetricFlowRate,
         description="""
-        The rate of the carrier gas entering the.
+        The flow through the push valve.
+        """,
+    )
+    carrier_purge_flow_rate = SubSection(
+        section_def=VolumetricFlowRate,
+        description="""
+        The flow through the purge valve.
         """,
     )
     dilution = Quantity(
@@ -237,42 +253,62 @@ class FlashEvaporator(CVDEvaporationSource):
     - Transport to Reaction Chamber.
     - Temperature Regulation.
     """
+    carrier_gas = SubSection(
+        section_def=PubChemPureSubstanceSection,
+    )
+    carrier_push_flow_rate = SubSection(
+        section_def=VolumetricFlowRate,
+        description="""
+        The flow through the push valve.
+        """,
+    )
+    carrier_purge_flow_rate = SubSection(
+        section_def=VolumetricFlowRate,
+        description="""
+        The flow through the purge valve.
+        """,
+    )
+    pass
 
+
+class GasSupply(CVDEvaporationSource):
+    """
+    In chemical vapor deposition (CVD), the gas supply plays a critical role 
+    in providing the necessary precursor molecules for the deposition process. 
+    These precursor gases are typically delivered to the reaction chamber 
+    through various methods depending on the specific setup and requirements 
+    of the CVD process.
+    """
+    pass
+
+
+class GasLine(GasSupply):
+    """
+    Gas lines are used to transport the precursor gases from their source to the reaction chamber. 
+    These lines are often made of materials that are compatible with the precursor gases 
+    and can withstand the process conditions. 
+    They may also be heated or insulated to maintain the gases at the desired temperature 
+    and prevent condensation or undesired reactions within the lines.
+    """
+    pass
+
+
+class GasCylinder(GasSupply):
+    """
+    Contains the precursor gases under pressure. 
+    These cylinders are connected to the CVD chamber through a system of valves, 
+    regulators, and tubing. 
+    The flow rate of each gas can be controlled precisely using flow meters 
+    or mass flow controllers to achieve the desired deposition conditions.
+    """
     pass
 
 
 class CVDSource(VaporDepositionSource):
-    name = Quantity(
-        type=str,
-        description="""
-        A short and descriptive name for this source.
-        """,
-    )
-    carrier_gas = SubSection(
-        section_def=PubChemPureSubstanceSection,
-    )
-    carrier_push_valve = SubSection(
-        section_def=VolumetricFlowRate,
-        description="""
-        The flow of the push valve.
-        """,
-    )
-    carrier_purge_valve = SubSection(
-        section_def=VolumetricFlowRate,
-        description="""
-        The flow of the purge valve.
-        """,
-    )
     vapor_source = SubSection(
         section_def=CVDEvaporationSource,
         description="""
         Example: A heater, a filament, a laser, a bubbler, etc.
-        """,
-    )
-    vapor_rate = SubSection(
-        section_def=MolarFlowRate,
-        description="""
-        The rate of the material being evaporated (mol/time).
         """,
     )
 
