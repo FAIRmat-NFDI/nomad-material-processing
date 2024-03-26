@@ -138,11 +138,26 @@ class GrowthRate(TimeSeries):
             component=ELNComponentEnum.EnumEditQuantity,
         ),
     )
-    value = TimeSeries.value.m_copy()
-    value.unit = 'meter/second'
-    set_value = TimeSeries.set_value.m_copy()
-    set_value.unit = 'meter/second'
-    set_value.a_eln.defaultDisplayUnit = 'nm/second'
+    # value = TimeSeries.value.m_copy()
+    # value.unit = 'meter/second'
+    # set_value = TimeSeries.set_value.m_copy()
+    # set_value.unit = 'meter/second'
+    # set_value.a_eln.defaultDisplayUnit = 'nm/second'
+    value = Quantity(
+        type=float,
+        unit='meter/second',
+        shape=["*"],
+    )
+    set_value = Quantity(
+        type=float,
+        description="The set value(s) (i.e. the intended values) set.",
+        shape=["*"],
+        unit='meter/second',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label="Set value",
+        ),
+    )
 
 
 class Temperature(TimeSeries):
@@ -167,11 +182,26 @@ class Temperature(TimeSeries):
             component=ELNComponentEnum.EnumEditQuantity,
         ),
     )
-    value = TimeSeries.value.m_copy()
-    value.unit = 'kelvin'
-    set_value = TimeSeries.set_value.m_copy()
-    set_value.unit = 'kelvin'
-    set_value.a_eln.defaultDisplayUnit = 'celsius'
+    # value = TimeSeries.value.m_copy()
+    # value.unit = 'kelvin'
+    # set_value = TimeSeries.set_value.m_copy()
+    # set_value.unit = 'kelvin'
+    # set_value.a_eln.defaultDisplayUnit = 'celsius'
+    value = Quantity(
+        type=float,
+        unit="kelvin",
+        shape=["*"],
+    )
+    set_value = Quantity(
+        type=float,
+        description="The set value(s) (i.e. the intended values) set.",
+        shape=["*"],
+        unit="kelvin",
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label="Set value",
+        ),
+    )
 
 
 class SampleParameters(PlotSection, ArchiveSection):
@@ -257,12 +287,31 @@ class Pressure(TimeSeries):
             y=['value', 'set_value'],
         ),
     )
-    value = TimeSeries.value.m_copy()
-    value.unit = 'pascal'
-    set_value = TimeSeries.set_value.m_copy()
-    set_value.unit = 'pascal'
-    set_value.a_eln.defaultDisplayUnit = 'mbar'
-
+    # value = TimeSeries.value.m_copy()
+    # value.unit = 'pascal'
+    # set_value = TimeSeries.set_value.m_copy()
+    # set_value.unit = 'pascal'
+    # set_value.a_eln.defaultDisplayUnit = 'mbar'
+    value = Quantity(
+        type=float,
+        unit="pascal",
+        shape=["*"],
+    )
+    time = Quantity(
+        type=float,
+        unit="second",
+        shape=["*"],
+    )
+    set_value = Quantity(
+        type=float,
+        unit="pascal",
+        shape=["*"],
+    )
+    set_time = Quantity(
+        type=float,
+        unit="second",
+        shape=["*"],
+    )
 
 class VolumetricFlowRate(TimeSeries):
     """
@@ -283,11 +332,27 @@ class VolumetricFlowRate(TimeSeries):
             'Other',
         ),
     )
-    value = TimeSeries.value.m_copy()
-    value.unit = 'meter ** 3 / second'
-    set_value = TimeSeries.set_value.m_copy()
-    set_value.unit = 'meter ** 3 / second'
-    set_value.a_eln.defaultDisplayUnit = 'centimeter ** 3 / minute'
+    # value = TimeSeries.value.m_copy()
+    # value.unit = 'meter ** 3 / second'
+    # set_value = TimeSeries.set_value.m_copy()
+    # set_value.unit = 'meter ** 3 / second'
+    # set_value.a_eln.defaultDisplayUnit = 'centimeter ** 3 / minute'
+    value = Quantity(
+        type=float,
+        unit='meter ** 3 / second',
+        shape=["*"],
+    )
+    set_value = Quantity(
+        type=float,
+        description="The set value(s) (i.e. the intended values) set.",
+        shape=["*"],
+        unit='meter ** 3 / second',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label="Set value",
+            defaultDisplayUnit='centimeter ** 3 / minute',
+        ),
+    )
 
 
 class GasFlow(ArchiveSection):
