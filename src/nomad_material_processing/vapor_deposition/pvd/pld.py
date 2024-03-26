@@ -30,7 +30,7 @@ from nomad.datamodel.metainfo.annotations import (
 )
 from nomad.datamodel.metainfo.basesections import (
     CompositeSystem,
-    CompositeSystemReference,
+    SystemComponent,
     ReadableIdentifiers,
 )
 
@@ -58,7 +58,7 @@ class PLDTarget(CompositeSystem):
     )
 
 
-class PLDTargetReference(CompositeSystemReference):
+class PLDTargetComponent(SystemComponent):
     lab_id = Quantity(
         type=str,
         a_eln=ELNAnnotation(
@@ -66,7 +66,7 @@ class PLDTargetReference(CompositeSystemReference):
             label='Target ID',
         ),
     )
-    reference = Quantity(
+    system = Quantity(
         type=PLDTarget,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.ReferenceEditQuantity,
@@ -112,11 +112,12 @@ class PLDLaser(PVDEvaporationSource):
 
 class PLDSource(PVDSource):
     material = SubSection(
-        section_def=PLDTargetReference,
+        section_def=PLDTargetComponent,
         description="""
         The source of the material that is being evaporated.
         Example: A sputtering target, a powder in a crucible, etc.
         """,
+        repeats=True,
     )
     vapor_source = SubSection(
         section_def=PLDLaser,
