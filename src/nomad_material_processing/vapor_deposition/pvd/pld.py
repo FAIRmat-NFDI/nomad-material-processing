@@ -49,7 +49,7 @@ if TYPE_CHECKING:
         BoundLogger,
     )
 
-m_package = Package(name="Pulsed Laser Deposition")
+m_package = Package(name='Pulsed Laser Deposition')
 
 
 class PLDTarget(CompositeSystem):
@@ -63,7 +63,7 @@ class PLDTargetReference(CompositeSystemReference):
         type=str,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
-            label="Target ID",
+            label='Target ID',
         ),
     )
     reference = Quantity(
@@ -77,26 +77,26 @@ class PLDTargetReference(CompositeSystemReference):
 class PLDLaser(PVDEvaporationSource):
     wavelength = Quantity(
         type=float,
-        unit="meter",
+        unit='meter',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="nanometer",
+            defaultDisplayUnit='nanometer',
         ),
     )
     repetition_rate = Quantity(
         type=float,
-        unit="hertz",
+        unit='hertz',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="hertz",
+            defaultDisplayUnit='hertz',
         ),
     )
     spot_size = Quantity(
         type=float,
-        unit="meter ** 2",
+        unit='meter ** 2',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="millimeter ** 2",
+            defaultDisplayUnit='millimeter ** 2',
         ),
     )
     pulses = Quantity(
@@ -151,11 +151,11 @@ class PulsedLaserDeposition(PhysicalVaporDeposition):
     """
 
     m_def = Section(
-        links=["http://purl.obolibrary.org/obo/CHMO_0001363"],
+        links=['http://purl.obolibrary.org/obo/CHMO_0001363'],
     )
     method = Quantity(
         type=str,
-        default="Pulsed Laser Deposition",
+        default='Pulsed Laser Deposition',
     )
     steps = SubSection(
         description="""
@@ -165,7 +165,7 @@ class PulsedLaserDeposition(PhysicalVaporDeposition):
         repeats=True,
     )
 
-    def normalize(self, archive: "EntryArchive", logger: "BoundLogger") -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
         The normalizer for the `PulsedLaserDeposition` class.
 

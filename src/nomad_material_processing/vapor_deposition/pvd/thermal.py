@@ -24,10 +24,10 @@ from nomad.metainfo import (
     SubSection,
     Quantity,
 )
-from nomad.datamodel.data import (
-    ArchiveSection,
-)
 
+from nomad_material_processing import (
+    TimeSeries,
+)
 from nomad_material_processing.vapor_deposition.pvd import (
     PVDEvaporationSource,
     PVDSource,
@@ -43,50 +43,49 @@ if TYPE_CHECKING:
         BoundLogger,
     )
 
-m_package = Package(name="Thermal Evaporation")
+m_package = Package(name='Thermal Evaporation')
 
 
-class ThermalEvaporationHeaterTemperature(ArchiveSection):
+class ThermalEvaporationHeaterTemperature(TimeSeries):
+    """
+    The temperature of the heater during the deposition process.
+    """
+
     m_def = Section(
         a_plot=dict(
-            x="process_time",
-            y="temperature",
+            x=['time', 'set_time'],
+            y=['value', 'set_value'],
         ),
     )
-    temperature = Quantity(
-        type=float,
-        unit="kelvin",
-        shape=["*"],
-    )
-    process_time = Quantity(
-        type=float,
-        unit="second",
-        shape=["*"],
-    )
+    value = TimeSeries.value.m_copy()
+    value.unit = 'kelvin'
+    set_value = TimeSeries.set_value.m_copy()
+    set_value.unit = 'kelvin'
+    set_value.a_eln.defaultDisplayUnit = 'celsius'
 
 
 class ThermalEvaporationHeater(PVDEvaporationSource):
     m_def = Section(
         a_plot=dict(
             x=[
-                "temperature/process_time",
-                "power/process_time",
+                'temperature/process_time',
+                'power/process_time',
             ],
             y=[
-                "temperature/temperature",
-                "power/power",
+                'temperature/temperature',
+                'power/power',
             ],
             lines=[
                 dict(
-                    mode="lines",
+                    mode='lines',
                     line=dict(
-                        color="rgb(25, 46, 135)",
+                        color='rgb(25, 46, 135)',
                     ),
                 ),
                 dict(
-                    mode="lines",
+                    mode='lines',
                     line=dict(
-                        color="rgb(0, 138, 104)",
+                        color='rgb(0, 138, 104)',
                     ),
                 ),
             ],
@@ -101,24 +100,24 @@ class ThermalEvaporationSource(PVDSource):
     m_def = Section(
         a_plot=dict(
             x=[
-                "deposition_rate/process_time",
-                "vapor_source/temperature/process_time",
+                'deposition_rate/process_time',
+                'vapor_source/temperature/process_time',
             ],
             y=[
-                "deposition_rate/rate",
-                "vapor_source/temperature/temperature",
+                'deposition_rate/rate',
+                'vapor_source/temperature/temperature',
             ],
             lines=[
                 dict(
-                    mode="lines",
+                    mode='lines',
                     line=dict(
-                        color="rgb(25, 46, 135)",
+                        color='rgb(25, 46, 135)',
                     ),
                 ),
                 dict(
-                    mode="lines",
+                    mode='lines',
                     line=dict(
-                        color="rgb(0, 138, 104)",
+                        color='rgb(0, 138, 104)',
                     ),
                 ),
             ],
@@ -133,16 +132,16 @@ class ThermalEvaporationStep(PVDStep):
     m_def = Section(
         a_plot=[
             dict(
-                x="sources/:/deposition_rate/process_time",
-                y="sources/:/deposition_rate/rate",
+                x='sources/:/deposition_rate/process_time',
+                y='sources/:/deposition_rate/rate',
             ),
             dict(
-                x="sources/:/vapor_source/temperature/process_time",
-                y="sources/:/vapor_source/temperature/temperature",
+                x='sources/:/vapor_source/temperature/process_time',
+                y='sources/:/vapor_source/temperature/temperature',
             ),
             dict(
-                x="sources/:/vapor_source/power/process_time",
-                y="sources/:/vapor_source/power/power",
+                x='sources/:/vapor_source/power/process_time',
+                y='sources/:/vapor_source/power/power',
             ),
         ],
     )
@@ -169,22 +168,22 @@ class ThermalEvaporation(PhysicalVaporDeposition):
     """
 
     m_def = Section(
-        links=["http://purl.obolibrary.org/obo/CHMO_0001360"],
+        links=['http://purl.obolibrary.org/obo/CHMO_0001360'],
         a_plot=[
             dict(
-                x="steps/:/sources/:/deposition_rate/process_time",
-                y="steps/:/sources/:/deposition_rate/rate",
+                x='steps/:/sources/:/deposition_rate/process_time',
+                y='steps/:/sources/:/deposition_rate/rate',
             ),
             dict(
-                x="steps/:/sources/:/vapor_source/temperature/process_time",
-                y="steps/:/sources/:/vapor_source/temperature/temperature",
+                x='steps/:/sources/:/vapor_source/temperature/process_time',
+                y='steps/:/sources/:/vapor_source/temperature/temperature',
             ),
             dict(
-                x="steps/:/environment/pressure/process_time",
-                y="steps/:/environment/pressure/pressure",
+                x='steps/:/environment/pressure/process_time',
+                y='steps/:/environment/pressure/pressure',
                 layout=dict(
                     yaxis=dict(
-                        type="log",
+                        type='log',
                     ),
                 ),
             ),
@@ -192,7 +191,7 @@ class ThermalEvaporation(PhysicalVaporDeposition):
     )
     method = Quantity(
         type=str,
-        default="Thermal Evaporation",
+        default='Thermal Evaporation',
     )
     steps = SubSection(
         description="""
@@ -202,7 +201,7 @@ class ThermalEvaporation(PhysicalVaporDeposition):
         repeats=True,
     )
 
-    def normalize(self, archive: "EntryArchive", logger: "BoundLogger") -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
         The normalizer for the `ThermalEvaporation` class.
 

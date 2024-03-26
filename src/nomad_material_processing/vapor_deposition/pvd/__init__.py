@@ -25,14 +25,14 @@ from nomad.metainfo import (
     Quantity,
     MEnum,
 )
-from nomad.datamodel.data import (
-    ArchiveSection,
-)
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
     ELNComponentEnum,
 )
 
+from nomad_material_processing import (
+    TimeSeries,
+)
 from nomad_material_processing.vapor_deposition import (
     EvaporationSource,
     VaporDepositionSource,
@@ -49,33 +49,31 @@ if TYPE_CHECKING:
         BoundLogger,
     )
 
-m_package = Package(name="Physical Vapor Deposition")
+m_package = Package(name='Physical Vapor Deposition')
 
 
-class SourcePower(ArchiveSection):
+class SourcePower(TimeSeries):
+    """
+    The power supplied to the source (watt).
+    """
+
     m_def = Section(
         a_plot=dict(
-            x="process_time",
-            y="power",
+            x=['time', 'set_time'],
+            y=['value', 'set_value'],
         ),
     )
-    power = Quantity(
-        type=float,
-        unit="watt",
-        shape=["*"],
-    )
-    process_time = Quantity(
-        type=float,
-        unit="second",
-        shape=["*"],
-    )
+    value = TimeSeries.value.m_copy()
+    value.unit = 'watt'
+    set_value = TimeSeries.set_value.m_copy()
+    set_value.unit = 'watt'
 
 
 class PVDEvaporationSource(EvaporationSource):
     m_def = Section(
         a_plot=dict(
-            x="power/process_time",
-            y="power/power",
+            x='power/process_time',
+            y='power/power',
         ),
     )
     power = SubSection(
@@ -83,32 +81,30 @@ class PVDEvaporationSource(EvaporationSource):
     )
 
 
-class ImpingingFlux(ArchiveSection):
+class ImpingingFlux(TimeSeries):
+    """
+    The impinging flux of the material onto the substrate (mol/area/time).
+    """
+
     m_def = Section(
         a_plot=dict(
-            x="process_time",
-            y="rate",
+            x=['time', 'set_time'],
+            y=['value', 'set_value'],
         ),
     )
     measurement_type = Quantity(
         type=MEnum(
-            "Assumed",
-            "Quartz Crystal Microbalance",
+            'Assumed',
+            'Quartz Crystal Microbalance',
         ),
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.EnumEditQuantity,
         ),
     )
-    rate = Quantity(
-        type=float,
-        unit="mol/meter ** 2/second",
-        shape=["*"],
-    )
-    process_time = Quantity(
-        type=float,
-        unit="second",
-        shape=["*"],
-    )
+    value = TimeSeries.value.m_copy()
+    value.unit = 'mol/meter ** 2/second'
+    set_value = TimeSeries.set_value.m_copy()
+    set_value.unit = 'mol/meter ** 2/second'
 
 
 class PVDSource(VaporDepositionSource):
@@ -116,12 +112,12 @@ class PVDSource(VaporDepositionSource):
         a_plot=[
             dict(
                 x=[
-                    "evaporation_source/power/process_time",
-                    "material_source/rate/process_time",
+                    'evaporation_source/power/process_time',
+                    'material_source/rate/process_time',
                 ],
                 y=[
-                    "evaporation_source/power/power",
-                    "material_source/rate/rate",
+                    'evaporation_source/power/power',
+                    'material_source/rate/rate',
                 ],
             ),
         ],
@@ -147,11 +143,11 @@ class PVDSampleParameters(SampleParameters):
         What is the substrate heated by.
         """,
         type=MEnum(
-            "No heating",
-            "Halogen lamp",
-            "Filament",
-            "Resistive element",
-            "CO2 laser",
+            'No heating',
+            'Halogen lamp',
+            'Filament',
+            'Resistive element',
+            'CO2 laser',
         ),
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.EnumEditQuantity,
@@ -159,13 +155,16 @@ class PVDSampleParameters(SampleParameters):
     )
     distance_to_source = Quantity(
         type=float,
-        unit="meter",
+        unit='meter',
         description="""
         The distance between the substrate and all the sources.
         In the case of multiple sources, the distances are listed in the same order as the
         sources are listed in the parent `VaporDepositionStep` section.
         """,
-        shape=["*"],
+        shape=['*'],
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
     )
 
 
@@ -183,7 +182,7 @@ class PVDStep(VaporDepositionStep):
         repeats=True,
     )
 
-    def normalize(self, archive: "EntryArchive", logger: "BoundLogger") -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
         The normalizer for the `PVDStep` class.
 
@@ -207,15 +206,15 @@ class PhysicalVaporDeposition(VaporDeposition):
     """
 
     m_def = Section(
-        links=["http://purl.obolibrary.org/obo/CHMO_0001356"],
+        links=['http://purl.obolibrary.org/obo/CHMO_0001356'],
         a_plot=[
             dict(
-                x="steps/:/environment/pressure/process_time",
-                y="steps/:/environment/pressure/pressure",
+                x='steps/:/environment/pressure/process_time',
+                y='steps/:/environment/pressure/pressure',
             ),
             dict(
-                x="steps/:/source/:/evaporation_source/power/process_time",
-                y="steps/:/source/:/evaporation_source/power/power",
+                x='steps/:/source/:/evaporation_source/power/process_time',
+                y='steps/:/source/:/evaporation_source/power/power',
             ),
         ],
     )
@@ -227,7 +226,7 @@ class PhysicalVaporDeposition(VaporDeposition):
         repeats=True,
     )
 
-    def normalize(self, archive: "EntryArchive", logger: "BoundLogger") -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
         The normalizer for the `PhysicalVaporDeposition` class.
 
