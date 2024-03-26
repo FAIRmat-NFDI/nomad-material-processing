@@ -1,0 +1,3 @@
+description: A plugin for NOMAD containing base sections for vapor deposition.
+name: Vapor Deposition
+plugin_type: schema

@@ -1,8 +1,19 @@
 {
     "python.defaultInterpreterPath": ".pyenv/bin/python",
+    "python.terminal.activateEnvInCurrentTerminal": true,
     "editor.rulers": [
         90
     ],
     "editor.renderWhitespace": "all",
-    "editor.tabSize": 4
+    "editor.tabSize": 4,
+    "files.trimTrailingWhitespace": true,
+    "files.watcherExclude": {
+      "${workspaceFolder}/.pyenv/**": true,
+    },
+    "python.testing.unittestEnabled": false,
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    },
 }
