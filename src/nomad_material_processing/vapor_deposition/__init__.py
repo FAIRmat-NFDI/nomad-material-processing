@@ -69,8 +69,10 @@ class MolarFlowRate(TimeSeries):
 
     m_def = Section(
         a_plot=dict(
-            x=['time', 'set_time'],
-            y=['value', 'set_value'],
+            # x=['time', 'set_time'],
+            # y=['value', 'set_value'],
+            x='time',
+            y='value',
         ),
     )
     measurement_type = Quantity(
@@ -124,8 +126,10 @@ class VaporDepositionSource(ArchiveSection):
 class GrowthRate(TimeSeries):
     m_def = Section(
         a_plot=dict(
-            x=['time', 'set_time'],
-            y=['value', 'set_value'],
+            # x=['time', 'set_time'],
+            # y=['value', 'set_value'],
+            x='time',
+            y='value',
         ),
     )
     measurement_type = Quantity(
@@ -146,16 +150,16 @@ class GrowthRate(TimeSeries):
     value = Quantity(
         type=float,
         unit='meter/second',
-        shape=["*"],
+        shape=['*'],
     )
     set_value = Quantity(
         type=float,
-        description="The set value(s) (i.e. the intended values) set.",
-        shape=["*"],
+        description='The set value(s) (i.e. the intended values) set.',
+        shape=['*'],
         unit='meter/second',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            label="Set value",
+            label='Set value',
         ),
     )
 
@@ -167,8 +171,10 @@ class Temperature(TimeSeries):
 
     m_def = Section(
         a_plot=dict(
-            x=['time', 'set_time'],
-            y=['value', 'set_value'],
+            # x=['time', 'set_time'],
+            # y=['value', 'set_value'],
+            x='time',
+            y='value',
         ),
     )
     measurement_type = Quantity(
@@ -189,17 +195,17 @@ class Temperature(TimeSeries):
     # set_value.a_eln.defaultDisplayUnit = 'celsius'
     value = Quantity(
         type=float,
-        unit="kelvin",
-        shape=["*"],
+        unit='kelvin',
+        shape=['*'],
     )
     set_value = Quantity(
         type=float,
-        description="The set value(s) (i.e. the intended values) set.",
-        shape=["*"],
-        unit="kelvin",
+        description='The set value(s) (i.e. the intended values) set.',
+        shape=['*'],
+        unit='kelvin',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            label="Set value",
+            label='Set value',
         ),
     )
 
@@ -283,8 +289,10 @@ class Pressure(TimeSeries):
 
     m_def = Section(
         a_plot=dict(
-            x=['time', 'set_time'],
-            y=['value', 'set_value'],
+            # x=['time', 'set_time'],
+            # y=['value', 'set_value'],
+            x='time',
+            y='value',
         ),
     )
     # value = TimeSeries.value.m_copy()
@@ -294,24 +302,25 @@ class Pressure(TimeSeries):
     # set_value.a_eln.defaultDisplayUnit = 'mbar'
     value = Quantity(
         type=float,
-        unit="pascal",
-        shape=["*"],
+        unit='pascal',
+        shape=['*'],
     )
     time = Quantity(
         type=float,
-        unit="second",
-        shape=["*"],
+        unit='second',
+        shape=['*'],
     )
     set_value = Quantity(
         type=float,
-        unit="pascal",
-        shape=["*"],
+        unit='pascal',
+        shape=['*'],
     )
     set_time = Quantity(
         type=float,
-        unit="second",
-        shape=["*"],
+        unit='second',
+        shape=['*'],
     )
+
 
 class VolumetricFlowRate(TimeSeries):
     """
@@ -321,8 +330,10 @@ class VolumetricFlowRate(TimeSeries):
 
     m_def = Section(
         a_plot=dict(
-            x=['time', 'set_time'],
-            y=['value', 'set_value'],
+            # x=['time', 'set_time'],
+            # y=['value', 'set_value'],
+            x='time',
+            y='value',
         ),
     )
     measurement_type = Quantity(
@@ -340,16 +351,16 @@ class VolumetricFlowRate(TimeSeries):
     value = Quantity(
         type=float,
         unit='meter ** 3 / second',
-        shape=["*"],
+        shape=['*'],
     )
     set_value = Quantity(
         type=float,
-        description="The set value(s) (i.e. the intended values) set.",
-        shape=["*"],
+        description='The set value(s) (i.e. the intended values) set.',
+        shape=['*'],
         unit='meter ** 3 / second',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            label="Set value",
+            label='Set value',
             defaultDisplayUnit='centimeter ** 3 / minute',
         ),
     )
@@ -362,8 +373,10 @@ class GasFlow(ArchiveSection):
 
     m_def = Section(
         a_plot=dict(
-            x=['flow/time', 'flow/set_time'],
-            y=['flow/value', 'flow/set_value'],
+            # x=['flow_rate/time', 'flow_rate/set_time'],
+            # y=['flow_rate/value', 'flow_rate/set_value'],
+            x='flow_rate/time',
+            y='flow_rate/value',
         ),
     )
     gas = SubSection(
