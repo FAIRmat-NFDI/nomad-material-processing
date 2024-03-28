@@ -35,7 +35,7 @@ from nomad.datamodel.metainfo.annotations import (
 from nomad.datamodel.metainfo.basesections import (
     ActivityStep,
     PureSubstanceSection,
-    CompositeSystemReference,
+    Component,
 )
 from nomad.datamodel.metainfo.plot import (
     PlotSection,
@@ -48,6 +48,7 @@ from nomad_material_processing import (
     SampleDeposition,
     ThinFilmStackReference,
     ThinFilmReference,
+    TimeSeries,
 )
 
 if TYPE_CHECKING:
@@ -58,35 +59,35 @@ if TYPE_CHECKING:
         BoundLogger,
     )
 
-m_package = Package(name="Vapor Deposition")
+m_package = Package(name='Vapor Deposition')
 
 
-class VaporRate(ArchiveSection):
+class MolarFlowRate(TimeSeries):
+    """
+    Molar flow rate is the amount of a substance which passes per unit of time.
+    """
+
     m_def = Section(
         a_plot=dict(
-            x="process_time",
-            y="rate",
+            # x=['time', 'set_time'],
+            # y=['value', 'set_value'],
+            x='time',
+            y='value',
         ),
     )
     measurement_type = Quantity(
         type=MEnum(
-            "Assumed",
-            "Mass Flow Controller",
+            'Assumed',
+            'Mass Flow Controller',
         ),
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.EnumEditQuantity,
         ),
     )
-    rate = Quantity(
-        type=float,
-        unit="mol/second",
-        shape=["*"],
-    )
-    process_time = Quantity(
-        type=float,
-        unit="second",
-        shape=["*"],
-    )
+    value = TimeSeries.value.m_copy()
+    value.unit = 'mol/second'
+    set_value = TimeSeries.set_value.m_copy()
+    set_value.unit = 'mol/second'
 
 
 class EvaporationSource(ArchiveSection):
@@ -94,12 +95,6 @@ class EvaporationSource(ArchiveSection):
 
 
 class VaporDepositionSource(ArchiveSection):
-    m_def = Section(
-        a_plot=dict(
-            x="deposition_rate/process_time",
-            y="deposition_rate/rate",
-        ),
-    )
     name = Quantity(
         type=str,
         description="""
@@ -107,11 +102,12 @@ class VaporDepositionSource(ArchiveSection):
         """,
     )
     material = SubSection(
-        section_def=CompositeSystemReference,
+        section_def=Component,
         description="""
         The source of the material that is being evaporated.
         Example: A sputtering target, a powder in a crucible, etc.
         """,
+        repeats=True,
     )
     vapor_source = SubSection(
         section_def=EvaporationSource,
@@ -119,117 +115,146 @@ class VaporDepositionSource(ArchiveSection):
         Example: A heater, a filament, a laser, a bubbler, etc.
         """,
     )
-    vapor_rate = SubSection(
-        section_def=VaporRate,
+    vapor_flow_rate = SubSection(
+        section_def=MolarFlowRate,
         description="""
         The rate of the material being evaporated (mol/time).
         """,
     )
 
 
-class GrowthRate(ArchiveSection):
+class GrowthRate(TimeSeries):
     m_def = Section(
         a_plot=dict(
-            x="process_time",
-            y="rate",
+            # x=['time', 'set_time'],
+            # y=['value', 'set_value'],
+            x='time',
+            y='value',
         ),
     )
     measurement_type = Quantity(
         type=MEnum(
-            "Assumed",
-            "RHEED",
-            "Reflectance",
+            'Assumed',
+            'RHEED',
+            'Reflectance',
         ),
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.EnumEditQuantity,
         ),
     )
-    rate = Quantity(
+    # value = TimeSeries.value.m_copy()
+    # value.unit = 'meter/second'
+    # set_value = TimeSeries.set_value.m_copy()
+    # set_value.unit = 'meter/second'
+    # set_value.a_eln.defaultDisplayUnit = 'nm/second'
+    value = Quantity(
         type=float,
-        unit="meter/second",
-        shape=["*"],
+        unit='meter/second',
+        shape=['*'],
     )
-    process_time = Quantity(
+    set_value = Quantity(
         type=float,
-        unit="second",
-        shape=["*"],
+        description='The set value(s) (i.e. the intended values) set.',
+        shape=['*'],
+        unit='meter/second',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label='Set value',
+        ),
     )
 
 
-class SubstrateTemperature(ArchiveSection):
+class Temperature(TimeSeries):
+    """
+    Generic Temperature monitoring
+    """
+
     m_def = Section(
         a_plot=dict(
-            x="process_time",
-            y="temperature",
+            # x=['time', 'set_time'],
+            # y=['value', 'set_value'],
+            x='time',
+            y='value',
         ),
     )
     measurement_type = Quantity(
         type=MEnum(
-            "Heater thermocouple",
-            "Pyrometer",
-            "Assumed",
+            'Heater thermocouple',
+            'Thermocouple',
+            'Pyrometer',
+            'Assumed',
         ),
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.EnumEditQuantity,
         ),
     )
-    temperature = Quantity(
+    # value = TimeSeries.value.m_copy()
+    # value.unit = 'kelvin'
+    # set_value = TimeSeries.set_value.m_copy()
+    # set_value.unit = 'kelvin'
+    # set_value.a_eln.defaultDisplayUnit = 'celsius'
+    value = Quantity(
         type=float,
-        unit="kelvin",
-        shape=["*"],
+        unit='kelvin',
+        shape=['*'],
     )
-    process_time = Quantity(
+    set_value = Quantity(
         type=float,
-        unit="second",
-        shape=["*"],
+        description='The set value(s) (i.e. the intended values) set.',
+        shape=['*'],
+        unit='kelvin',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label='Set value',
+        ),
     )
 
 
 class SampleParameters(PlotSection, ArchiveSection):
     m_def = Section(
         a_plotly_graph_object={
-            "label": "Measured Temperatures",
-            "index": 1,
-            "dragmode": "pan",
-            "data": {
-                "type": "scattergl",
-                "line": {"width": 2},
-                "marker": {"size": 2},
-                "mode": "lines+markers",
-                "name": "Temperature",
-                "x": "#temperature/process_time",
-                "y": "#temperature/temperature",
+            'label': 'Measured Temperatures',
+            'index': 1,
+            'dragmode': 'pan',
+            'data': {
+                'type': 'scattergl',
+                'line': {'width': 2},
+                'marker': {'size': 2},
+                'mode': 'lines+markers',
+                'name': 'Temperature',
+                'x': '#temperature/time',
+                'y': '#temperature/value',
             },
-            "layout": {
-                "title": {"text": "Measured Temperature"},
-                "xaxis": {
-                    "showticklabels": True,
-                    "fixedrange": True,
-                    "ticks": "",
-                    "title": {"text": "Process time [s]"},
-                    "showline": True,
-                    "linewidth": 1,
-                    "linecolor": "black",
-                    "mirror": True,
+            'layout': {
+                'title': {'text': 'Measured Temperature'},
+                'xaxis': {
+                    'showticklabels': True,
+                    'fixedrange': True,
+                    'ticks': '',
+                    'title': {'text': 'Process time [s]'},
+                    'showline': True,
+                    'linewidth': 1,
+                    'linecolor': 'black',
+                    'mirror': True,
                 },
-                "yaxis": {
-                    "showticklabels": True,
-                    "fixedrange": True,
-                    "ticks": "",
-                    "title": {"text": "Temperature [°C]"},
-                    "showline": True,
-                    "linewidth": 1,
-                    "linecolor": "black",
-                    "mirror": True,
+                'yaxis': {
+                    'showticklabels': True,
+                    'fixedrange': True,
+                    'ticks': '',
+                    'title': {'text': 'Temperature [°C]'},
+                    'showline': True,
+                    'linewidth': 1,
+                    'linecolor': 'black',
+                    'mirror': True,
                 },
-                "showlegend": False,
+                'showlegend': False,
             },
-            "config": {
-                "displayModeBar": False,
-                "scrollZoom": False,
-                "responsive": False,
-                "displaylogo": False,
-                "dragmode": False,
+            'config': {
+                'displayModeBar': False,
+                'scrollZoom': False,
+                'responsive': False,
+                'displaylogo': False,
+                'dragmode': False,
             },
         },
     )
@@ -240,8 +265,8 @@ class SampleParameters(PlotSection, ArchiveSection):
         Measured by in-situ RHEED or Reflection or assumed.
         """,
     )
-    temperature = SubSection(
-        section_def=SubstrateTemperature,
+    substrate_temperature = SubSection(
+        section_def=Temperature,
     )
     layer = SubSection(
         description="""
@@ -257,44 +282,108 @@ class SampleParameters(PlotSection, ArchiveSection):
     )
 
 
-class Pressure(ArchiveSection):
+class Pressure(TimeSeries):
+    """
+    The pressure during the deposition process.
+    """
+
     m_def = Section(
         a_plot=dict(
-            x="process_time",
-            y="pressure",
+            # x=['time', 'set_time'],
+            # y=['value', 'set_value'],
+            x='time',
+            y='value',
         ),
     )
-    pressure = Quantity(
+    # value = TimeSeries.value.m_copy()
+    # value.unit = 'pascal'
+    # set_value = TimeSeries.set_value.m_copy()
+    # set_value.unit = 'pascal'
+    # set_value.a_eln.defaultDisplayUnit = 'mbar'
+    value = Quantity(
         type=float,
-        unit="pascal",
-        shape=["*"],
+        unit='pascal',
+        shape=['*'],
     )
-    process_time = Quantity(
+    time = Quantity(
         type=float,
-        unit="second",
-        shape=["*"],
+        unit='second',
+        shape=['*'],
+    )
+    set_value = Quantity(
+        type=float,
+        unit='pascal',
+        shape=['*'],
+    )
+    set_time = Quantity(
+        type=float,
+        unit='second',
+        shape=['*'],
+    )
+
+
+class VolumetricFlowRate(TimeSeries):
+    """
+    The volumetric flow rate of a gas at standard conditions, i.e. the equivalent rate
+    at a temperature of 0 °C (273.15 K) and a pressure of 1 atm (101325 Pa).
+    """
+
+    m_def = Section(
+        a_plot=dict(
+            # x=['time', 'set_time'],
+            # y=['value', 'set_value'],
+            x='time',
+            y='value',
+        ),
+    )
+    measurement_type = Quantity(
+        type=MEnum(
+            'Mass Flow Controller',
+            'Flow Meter',
+            'Other',
+        ),
+    )
+    # value = TimeSeries.value.m_copy()
+    # value.unit = 'meter ** 3 / second'
+    # set_value = TimeSeries.set_value.m_copy()
+    # set_value.unit = 'meter ** 3 / second'
+    # set_value.a_eln.defaultDisplayUnit = 'centimeter ** 3 / minute'
+    value = Quantity(
+        type=float,
+        unit='meter ** 3 / second',
+        shape=['*'],
+    )
+    set_value = Quantity(
+        type=float,
+        description='The set value(s) (i.e. the intended values) set.',
+        shape=['*'],
+        unit='meter ** 3 / second',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label='Set value',
+            defaultDisplayUnit='centimeter ** 3 / minute',
+        ),
     )
 
 
 class GasFlow(ArchiveSection):
+    """
+    Section describing the flow of a gas.
+    """
+
     m_def = Section(
         a_plot=dict(
-            x="process_time",
-            y="flow",
+            # x=['flow_rate/time', 'flow_rate/set_time'],
+            # y=['flow_rate/value', 'flow_rate/set_value'],
+            x='flow_rate/time',
+            y='flow_rate/value',
         ),
     )
     gas = SubSection(
         section_def=PureSubstanceSection,
     )
-    flow = Quantity(
-        type=float,
-        unit="meter ** 3 / second",
-        shape=["*"],
-    )
-    process_time = Quantity(
-        type=float,
-        unit="second",
-        shape=["*"],
+    flow_rate = SubSection(
+        section_def=VolumetricFlowRate,
     )
 
 
@@ -305,8 +394,8 @@ class SubstrateHeater(ArchiveSection):
 class ChamberEnvironment(ArchiveSection):
     m_def = Section(
         a_plot=dict(
-            x="pressure/process_time",
-            y="pressure/pressure",
+            x='pressure/time',
+            y='pressure/value',
         ),
     )
     gas_flow = SubSection(
@@ -334,12 +423,12 @@ class VaporDepositionStep(ActivityStep):
         """,
         default=False,
         a_eln=ELNAnnotation(
-            component="BoolEditQuantity",
+            component='BoolEditQuantity',
         ),
     )
     duration = Quantity(
         type=float,
-        unit="second",
+        unit='second',
     )
     sources = SubSection(
         section_def=VaporDepositionSource,
@@ -360,14 +449,24 @@ class VaporDepositionStep(ActivityStep):
         Returns:
             Task: The activity step as a workflow task.
         """
-        inputs = [
-            Link(
-                name=source.material.name,
-                section=source.material.reference,
-            )
-            for source in self.sources
-            if source.material is not None and source.material.reference is not None
-        ]
+        inputs = []
+        for source in self.sources:
+            if source.material is not None and hasattr(source.material, 'system'):
+                inputs.append(
+                    Link(
+                        name=getattr(source.material, 'name', None),
+                        section=getattr(source.material, 'system', None),
+                    )
+                )
+            elif source.material is not None and hasattr(
+                source.material, 'pure_substance'
+            ):
+                inputs.append(
+                    Link(
+                        name=getattr(source.material, 'substance_name', None),
+                        section=getattr(source.material, 'pure_substance', None),
+                    )
+                )
         outputs = [
             Link(
                 name=parameters.layer.name,
@@ -378,7 +477,7 @@ class VaporDepositionStep(ActivityStep):
         ]
         return Task(name=self.name, inputs=inputs, outputs=outputs)
 
-    def normalize(self, archive: "EntryArchive", logger: "BoundLogger") -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
         The normalizer for the `VaporDepositionStep` class.
 
@@ -412,13 +511,13 @@ class VaporDeposition(SampleDeposition):
 
     m_def = Section(
         links=[
-            "http://purl.obolibrary.org/obo/CHMO_0001314",
-            "http://purl.obolibrary.org/obo/CHMO_0001356",
+            'http://purl.obolibrary.org/obo/CHMO_0001314',
+            'http://purl.obolibrary.org/obo/CHMO_0001356',
         ],
         a_plot=[
             dict(
-                x="steps/:/environment/pressure/process_time",
-                y="steps/:/environment/pressure/pressure",
+                x='steps/:/environment/pressure/time',
+                y='steps/:/environment/pressure/value',
             ),
         ],
     )
@@ -430,7 +529,7 @@ class VaporDeposition(SampleDeposition):
         repeats=True,
     )
 
-    def normalize(self, archive: "EntryArchive", logger: "BoundLogger") -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
         The normalizer for the `VaporDeposition` class.
 
