@@ -59,8 +59,10 @@ class SourcePower(TimeSeries):
 
     m_def = Section(
         a_plot=dict(
-            x=['time', 'set_time'],
-            y=['value', 'set_value'],
+            # x=['time', 'set_time'],
+            # y=['value', 'set_value'],
+            x='time',
+            y='value',
         ),
     )
     value = TimeSeries.value.m_copy()
@@ -72,8 +74,8 @@ class SourcePower(TimeSeries):
 class PVDEvaporationSource(EvaporationSource):
     m_def = Section(
         a_plot=dict(
-            x='power/process_time',
-            y='power/power',
+            x='power/time',
+            y='power/value',
         ),
     )
     power = SubSection(
@@ -88,8 +90,10 @@ class ImpingingFlux(TimeSeries):
 
     m_def = Section(
         a_plot=dict(
-            x=['time', 'set_time'],
-            y=['value', 'set_value'],
+            # x=['time', 'set_time'],
+            # y=['value', 'set_value'],
+            x='time',
+            y='value',
         ),
     )
     measurement_type = Quantity(
@@ -112,12 +116,12 @@ class PVDSource(VaporDepositionSource):
         a_plot=[
             dict(
                 x=[
-                    'evaporation_source/power/process_time',
-                    'material_source/rate/process_time',
+                    'vapor_source/power/time',
+                    'impinging_flux/time',
                 ],
                 y=[
-                    'evaporation_source/power/power',
-                    'material_source/rate/rate',
+                    'vapor_source/power/value',
+                    'impinging_flux/value',
                 ],
             ),
         ],
@@ -209,12 +213,12 @@ class PhysicalVaporDeposition(VaporDeposition):
         links=['http://purl.obolibrary.org/obo/CHMO_0001356'],
         a_plot=[
             dict(
-                x='steps/:/environment/pressure/process_time',
-                y='steps/:/environment/pressure/pressure',
+                x='steps/:/environment/pressure/time',
+                y='steps/:/environment/pressure/value',
             ),
             dict(
-                x='steps/:/source/:/evaporation_source/power/process_time',
-                y='steps/:/source/:/evaporation_source/power/power',
+                x='steps/:/source/:/vapor_source/power/time',
+                y='steps/:/source/:/vapor_source/power/value',
             ),
         ],
     )

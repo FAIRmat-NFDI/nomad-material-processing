@@ -53,8 +53,10 @@ class ThermalEvaporationHeaterTemperature(TimeSeries):
 
     m_def = Section(
         a_plot=dict(
-            x=['time', 'set_time'],
-            y=['value', 'set_value'],
+            # x=['time', 'set_time'],
+            # y=['value', 'set_value'],
+            x='time',
+            y='value',
         ),
     )
     value = TimeSeries.value.m_copy()
@@ -68,12 +70,12 @@ class ThermalEvaporationHeater(PVDEvaporationSource):
     m_def = Section(
         a_plot=dict(
             x=[
-                'temperature/process_time',
-                'power/process_time',
+                'temperature/time',
+                'power/time',
             ],
             y=[
-                'temperature/temperature',
-                'power/power',
+                'temperature/value',
+                'power/value',
             ],
             lines=[
                 dict(
@@ -100,12 +102,12 @@ class ThermalEvaporationSource(PVDSource):
     m_def = Section(
         a_plot=dict(
             x=[
-                'deposition_rate/process_time',
-                'vapor_source/temperature/process_time',
+                'impinging_flux/time',
+                'vapor_source/temperature/time',
             ],
             y=[
-                'deposition_rate/rate',
-                'vapor_source/temperature/temperature',
+                'impinging_flux/value',
+                'vapor_source/temperature/value',
             ],
             lines=[
                 dict(
@@ -132,16 +134,16 @@ class ThermalEvaporationStep(PVDStep):
     m_def = Section(
         a_plot=[
             dict(
-                x='sources/:/deposition_rate/process_time',
-                y='sources/:/deposition_rate/rate',
+                x='sources/:/impinging_flux/time',
+                y='sources/:/impinging_flux/value',
             ),
             dict(
-                x='sources/:/vapor_source/temperature/process_time',
-                y='sources/:/vapor_source/temperature/temperature',
+                x='sources/:/vapor_source/temperature/time',
+                y='sources/:/vapor_source/temperature/value',
             ),
             dict(
-                x='sources/:/vapor_source/power/process_time',
-                y='sources/:/vapor_source/power/power',
+                x='sources/:/vapor_source/power/time',
+                y='sources/:/vapor_source/power/value',
             ),
         ],
     )
@@ -171,16 +173,16 @@ class ThermalEvaporation(PhysicalVaporDeposition):
         links=['http://purl.obolibrary.org/obo/CHMO_0001360'],
         a_plot=[
             dict(
-                x='steps/:/sources/:/deposition_rate/process_time',
-                y='steps/:/sources/:/deposition_rate/rate',
+                x='steps/:/sources/:/impinging_flux/time',
+                y='steps/:/sources/:/impinging_flux/value',
             ),
             dict(
-                x='steps/:/sources/:/vapor_source/temperature/process_time',
-                y='steps/:/sources/:/vapor_source/temperature/temperature',
+                x='steps/:/sources/:/vapor_source/temperature/time',
+                y='steps/:/sources/:/vapor_source/temperature/value',
             ),
             dict(
-                x='steps/:/environment/pressure/process_time',
-                y='steps/:/environment/pressure/pressure',
+                x='steps/:/environment/pressure/time',
+                y='steps/:/environment/pressure/value',
                 layout=dict(
                     yaxis=dict(
                         type='log',
