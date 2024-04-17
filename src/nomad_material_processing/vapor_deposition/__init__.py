@@ -115,7 +115,7 @@ class VaporDepositionSource(ArchiveSection):
         Example: A heater, a filament, a laser, a bubbler, etc.
         """,
     )
-    vapor_flow_rate = SubSection(
+    vapor_molar_flow_rate = SubSection(
         section_def=MolarFlowRate,
         description="""
         The rate of the material being evaporated (mol/time).
