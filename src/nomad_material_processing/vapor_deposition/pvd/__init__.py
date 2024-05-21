@@ -65,10 +65,23 @@ class SourcePower(TimeSeries):
             y='value',
         ),
     )
-    value = TimeSeries.value.m_copy()
-    value.unit = 'watt'
-    set_value = TimeSeries.set_value.m_copy()
-    set_value.unit = 'watt'
+
+    value = Quantity(
+        type=float,
+        unit='watt',
+        shape=['*'],
+    )
+    set_value = Quantity(
+        type=float,
+        description='The set value(s) (i.e. the intended values) set.',
+        shape=['*'],
+        unit='watt',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label='Set value',
+            defaultDisplayUnit='watt',
+        ),
+    )
 
 
 class PVDEvaporationSource(EvaporationSource):
@@ -105,10 +118,23 @@ class ImpingingFlux(TimeSeries):
             component=ELNComponentEnum.EnumEditQuantity,
         ),
     )
-    value = TimeSeries.value.m_copy()
-    value.unit = 'mol/meter ** 2/second'
-    set_value = TimeSeries.set_value.m_copy()
-    set_value.unit = 'mol/meter ** 2/second'
+
+    value = Quantity(
+        type=float,
+        unit='mol/meter ** 2/second',
+        shape=['*'],
+    )
+    set_value = Quantity(
+        type=float,
+        description='The set value(s) (i.e. the intended values) set.',
+        shape=['*'],
+        unit='mol/meter ** 2/second',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label='Set value',
+            defaultDisplayUnit='mol/meter ** 2/second',
+        ),
+    )
 
 
 class PVDSource(VaporDepositionSource):
@@ -117,11 +143,11 @@ class PVDSource(VaporDepositionSource):
             dict(
                 x=[
                     'vapor_source/power/time',
-                    'impinging_flux/time',
+                    'impinging_flux/:/time',
                 ],
                 y=[
                     'vapor_source/power/value',
-                    'impinging_flux/value',
+                    'impinging_flux/:/value',
                 ],
             ),
         ],

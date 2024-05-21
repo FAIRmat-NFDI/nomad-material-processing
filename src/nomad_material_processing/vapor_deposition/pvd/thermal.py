@@ -35,6 +35,11 @@ from nomad_material_processing.vapor_deposition.pvd import (
     PhysicalVaporDeposition,
 )
 
+from nomad.datamodel.metainfo.annotations import (
+    ELNAnnotation,
+    ELNComponentEnum,
+)
+
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import (
         EntryArchive,
@@ -59,11 +64,22 @@ class ThermalEvaporationHeaterTemperature(TimeSeries):
             y='value',
         ),
     )
-    value = TimeSeries.value.m_copy()
-    value.unit = 'kelvin'
-    set_value = TimeSeries.set_value.m_copy()
-    set_value.unit = 'kelvin'
-    set_value.a_eln.defaultDisplayUnit = 'celsius'
+    value = Quantity(
+        type=float,
+        unit='kelvin',
+        shape=['*'],
+    )
+    set_value = Quantity(
+        type=float,
+        description='The set value(s) (i.e. the intended values) set.',
+        shape=['*'],
+        unit='kelvin',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label='Set value',
+            defaultDisplayUnit='celsius',
+        ),
+    )
 
 
 class ThermalEvaporationHeater(PVDEvaporationSource):
@@ -102,11 +118,11 @@ class ThermalEvaporationSource(PVDSource):
     m_def = Section(
         a_plot=dict(
             x=[
-                'impinging_flux/time',
+                'impinging_flux/:/time',
                 'vapor_source/temperature/time',
             ],
             y=[
-                'impinging_flux/value',
+                'impinging_flux/:/value',
                 'vapor_source/temperature/value',
             ],
             lines=[
@@ -134,8 +150,8 @@ class ThermalEvaporationStep(PVDStep):
     m_def = Section(
         a_plot=[
             dict(
-                x='sources/:/impinging_flux/time',
-                y='sources/:/impinging_flux/value',
+                x='sources/:/impinging_flux/:/time',
+                y='sources/:/impinging_flux/:/value',
             ),
             dict(
                 x='sources/:/vapor_source/temperature/time',
@@ -173,8 +189,8 @@ class ThermalEvaporation(PhysicalVaporDeposition):
         links=['http://purl.obolibrary.org/obo/CHMO_0001360'],
         a_plot=[
             dict(
-                x='steps/:/sources/:/impinging_flux/time',
-                y='steps/:/sources/:/impinging_flux/value',
+                x='steps/:/sources/:/impinging_flux/:/time',
+                y='steps/:/sources/:/impinging_flux/:/value',
             ),
             dict(
                 x='steps/:/sources/:/vapor_source/temperature/time',
