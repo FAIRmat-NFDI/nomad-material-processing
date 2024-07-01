@@ -49,7 +49,6 @@ from nomad_material_processing.vapor_deposition import (
     VolumetricFlowRate,
     Pressure,
     Temperature,
-
 )
 
 
@@ -83,29 +82,30 @@ class Rotation(TimeSeries):
     value = Quantity(
         type=float,
         description="FILL THE DESCRIPTION",
-        a_eln=ELNAnnotation(
-            component="NumberEditQuantity",
-            defaultDisplayUnit="rpm",
-        ),
+        # a_eln=ELNAnnotation(
+        #     component="NumberEditQuantity",
+        #     defaultDisplayUnit="rpm",
+        # ),
         unit="rpm",
     )
 
 
 class PartialVaporPressure(Pressure):
     """
-    The Partial Vapor Pressure (or Equilibrium Vapor Pressure), p, is the pressure exerted 
-    by a vapor in thermodynamic equilibrium with its condensed phases (solid or liquid) 
-    at a given temperature in a closed system. 
-    
+    The Partial Vapor Pressure (or Equilibrium Vapor Pressure), p, is the pressure exerted
+    by a vapor in thermodynamic equilibrium with its condensed phases (solid or liquid)
+    at a given temperature in a closed system.
+
     It can be approximately calculated by the semiempirical Antoine equation.
     It is a relation between the vapor pressure and temperature of pure substances.
     log10(p) = A - [B / (T + C)]
     https://en.wikipedia.org/wiki/Vapor_pressure
     The August-Antoine equation is a simplified version of the Antoine equation,
-    sometimes used to calculate Partial Vapor Pressure. 
-    This assumes a temperature-independent heat of vaporization, i.e., C = 0. 
+    sometimes used to calculate Partial Vapor Pressure.
+    This assumes a temperature-independent heat of vaporization, i.e., C = 0.
     https://en.wikipedia.org/wiki/Antoine_equation
     """
+
     set_value = Quantity(
         type=float,
         description="FILL THE DESCRIPTION",
@@ -143,6 +143,7 @@ class BubblerMolarFlowRate(MolarFlowRate):
     Journal of Vacuum Science & Technology A 8, 800 (1990); doi: 10.1116/1.576921
 
     """
+
     value = MolarFlowRate.value.m_copy()
     set_value = MolarFlowRate.set_value.m_copy()
     set_value.a_eln.defaultDisplayUnit = "mol/minute"
@@ -152,14 +153,17 @@ class CVDEvaporationSource(EvaporationSource):
     pressure = SubSection(
         section_def=Pressure,
     )
+    precursor_partial_pressure = SubSection(
+        section_def=PartialVaporPressure,
+    )
     temperature = SubSection(
         section_def=Temperature,
     )
     total_flow_rate = SubSection(
         section_def=VolumetricFlowRate,
         description="""
-        The total flow rate exiting the source. 
-        It can be the sum of precursor and carrier gas or only a gas, 
+        The total flow rate exiting the source.
+        It can be the sum of precursor and carrier gas or only a gas,
         depending on the nature of the source.
         """,
     )
@@ -186,9 +190,6 @@ class BubblerEvaporator(CVDEvaporationSource):
           leading to thin film growth.
     """
 
-    precursor_partial_pressure = SubSection(
-        section_def=PartialVaporPressure,
-    )
     carrier_gas = SubSection(
         section_def=PubChemPureSubstanceSection,
     )
@@ -252,6 +253,7 @@ class FlashEvaporator(CVDEvaporationSource):
     - Transport to Reaction Chamber.
     - Temperature Regulation.
     """
+
     carrier_gas = SubSection(
         section_def=PubChemPureSubstanceSection,
     )
@@ -272,34 +274,43 @@ class FlashEvaporator(CVDEvaporationSource):
 
 class GasSupply(CVDEvaporationSource):
     """
-    In chemical vapor deposition (CVD), the gas supply plays a critical role 
-    in providing the necessary precursor molecules for the deposition process. 
-    These precursor gases are typically delivered to the reaction chamber 
-    through various methods depending on the specific setup and requirements 
+    In chemical vapor deposition (CVD), the gas supply plays a critical role
+    in providing the necessary precursor molecules for the deposition process.
+    These precursor gases are typically delivered to the reaction chamber
+    through various methods depending on the specific setup and requirements
     of the CVD process.
     """
+
     pass
+
+
+class Mist(CVDEvaporationSource):
+    """
+    MIST-CVD source is a novel method for the deposition of thin films
+    """
 
 
 class GasLine(GasSupply):
     """
-    Gas lines are used to transport the precursor gases from their source to the reaction chamber. 
-    These lines are often made of materials that are compatible with the precursor gases 
-    and can withstand the process conditions. 
-    They may also be heated or insulated to maintain the gases at the desired temperature 
+    Gas lines are used to transport the precursor gases from their source to the reaction chamber.
+    These lines are often made of materials that are compatible with the precursor gases
+    and can withstand the process conditions.
+    They may also be heated or insulated to maintain the gases at the desired temperature
     and prevent condensation or undesired reactions within the lines.
     """
+
     pass
 
 
 class GasCylinder(GasSupply):
     """
-    Contains the precursor gases under pressure. 
-    These cylinders are connected to the CVD chamber through a system of valves, 
-    regulators, and tubing. 
-    The flow rate of each gas can be controlled precisely using flow meters 
+    Contains the precursor gases under pressure.
+    These cylinders are connected to the CVD chamber through a system of valves,
+    regulators, and tubing.
+    The flow rate of each gas can be controlled precisely using flow meters
     or mass flow controllers to achieve the desired deposition conditions.
     """
+
     pass
 
 
