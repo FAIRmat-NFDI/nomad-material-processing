@@ -1,0 +1,3 @@
+data:
+  m_def: nomad_synthesis_plugin.schema_packages.mypackage.MySchema
+  name: Markus
