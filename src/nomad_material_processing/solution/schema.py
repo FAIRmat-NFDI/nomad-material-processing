@@ -50,7 +50,7 @@ class SolutionComponent(BaseSolutionComponent, PureSubstanceComponent):
                     'name',
                     'substance_name',
                     'container_mass',
-                    'brutto_mass',
+                    'gross_mass',
                     'mass',
                     'mass_fraction',
                 ],
@@ -63,8 +63,8 @@ class SolutionComponent(BaseSolutionComponent, PureSubstanceComponent):
         a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'gram'},
         unit='gram',
     )
-    brutto_mass = Quantity(
-        type=float,
+    gross_mass = Quantity(
+        type=np.float64,
         description='The mass of the material including the container.',
         a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'gram'},
         unit='gram',
