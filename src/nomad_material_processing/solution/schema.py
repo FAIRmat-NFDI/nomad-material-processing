@@ -34,14 +34,6 @@ class BaseSolutionComponent(ArchiveSection):
     )
 
 
-class SolutionPreparationStep(ProcessStep):
-    m_def = Section(
-        description="""
-        Class to put together the steps of a solution preparation.
-        """,
-    )
-
-
 class SolutionComponent(BaseSolutionComponent, PureSubstanceComponent):
     m_def = Section(
         a_eln=ELNAnnotation(
@@ -283,6 +275,61 @@ class SolutionComponentReference(BaseSolutionComponent, SolutionReference):
     )
 
 
+class SolutionPreparationStep(ProcessStep):
+    m_def = Section(
+        description="""
+        Class to put together the steps of a solution preparation.
+        """,
+    )
+
+
+class AddMaterial(SolutionPreparationStep):
+    m_def = Section(
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                order=[
+                    'name',
+                    'start_time',
+                    'material_type',
+                    'comment',
+                    'duration',
+                    'material',
+                ],
+            ),
+        ),
+    )
+    material_type = Quantity(
+        type=MEnum(
+            'Solvent',
+            'Solute',
+            'Compound',
+        ),
+        description="""
+        The type of material added to the solution.
+        | material type | description |
+        | ------------- | ----------- |
+        | Solvent       | Solvent added to the solution. |
+        | Solute        | Solute added to the solution. |
+        | Compound      | A compound that does not dissolve in the solution. |
+        """,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+        ),
+    )
+
+    solution_component = SubSection(section_def=BaseSolutionComponent)
+
+    def normalize(self, archive, logger):
+        if not self.name:
+            if self.material_type:
+                self.name = f'Add {self.material_type}'
+            else:
+                self.name = 'Add Material'
+        return super().normalize(archive, logger)
+        # TODO based on the material type, add the material to the solvent or solute
+        # if the material type is compound, only add it to the components list
+
+
 class Agitation(SolutionPreparationStep):
     m_def = Section(
         a_eln=None,
@@ -342,53 +389,6 @@ class MechanicalStirring(Agitation):
         if not self.name:
             self.name = 'Mechanical Stirring'
         return super().normalize(archive, logger)
-
-
-class AddMaterial(SolutionPreparationStep):
-    m_def = Section(
-        a_eln=ELNAnnotation(
-            properties=SectionProperties(
-                order=[
-                    'name',
-                    'start_time',
-                    'material_type',
-                    'comment',
-                    'duration',
-                    'material',
-                ],
-            ),
-        ),
-    )
-    material_type = Quantity(
-        type=MEnum(
-            'Solvent',
-            'Solute',
-            'Compound',
-        ),
-        description="""
-        The type of material added to the solution.
-        | material type | description |
-        | ------------- | ----------- |
-        | Solvent       | Solvent added to the solution. |
-        | Solute        | Solute added to the solution. |
-        | Compound      | A compound that does not dissolve in the solution. |
-        """,
-        a_eln=ELNAnnotation(
-            component='EnumEditQuantity',
-        ),
-    )
-
-    solution_component = SubSection(section_def=BaseSolutionComponent)
-
-    def normalize(self, archive, logger):
-        if not self.name:
-            if self.material_type:
-                self.name = f'Add {self.material_type}'
-            else:
-                self.name = 'Add Material'
-        return super().normalize(archive, logger)
-        # TODO based on the material type, add the material to the solvent or solute
-        # if the material type is compound, only add it to the components list
 
 
 class SolutionPreparation(Process, EntryData):
