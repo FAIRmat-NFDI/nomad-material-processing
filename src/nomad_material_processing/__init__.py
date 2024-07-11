@@ -51,6 +51,8 @@ if TYPE_CHECKING:
         BoundLogger,
     )
 
+from nomad_material_processing.solution.schema import *
+
 m_package = Package(name='Material Processing')
 
 

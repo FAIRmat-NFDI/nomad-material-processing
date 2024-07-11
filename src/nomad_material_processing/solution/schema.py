@@ -412,7 +412,7 @@ class SolutionPreparation(Process, EntryData):
                     'lab_id',
                     'location',
                     'description',
-                    'solvent',
+                    'solvents',
                     'solutes',
                     'steps',
                     'instruments',
