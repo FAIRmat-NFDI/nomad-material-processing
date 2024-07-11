@@ -1,9 +1,3 @@
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    pass
-
-
 import numpy as np
 from nomad.datamodel.data import (
     ArchiveSection,
@@ -15,26 +9,20 @@ from nomad.datamodel.metainfo.annotations import (
     Filter,
 )
 from nomad.datamodel.metainfo.basesections import (
-    Activity,
-    ActivityStep,
     Component,
     CompositeSystem,
     CompositeSystemReference,
-    EntityReference,
     Process,
     ProcessStep,
     PureSubstanceComponent,
-    System,
 )
 from nomad.metainfo import (
     Datetime,
     MEnum,
     Quantity,
-    Reference,
     Section,
     SubSection,
 )
-from nomad.utils import hash
 
 
 class BaseSolutionComponent(ArchiveSection):
