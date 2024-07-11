@@ -74,7 +74,7 @@ select = [
     "UP",
     # isort
     "I",
-    # pylint 
+    # pylint
     "PL",
 ]
 
@@ -108,10 +108,10 @@ package-dir = { "" = "src" }
 where = ["src"]
 
 [project.entry-points.'nomad.plugin']
-myparser = "nomad_synthesis_plugin.parsers:myparser"
-mypackage = "nomad_synthesis_plugin.schema_packages:mypackage"
+# myparser = "nomad_synthesis_plugin.parsers:myparser"
+# mypackage = "nomad_synthesis_plugin.schema_packages:mypackage"
 
-myapp = "nomad_synthesis_plugin.apps:myapp"
+# myapp = "nomad_synthesis_plugin.apps:myapp"
 [tool.cruft]
 # Avoid updating workflow files, this leads to permissions issues
 skip = [".github/*"]

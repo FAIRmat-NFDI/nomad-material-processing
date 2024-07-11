@@ -1,0 +1,422 @@
+definitions:
+  name: ' Experiment'
+  sections:
+    CaP_Experiment:
+      base_sections:
+       - nomad.datamodel.metainfo.basesections.Experiment
+       - nomad.datamodel.data.EntryData
+      quantities:
+        Based_on_Experiment:
+          type: '#/CaP_Experiment' # nomad.datamodel.metainfo.basesections.Experiment
+          description: "the experiment this experiment is based on"
+          m_annotations:
+            eln:
+              component: ReferenceEditQuantity
+        Difference_to_previous_experiment:
+          type: str
+          shape: ['*']
+          description: "differences to previous experiment"
+          m_annotations:
+            eln:
+              component: StringEditQuantity
+      sub_sections:
+        Based_on_publication:
+          #repeats: true
+          m_annotations:
+            eln:
+          section: nomad.datamodel.metainfo.basesections.PublicationReference
+        steps:
+          repeats: true
+          section: '#/CaPSteps'
+        solutions:
+          repeats: true
+          section:
+            quantities:
+              precursor:
+                type: '#/Solution'
+                m_annotations:
+                  eln:
+                    component: ReferenceEditQuantity
+    CaPSteps:
+      base_sections:
+      - nomad.datamodel.metainfo.basesections.ExperimentStep #SectionReference
+      quantities:
+        activity:
+          type: '#/CaPActivity' # CaPSteps'
+          m_annotations:
+            eln:
+              component: ReferenceEditQuantity
+    CaPActivity:
+      base_sections:
+      - nomad.datamodel.metainfo.basesections.Activity
+    CaP_sample:
+      base_sections:
+      - nomad.datamodel.metainfo.basesections.CompositeSystem
+      - nomad.datamodel.data.EntryData
+
+    SolutionPreparation: #check if Huayna wans this
+      base_sections:
+      - nomad.datamodel.metainfo.basesections.Process
+      - '#/CaPActivity'
+      - nomad.datamodel.data.EntryData
+
+    Solution: # we will have a "solution" soon in base sections!
+      base_sections:
+      - nomad.datamodel.metainfo.basesections.CompositeSystem
+      - nomad.datamodel.data.EntryData
+    ReactorProgram:
+      base_sections:
+      - nomad.datamodel.metainfo.basesections.Process
+      - '#/CaPActivity'
+      - nomad.datamodel.data.EntryData
+      quantities:
+        data_file:
+          type: str
+          description: |
+            A reference to an uploaded .csv from the synthesis process.
+          m_annotations:
+            browser:
+              adaptor: RawFileAdaptor  # Allows to navigate to files in the data browser
+            eln:
+              component: FileEditQuantity
+      sub_sections:
+        steps:
+          repeats: true
+          section: '#/ProgramSteps'
+    ProgramSteps: # check availbale steps
+      base_sections:
+      - nomad.datamodel.metainfo.basesections.ProcessStep
+    ReactorProgramStep:
+      base_sections:
+      - '#/ProgramSteps'
+      quantities:
+        stirring_ration_speed:
+          type: np.float64
+          shape: [1]
+          unit: 1/minute
+          description: " "
+          m_annotations:
+            eln:
+              component: NumberEditQuantity
+              defaultDisplayUnit: 1/minute
+        temperature_setpoint:
+          type: np.float64
+          shape: [1]
+          unit: °C
+          description: " "
+          m_annotations:
+            eln:
+              component: NumberEditQuantity
+              defaultDisplayUnit: °C
+        heating_rate:
+          type: np.float64
+          shape: [1]
+          unit: K/minute
+          description: " "
+          m_annotations:
+            eln:
+              component: NumberEditQuantity
+              defaultDisplayUnit: K/minute
+      sub_sections:
+        AddingSolution:
+          base_sections:
+            - 'CompositeSystemReference'
+          repeats: true
+          section:
+            quantities:
+              reference:
+                type: '#/Solution'
+                description: " "
+                m_annotations:
+                  eln:
+                    component: ReferenceEditQuantity
+                    label: 'Solution'
+              amount_of_solution:
+                type: np.float64
+                shape: [1]
+                unit: milliliter
+                description: " "
+                m_annotations:
+                  eln:
+                    component: NumberEditQuantity
+                    defaultDisplayUnit: milliliter
+              rate:
+                type: np.float64
+                shape: [1]
+                unit: milliliter/minute
+                description: " "
+                m_annotations:
+                  eln:
+                    component: NumberEditQuantity
+                    defaultDisplayUnit: milliliter/minute
+
+    # EndProgramStep:
+    #   base_sections:
+    #   - '#/ProgramSteps'
+
+    # WaitingStep:
+    #   base_sections:
+    #    - '#/ProgramSteps'
+    # AddingSolutionStep:
+    #   base_sections:
+    #   - '#/ProgramSteps'
+    #   quantities:
+    #     Solution:
+    #       type: '#/Solution'
+    #       description:
+    #       m_annotations:
+    #         eln:
+    #           component: ReferenceEditQuantity
+    #     AmountOfSolution:
+    #       type: np.float64
+    #       shape: [1]
+    #       unit: milliliter
+    #       description:
+    #       m_annotations:
+    #         eln:
+    #           component: NumberEditQuantity
+    #           defaultDisplayUnit: milliliter
+    #     Rate:
+    #       type: np.float64
+    #       shape: [1]
+    #       unit: milliliter/minute
+    #       description:
+    #       m_annotations:
+    #         eln:
+    #           component: NumberEditQuantity
+    #           defaultDisplayUnit: milliliter/minute
+    # StirringStep:
+    #   base_sections:
+    #   - '#/ProgramSteps'
+    #   quantities:
+    #     RotationalSpeed :
+    #       type: np.float64
+    #       shape: [1]
+    #       unit: 1/minute
+    #       description:
+    #       m_annotations:
+    #         eln:
+    #           component: NumberEditQuantity
+    #           defaultDisplayUnit: 1/minute
+    # SetTemperatureStep:
+    #   base_sections:
+    #   - '#/ProgramSteps'
+    #   quantities:
+    #     TemperatureSetpoint :
+    #       type: np.float64
+    #       shape: [1]
+    #       unit: °C
+    #       description:
+    #       m_annotations:
+    #         eln:
+    #           component: NumberEditQuantity
+    #           defaultDisplayUnit: °C
+    #     HeatingRate :
+    #       type: np.float64
+    #       shape: [1]
+    #       unit: K/minute
+    #       description:
+    #       m_annotations:
+    #         eln:
+    #           component: NumberEditQuantity
+    #           defaultDisplayUnit: K/minute
+    # EndProgramStep:
+    #   base_sections:
+    #   - '#/ProgramSteps'
+    LuminescenceMeasurements:
+      base_sections:
+      - nomad.datamodel.metainfo.basesections.Measurement
+      - '#/CaPActivity'
+      - nomad.datamodel.data.EntryData
+      quantities:
+        Filter:
+          type: np.float64
+          shape: [1]
+          unit: nanometer
+          description: "optical filter"
+          m_annotations:
+            eln:
+              component: NumberEditQuantity
+              defaultDisplayUnit: nanometer
+        Measurement_Option:
+          type:
+            type_kind: Enum
+            type_data:
+              - 'in-situ'
+              - 'ex-situ'
+          description: "Measurement option"
+          m_annotations:
+            eln:
+              component: RadioEnumEditQuantity
+
+      sub_sections:
+        measurement_settings: #define standard values or fixedoptions
+          section:
+            sub_sections:
+              excitation:
+                section:
+                  quantities:
+                    Wavelenght:
+                      type: np.float64
+                      shape: [1]
+                      unit: nanometer
+                      description: " "
+                      m_annotations:
+                        eln:
+                          component: NumberEditQuantity
+                          defaultDisplayUnit: nanometer
+                    Slit:
+                      type: np.float64
+                      shape: [1]
+                      unit: nanometer
+                      description: " "
+                      m_annotations:
+                        eln:
+                          component: NumberEditQuantity
+                          defaultDisplayUnit: nanometer
+              emission:
+                section:
+                  quantities:
+                    Detector:
+                      type: str
+                      description: " "
+                      m_annotations:
+                        eln:
+                          component: StringEditQuantity
+                    Integration_time:
+                      type: np.float64
+                      shape: [1]
+                      unit: second
+                      description: " "
+                      m_annotations:
+                        eln:
+                          component: NumberEditQuantity
+                          defaultDisplayUnit: second
+                    DetectorSlit: #?
+                      type: np.float64
+                      shape: [1]
+                      unit: nanometer
+                      description: " "
+                      m_annotations:
+                        eln:
+                          component: NumberEditQuantity
+                          defaultDisplayUnit: nanometer
+                    GratingLines: #?
+                      type: np.float64
+                      shape: [1]
+                      description: " "
+                      m_annotations:
+                        eln:
+                          component: NumberEditQuantity
+                    GratingCenter: #?
+                      type: np.float64
+                      shape: [1]
+                      unit: nanometer
+                      description: " "
+                      m_annotations:
+                        eln:
+                          component: NumberEditQuantity
+                          defaultDisplayUnit: nanometer
+                    UnknownSetting: #? S1c/S1
+                      type: str
+                      description: " "
+                      m_annotations:
+                        eln:
+                          component: StringEditQuantity
+                    Cycles: #?
+                      type: np.float64
+                      shape: [1]
+                      description: " "
+                      m_annotations:
+                        eln:
+                          component: NumberEditQuantity
+                    Delay:
+                      type: np.float64
+                      shape: [1]
+                      unit: second
+                      description: " "
+                      m_annotations:
+                        eln:
+                          component: NumberEditQuantity
+                          defaultDisplayUnit: second
+                    Dark offset:
+                      type: str
+                      description: " "
+                      m_annotations:
+                        eln:
+                          component: StringEditQuantity
+    Sensors:
+      base_sections:
+      - nomad.datamodel.metainfo.basesections.Process
+      - '#/CaPActivity'
+      - nomad.datamodel.data.EntryData
+      quantities:
+        List_of_sensors: #maybe use different type!?
+          type: str
+          description: " "
+          m_annotations:
+            eln:
+              component: StringEditQuantity
+        Sensor_setup_drawing: #maybe use different type!?
+          type: str
+          description: " "
+          m_annotations:
+            eln:
+              component: RichTextEditQuantity
+              #label: "Sensor_setup_drawing"
+    SampleRemoval:
+      base_sections:
+      - nomad.datamodel.metainfo.basesections.Process
+      - '#/CaPActivity'
+      - nomad.datamodel.data.EntryData
+      quantities:
+        Sample_removal: #maybe use different type!?
+          type: bool
+          m_annotations:
+            eln:
+              component: BoolEditQuantity
+      sub_sections:
+        steps:
+          repeats: true
+          section: '#/SampleRemovalSteps'
+    SampleRemovalSteps:
+      base_sections:
+      - nomad.datamodel.metainfo.basesections.ProcessStep
+      quantities:
+        sample_at_removal_time:
+          type: '#/CaP_sample'
+          description: "sample that was removed from the reactor at a given time in minutes"
+          m_annotations:
+            eln:
+              component: ReferenceEditQuantity
+        duration:
+          type: np.float64
+          unit: minute
+          m_annotations:
+            eln:
+              component: NumberEditQuantity
+              defaultDisplayUnit: minute
+              label: "removal time in minutes"
+    SampleTreatment:
+      base_sections:
+      - nomad.datamodel.metainfo.basesections.Process
+      - '#/CaPActivity'
+      - nomad.datamodel.data.EntryData
+      sub_sections:
+        steps:
+          repeats: true
+          section: '#/SampleTreatmentSteps'
+    SampleTreatmentSteps:
+      base_sections:
+      - nomad.datamodel.metainfo.basesections.ProcessStep
+    Rest:  # define better what wash and dry is within Rest
+      base_sections:
+       - '#/SampleTreatmentSteps'
+    PrepareForXRD: # any more details on this step?
+      base_sections:
+       - '#/SampleTreatmentSteps'
+    Results: # define better with Huayna
+      base_sections:
+      - nomad.datamodel.metainfo.basesections.Analysis
+      - '#/CaPActivity'
+      - nomad.datamodel.data.EntryData
