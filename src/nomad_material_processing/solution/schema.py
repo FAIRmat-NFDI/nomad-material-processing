@@ -58,21 +58,33 @@ class SolutionComponent(BaseSolutionComponent, PureSubstanceComponent):
         ),
     )
     container_mass = Quantity(
-        type=float,
+        type=np.float64,
         description='The mass of the container.',
-        a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'gram'},
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='gram',
+            minValue=0,
+        ),
         unit='gram',
     )
     gross_mass = Quantity(
         type=np.float64,
         description='The mass of the material including the container.',
-        a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'gram'},
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='gram',
+            minValue=0,
+        ),
         unit='gram',
     )
     mass = Quantity(
-        type=float,
+        type=np.float64,
         description='The mass of the material without the container.',
-        a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'gram'},
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='gram',
+            minValue=0,
+        ),
         unit='gram',
     )
 
@@ -97,12 +109,12 @@ class LiquidSolutionComponent(SolutionComponent):
     volume = Quantity(
         type=np.float64,
         description='The volume of the liquid component.',
-        unit='liter',
         a_eln=dict(
             component='NumberEditQuantity',
-            defaultDisplayUnit='liter',
+            defaultDisplayUnit='milliliter',
             minValue=0,
         ),
+        unit='milliliter',
     )
     purity_percentage = Quantity(
         type=np.float64,
@@ -114,9 +126,13 @@ class LiquidSolutionComponent(SolutionComponent):
         ),
     )
     density = Quantity(
-        type=float,
-        description='The density of the liquid material.',
-        a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'gram / liter'},
+        type=np.float64,
+        description='The density of the liquid component.',
+        a_eln=dict(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='gram / liter',
+            minValue=0,
+        ),
         unit='gram / liter',
     )
 
@@ -135,14 +151,22 @@ class ComponentConcentration(ArchiveSection):
     )
     theoretical_concentration = Quantity(
         type=np.float64,
-        description='The concentration planned for the mixed material.',
-        a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'mol / liter'},
+        description='The concentration planned for the component.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='mol / liter',
+            minValue=0,
+        ),
         unit='mol / liter',
     )
     actual_concentration = Quantity(
         type=np.float64,
-        description='The concentration calculated from the mixed material weights and volumes.',
-        a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'mol / liter'},
+        description='The concentration calculated from the component moles and total volume.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='mol / liter',
+            minValue=0,
+        ),
         unit='mol / liter',
     )
 
@@ -174,9 +198,10 @@ class SolutionProperties(ArchiveSection):
         type=np.float64,
         a_eln=dict(
             component='NumberEditQuantity',
-            defaultDisplayUnit='ml',
+            defaultDisplayUnit='milliliter',
+            minValue=0,
         ),
-        unit=('ml'),
+        unit='milliliter',
     )
     components_concentration = SubSection(
         section_def=ComponentConcentration,
@@ -218,7 +243,7 @@ class Solution(CompositeSystem, EntryData):
         # generate the solution properties section
         # - calculate the total volume of the solution
         #   by summing the volumes of the liquid components and solution from references
-        # - calculate the concentration of the components
+        # - calculate the actual_concentration of the components
         #   solids: calculate the moles based on molar mass and mass
         #   liquids: calculate the moles based on the volume and density
         #     use the total volume of the solution to calculate the concentration
@@ -265,16 +290,18 @@ class Agitation(SolutionPreparationStep):
     temperature = Quantity(
         type=np.float64,
         description='The temperature of the mixing process.',
-        a_eln={
-            'component': 'NumberEditQuantity',
-            'defaultDisplayUnit': 'celsius',
-        },
-        unit='kelvin',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='celsius',
+        ),
+        unit='celsius',
     )
     container_type = Quantity(
         type=str,
         description='The type of container used for mixing.',
-        a_eln={'component': 'StringEditQuantity'},
+        a_eln=ELNAnnotation(
+            component='StringEditQuantity',
+        ),
     )
 
     def normalize(self, archive, logger):
@@ -287,10 +314,11 @@ class Sonication(Agitation):
     frequency = Quantity(
         type=np.float64,
         description='The frequency of the sonication instrument.',
-        a_eln={
-            'component': 'NumberEditQuantity',
-            'defaultDisplayUnit': 'Hz',
-        },
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='Hz',
+        ),
+        unit='Hz',
     )
 
     def normalize(self, archive, logger):
@@ -301,9 +329,12 @@ class Sonication(Agitation):
 
 class MechanicalStirring(Agitation):
     rotation_speed = Quantity(
-        type=float,
+        type=np.float64,
         description='The rotation speed of the mixing process.',
-        a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'rpm'},
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='rpm',
+        ),
         unit='rpm',
     )
 
@@ -337,12 +368,14 @@ class AddMaterial(SolutionPreparationStep):
         description="""
         The type of material added to the solution.
         | material type | description |
-        | --- | --- |
-        | Solvent | Solvent added to the solution. |
-        | Solute | Solute added to the solution. |
-        | Compound | A compound that does not dissolve in the solution. |
+        | ------------- | ----------- |
+        | Solvent       | Solvent added to the solution. |
+        | Solute        | Solute added to the solution. |
+        | Compound      | A compound that does not dissolve in the solution. |
         """,
-        a_eln={'component': 'EnumEditQuantity'},
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+        ),
     )
 
     solution_component = SubSection(section_def=BaseSolutionComponent)
@@ -427,30 +460,50 @@ class SolutionStorage(ArchiveSection):
     Solution storage class
     """
 
-    start_date = Quantity(type=Datetime, a_eln=dict(component='DateTimeEditQuantity'))
+    start_date = Quantity(
+        type=Datetime,
+        a_eln=dict(
+            component='DateTimeEditQuantity',
+        ),
+    )
 
-    end_date = Quantity(type=Datetime, a_eln=dict(component='DateTimeEditQuantity'))
+    end_date = Quantity(
+        type=Datetime,
+        a_eln=dict(
+            component='DateTimeEditQuantity',
+        ),
+    )
 
     storage_condition = Quantity(
         type=str,
-        a_eln=dict(component='StringEditQuantity'),
+        a_eln=dict(
+            component='StringEditQuantity',
+        ),
     )
     temperature = Quantity(
-        type=np.dtype(np.float64),
-        unit=('°C'),
-        a_eln=dict(component='NumberEditQuantity', defaultDisplayUnit='°C'),
+        type=np.float64,
+        a_eln=dict(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='celsius',
+        ),
+        unit='celsius',
     )
 
     atmosphere = Quantity(
         type=str,
         a_eln=dict(
-            component='EnumEditQuantity', props=dict(suggestions=['Ar', 'N2', 'Air'])
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=['Ar', 'N2', 'Air'],
+            ),
         ),
     )
 
     comments = Quantity(
         type=str,
-        a_eln=dict(component='RichTextEditQuantity'),
+        a_eln=dict(
+            component='RichTextEditQuantity',
+        ),
     )
 
 
