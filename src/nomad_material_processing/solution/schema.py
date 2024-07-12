@@ -422,7 +422,7 @@ class SolutionPreparation(Process, EntryData):
     )
     solvents = SubSection(
         link='https://doi.org/10.1351/goldbook.S05751',
-        section_def=LiquidSolutionComponent,
+        section_def=BaseSolutionComponent,
         description="""
         The term applied to the whole initial liquid phase containing the extractant.
         """,
@@ -430,7 +430,7 @@ class SolutionPreparation(Process, EntryData):
     )
     solutes = SubSection(
         link='https://doi.org/10.1351/goldbook.S05744',
-        section_def=Component,
+        section_def=BaseSolutionComponent,
         description="""
         The minor component of a solution which is regarded as having been dissolved
         by the solvent.
@@ -438,7 +438,7 @@ class SolutionPreparation(Process, EntryData):
         repeats=True,
     )
     solution = SubSection(
-        section_def=CompositeSystem,
+        section_def=SolutionReference,
     )
     steps = SubSection(
         section_def=SolutionPreparationStep,
