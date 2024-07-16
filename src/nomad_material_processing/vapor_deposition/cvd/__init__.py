@@ -143,7 +143,7 @@ class Rotation(TimeSeries):
     )
     value = Quantity(
         type=float,
-        description="FILL THE DESCRIPTION",
+        description="The rotation of the sample holder, or susceptor.",
         # a_eln=ELNAnnotation(
         #     component="NumberEditQuantity",
         #     defaultDisplayUnit="rpm",
@@ -170,7 +170,7 @@ class PartialVaporPressure(Pressure):
 
     set_value = Quantity(
         type=float,
-        description="FILL THE DESCRIPTION",
+        description="The value scalar set for this parameter.",
         a_eln={"component": "NumberEditQuantity", "defaultDisplayUnit": "mbar"},
         unit="pascal",
     )
@@ -367,6 +367,14 @@ class GasCylinderEvaporator(CVDEvaporationSource):
     or mass flow controllers to achieve the desired deposition conditions.
     """
 
+    dilution_in_cylinder = Quantity(
+        type=float,
+        description='The gas dilution in the cylinder.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+        ),
+    )
+
     effective_flow_rate = SubSection(
         section_def=VolumetricFlowRate,
         description="""
@@ -407,12 +415,6 @@ class GasLineSource(CVDSource):
 
 
 class GasCylinderSource(CVDSource):
-    dilution_in_cylinder = Quantity(
-        type=float,
-        description='FILL THE DESCRIPTION',
-        a_eln={'component': 'NumberEditQuantity'},
-    )
-
     vapor_source = SubSection(
         section_def=GasCylinderEvaporator,
     )
@@ -433,19 +435,10 @@ class MistSource(CVDSource):
     """
     item = Quantity(
         type=str,
-        description='FILL',
+        description='An ID used to identify the solution.',
         a_eln=ELNAnnotation(
             component='StringEditQuantity',
         ),
-    )
-    temperature = Quantity(
-        type=float,
-        description='FILL',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity',
-            defaultDisplayUnit='celsius',
-        ),
-        unit='kelvin',
     )
     stirring_time = Quantity(
         type=float,
