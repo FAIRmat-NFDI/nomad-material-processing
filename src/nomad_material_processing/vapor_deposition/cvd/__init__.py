@@ -459,7 +459,7 @@ class MistSource(CVDSource):
     vapor_source = SubSection(
         section_def=MistEvaporator,
     )
-    components = SubSection(section_def=ComponentConcentration, repeats=True)
+    material = SubSection(section_def=ComponentConcentration, repeats=True)
 
 
 m_package.__init_metainfo__()
