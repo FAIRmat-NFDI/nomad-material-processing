@@ -38,6 +38,7 @@ from nomad.datamodel.metainfo.plot import PlotSection, PlotlyFigure
 
 from nomad.datamodel.metainfo.basesections import (
     PubChemPureSubstanceSection,
+    PureSubstanceComponent,
 )
 from nomad_material_processing import (
     TimeSeries,
@@ -49,6 +50,7 @@ from nomad_material_processing.vapor_deposition import (
     VolumetricFlowRate,
     Pressure,
     Temperature,
+    GasFlow,
 )
 
 
@@ -61,6 +63,66 @@ if TYPE_CHECKING:
     )
 
 m_package = Package(name="Chemical Vapor Deposition")
+
+
+class ComponentConcentration(ArchiveSection):
+    """
+    The concentration of a component in a mixed material.
+    """
+
+    component_reference = Quantity(
+        type=PureSubstanceComponent,
+        description='A reference to a NOMAD `PureSubstanceComponent` sub-section.',
+        a_eln=ELNAnnotation(
+            component='ReferenceEditQuantity',
+        ),
+    )
+    theoretical_concentration = Quantity(
+        type=float,
+        description='The concentration planned for the component.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='mol / liter',
+            minValue=0,
+        ),
+        unit='mol / liter',
+    )
+    actual_concentration = Quantity(
+        type=float,
+        description='The concentration calculated from the component moles and total volume.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='mol / liter',
+            minValue=0,
+        ),
+        unit='mol / liter',
+    )
+
+class PushPurgeGasFlow(GasFlow):
+    """
+    Section describing the flow of a gas.
+    """
+
+    m_def = Section(
+        a_plot=[dict(
+            # x=['flow_rate/time', 'flow_rate/set_time'],
+            # y=['flow_rate/value', 'flow_rate/set_value'],
+            x='flow_rate/time',
+            y='flow_rate/value',
+        ),
+        dict(
+            x='purge_flow_rate/time',
+            y='purge_flow_rate/value',
+        ),
+        ],
+    )
+    flow_rate = SubSection(
+        section_def=VolumetricFlowRate,
+        label="push_flow_rate",
+    )
+    purge_flow_rate = SubSection(
+        section_def=VolumetricFlowRate,
+    )
 
 
 class Rotation(TimeSeries):
@@ -272,26 +334,17 @@ class FlashEvaporator(CVDEvaporationSource):
     pass
 
 
-class GasSupply(CVDEvaporationSource):
+class MistEvaporator(CVDEvaporationSource):
+    """
+    MIST-CVD source is a novel method for the deposition of thin films.
+    """
+
+
+class GasLineEvaporator(CVDEvaporationSource):
     """
     In chemical vapor deposition (CVD), the gas supply plays a critical role
     in providing the necessary precursor molecules for the deposition process.
-    These precursor gases are typically delivered to the reaction chamber
-    through various methods depending on the specific setup and requirements
-    of the CVD process.
-    """
 
-    pass
-
-
-class Mist(CVDEvaporationSource):
-    """
-    MIST-CVD source is a novel method for the deposition of thin films
-    """
-
-
-class GasLine(GasSupply):
-    """
     Gas lines are used to transport the precursor gases from their source to the reaction chamber.
     These lines are often made of materials that are compatible with the precursor gases
     and can withstand the process conditions.
@@ -302,8 +355,11 @@ class GasLine(GasSupply):
     pass
 
 
-class GasCylinder(GasSupply):
+class GasCylinderEvaporator(CVDEvaporationSource):
     """
+    In chemical vapor deposition (CVD), the gas supply plays a critical role
+    in providing the necessary precursor molecules for the deposition process.
+
     Contains the precursor gases under pressure.
     These cylinders are connected to the CVD chamber through a system of valves,
     regulators, and tubing.
@@ -311,16 +367,106 @@ class GasCylinder(GasSupply):
     or mass flow controllers to achieve the desired deposition conditions.
     """
 
-    pass
+    effective_flow_rate = SubSection(
+        section_def=VolumetricFlowRate,
+        description="""
+        Effective flow rate, to be defined better.
+        """,
+    )
 
 
 class CVDSource(VaporDepositionSource):
+    """
+    A source of vapor for chemical vapor deposition (CVD) processes.
+    """
+    valve = Quantity(
+        type=bool,
+        description='is the valve open?',
+        a_eln=ELNAnnotation(
+            component='BoolEditQuantity',
+        ),
+    )
     vapor_source = SubSection(
         section_def=CVDEvaporationSource,
         description="""
         Example: A heater, a filament, a laser, a bubbler, etc.
         """,
     )
+
+
+class BubblerSource(CVDSource):
+    vapor_source = SubSection(
+        section_def=BubblerEvaporator,
+    )
+
+
+class GasLineSource(CVDSource):
+    vapor_source = SubSection(
+        section_def=GasLineEvaporator,
+    )
+
+
+class GasCylinderSource(CVDSource):
+    dilution_in_cylinder = Quantity(
+        type=float,
+        description='FILL THE DESCRIPTION',
+        a_eln={'component': 'NumberEditQuantity'},
+    )
+
+    vapor_source = SubSection(
+        section_def=GasCylinderEvaporator,
+    )
+
+
+class FlashSource(CVDSource):
+    vapor_source = SubSection(
+        section_def=FlashEvaporator,
+        description="""
+        Example: A heater, a filament, a laser, a bubbler, etc.
+        """,
+    )
+
+
+class MistSource(CVDSource):
+    """
+    Mist-CVD source is a novel method for the deposition of thin films.
+    """
+    item = Quantity(
+        type=str,
+        description='FILL',
+        a_eln=ELNAnnotation(
+            component='StringEditQuantity',
+        ),
+    )
+    temperature = Quantity(
+        type=float,
+        description='FILL',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='celsius',
+        ),
+        unit='kelvin',
+    )
+    stirring_time = Quantity(
+        type=float,
+        description='Solution stirring time.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='minute',
+        ),
+        unit='second',
+    )
+    description = Quantity(
+        type=str,
+        description='Some notes.',
+        a_eln=ELNAnnotation(
+            component='StringEditQuantity',
+        ),
+    )
+    vapor_source = SubSection(
+        section_def=MistEvaporator,
+    )
+    components = SubSection(section_def=ComponentConcentration, repeats=True)
 
 
 m_package.__init_metainfo__()
