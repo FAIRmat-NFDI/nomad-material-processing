@@ -1,0 +1,99 @@
+{
+    "data": {
+        "m_def": "nomad_synthesis_plugin.schema_packages.crystallization.ReactorProgram",
+        "name": "rpppp22",
+        "datetime": "2024-07-15T08:57:10.436694+00:00",
+
+        "steps": [
+            {
+                "m_def": "nomad_synthesis_plugin.schema_packages.crystallization.ReactorProgramStep",
+                "name": "Start of experiment on 30.09.2016 at 11:08:24 with Tj set to 25 C and stirrer off, (NH4)2HPO4=20 ml",
+                "start_time": "2024-07-15T00:00:00",
+                "duration": 5,
+                "elapsed_time": 5,
+                "end_time": "2024-07-15T00:00:05",
+                "comment": "<p>Start of experiment on 30.09.2016 at 11:08:24 with Tj set to 25 C and stirrer off, (NH4)2HPO4=20 ml</p>"
+            },
+            {
+                "m_def": "nomad_synthesis_plugin.schema_packages.crystallization.ReactorProgramStep",
+                "name": "Ramp stirrer speed to 200 rpm over 3 sec",
+                "start_time": "2024-07-15T00:00:05",
+                "duration": 6,
+                "elapsed_time": 11,
+                "end_time": "2024-07-15T00:00:11",
+                "stirring_ration_speed": 200,
+                "comment": "<p>Ramp stirrer speed to 200 rpm over 3 sec</p>"
+            },
+            {
+                "m_def": "nomad_synthesis_plugin.schema_packages.crystallization.ReactorProgramStep",
+                "name": "Cool Tr to 10 °C at 5 K/min",
+                "start_time": "2024-07-15T00:00:11",
+                "duration": 182,
+                "elapsed_time": 193,
+                "end_time": "2024-07-15T00:03:13",
+                "temperature_setpoint": 10,
+                "heating_rate": -5,
+                "comment": "<p>Cool Tr to 10 °C at 5 K/min</p>"
+            },
+            {
+                "m_def": "nomad_synthesis_plugin.schema_packages.crystallization.ReactorProgramStep",
+                "name": "Dose 5 ml of Ca(NO3)2 Ce(NO3)3 at 0.5 ml/min using DU1",
+                "start_time": "2024-07-15T00:13:13",
+                "duration": 633,
+                "elapsed_time": 1426,
+                "end_time": "2024-07-15T00:23:46",
+                "AddingSolution": [
+                    {
+                        "reference": "Ca(NO3)2 Ce(NO3)3",
+                        "amount_of_solution": [5],
+                        "rate": [0.5]
+                    }
+                ],
+                "comment": "<p>Dose 5 ml of Ca(NO3)2 Ce(NO3)3 at 0.5 ml/min using DU1</p>"
+            },
+            {
+                "m_def": "nomad_synthesis_plugin.schema_packages.crystallization.ReactorProgramStep",
+                "name": "Heat Tr to 75 °C at 5 K/min",
+                "start_time": "2024-07-15T00:53:46",
+                "duration": 783,
+                "elapsed_time": 4009,
+                "end_time": "2024-07-15T01:06:49",
+                "temperature_setpoint": 75,
+                "heating_rate": 5,
+                "comment": "<p>Heat Tr to 75 °C at 5 K/min</p>"
+            },
+            {
+                "m_def": "nomad_synthesis_plugin.schema_packages.crystallization.ReactorProgramStep",
+                "name": "Heat Tr to 80 °C at 1 K/min",
+                "start_time": "2024-07-15T01:06:49",
+                "duration": 303,
+                "elapsed_time": 4312,
+                "end_time": "2024-07-15T01:11:52",
+                "temperature_setpoint": 80,
+                "heating_rate": 1,
+                "comment": "<p>Heat Tr to 80 °C at 1 K/min</p>"
+            },
+            {
+                "m_def": "nomad_synthesis_plugin.schema_packages.crystallization.ReactorProgramStep",
+                "name": "Cool Tr to 20°C at 5 K/min",
+                "start_time": "2024-07-15T01:21:52",
+                "duration": 722,
+                "elapsed_time": 5634,
+                "end_time": "2024-07-15T01:33:54",
+                "temperature_setpoint": 20,
+                "heating_rate": -5,
+                "comment": "<p>Cool Tr to 20°C at 5 K/min</p>"
+            },
+            {
+                "m_def": "nomad_synthesis_plugin.schema_packages.crystallization.ReactorProgramStep",
+                "name": "End of experiment on 30.09.2016 at 12:42:17 with Tj set to 25 °C and stirrer off",
+                "start_time": "2024-07-15T01:33:54",
+                "duration": 5,
+                "elapsed_time": 5639,
+                "end_time": "2024-07-15T01:33:59",
+                "temperature_setpoint": 25,
+                "comment": "<p>End of experiment on 30.09.2016 at 12:42:17 with Tj set to 25 °C and stirrer off</p>"
+            }
+        ]
+    }
+}

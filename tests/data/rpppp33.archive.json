@@ -1,0 +1,31 @@
+{
+    "data": {
+        "m_def": "nomad_synthesis_plugin.schema_packages.crystallization.ReactorProgram",
+        "name": "rpppp22",
+        "datetime": "2024-07-15T08:57:10.436694+00:00",
+        "steps": [
+            {
+                "m_def": "nomad_synthesis_plugin.schema_packages.crystallization.ReactorProgramStep",
+                "name": "test step",
+                "start_time": "2024-07-15T06:57:00+00:00",
+                "duration": 12,
+                "end_time": "2024-07-15T06:58:00+00:00",
+                "stirring_ration_speed": 12,
+                "temperature_setpoint": 14,
+                "heating_rate": 45,
+                "AddingSolution": [
+                    {
+                        "reference": "test",
+                        "amount_of_solution": [
+                            43
+                        ],
+                        "rate": [
+                            23
+                        ]
+                    }
+                ],
+                "comment": "<p>test</p>"
+            }
+        ]
+    }
+}

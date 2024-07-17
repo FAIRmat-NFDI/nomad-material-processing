@@ -1,3 +1,4 @@
 data:
-  m_def: nomad_synthesis_plugin.schema_packages.mypackage.MySchema
+  m_def: nomad_synthesis_plugin.schema_packages.crystallization.ReactorProgram
   name: Markus
+  data_file: 'csv_data/MRO017 Reactor data 2016-09-30 CaP ohne IR richtig.csv' # "MRO017 Reactor data 2016-09-30 CaP ohne IR richtig.csv"
