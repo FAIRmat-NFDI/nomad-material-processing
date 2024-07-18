@@ -530,6 +530,9 @@ class ElectricProperties(ArchiveSection):
         type=np.dtype(float),
         unit='1 / cm**3',
         shape=['*'],
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
         description='Concentration of free charge carriers, electrons in the conduction band and holes in the valence band.',
     )
 
@@ -548,15 +551,14 @@ class Substrate(CompositeSystem):
             component=ELNComponentEnum.DateEditQuantity,
         ),
     )
-    supplier = Quantity(
+    manufacturer = Quantity(
         type=str,
-        description='The supplier of the current substrate specimen.',
+        description='The manufacturer of the current substrate specimen.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
-            label='Name of Supplier',
         ),
     )
-    supplier_id = Quantity(
+    manufacturer_id = Quantity(
         type=str,
         description='An ID string that is unique from the supplier.',
         a_eln=ELNAnnotation(
