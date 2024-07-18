@@ -526,6 +526,7 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
         elif file_path.endswith('.xlsx'):
             with archive.m_context.raw_file(file_path) as f:
                 df = self.read_excel_optimax1001(f.name)
+                return df
 
     def plot_multiple_y_axes_colored(self, df, df_steps):
         # Initialize the figure
@@ -964,6 +965,7 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
             else:
                 df_steps = None
             figure1 = self.plot_multiple_y_axes_colored(df_datalog, df_steps)
+            self.figures = []
             self.figures.append(
                 PlotlyFigure(label='figure 1', figure=figure1.to_plotly_json())
             )
