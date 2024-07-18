@@ -516,12 +516,24 @@ class ElectricProperties(ArchiveSection):
 
     m_def = Section()
 
+    conductivity_type = Quantity(
+        type=MEnum(
+            'P-type',
+            'N-type',
+        ),
+        description='The type of conductivity of the material.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.EnumEditQuantity,
+        ),
+    )
     carrier_density = Quantity(
         type=np.dtype(float),
         unit='1 / cm**3',
         shape=['*'],
         description='Concentration of free charge carriers, electrons in the conduction band and holes in the valence band.',
     )
+
+
 class Substrate(CompositeSystem):
     """
     A thin free standing sheet of material. Not to be confused with the substrate role
@@ -593,6 +605,10 @@ class CrystallineSubstrate(Substrate):
     crystal_properties = SubSection(
         section_def=SubstrateCrystalProperties,
         description='Section containing the crystal properties of the substrate.',
+    )
+    electric_properties = SubSection(
+        section_def=ElectricProperties,
+        description='Section containing the electric properties of the substrate.',
     )
     dopants = SubSection(
         section_def=Dopant,
