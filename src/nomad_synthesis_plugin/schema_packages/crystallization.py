@@ -423,8 +423,6 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
         # Mapping of strings to match to new column names
         column_mapping = dict(zip(strings_to_match, new_column_names))
 
-        # file_path = 'csv_data/MRO016 Reactor data 2016-09-28 CaP ohne IR.csv'
-
         df = pd.read_csv(
             file_path,
             header=3,
@@ -476,8 +474,6 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
 
     def check_strings_in_first_row(self, archive, file_path):
         """Checks if specified strings are in the first row of each CSV file in the directory."""
-        # Find all CSV files in the directory
-        # csv_files = [file for file in os.listdir(directory_path) if file.endswith('.csv')]
 
         # Strings to check in the CSV header
         strings_to_check = [
@@ -494,12 +490,7 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
             'dU/dt [mV/min]',
             'Temperature [ｰC]',
         ]
-        # Iterate over the list of CSV files
-        # for file in csv_files:
-        #     # Construct full file path
-        #     file_path = os.path.join(directory_path, file)
-        # Open the file and read the first line
-        # with open(file_path) as f:
+
         if file_path.endswith('.csv'):
             with archive.m_context.raw_file(file_path) as f:
                 first_line = f.readline().strip()
@@ -512,7 +503,7 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
                 found_methrom_strings = [
                     s for s in strings_to_check_methrom if s in fourth_line
                 ]
-                # Print the results
+
                 if found_strings:
                     # print(f"Found in {file}: {', '.join(found_strings)}")
                     df = self.read_csv(f.name)
@@ -707,32 +698,6 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
         """
         super().normalize(archive, logger)
         if self.data_file is not None:
-            # with archive.m_context.raw_file(self.data_file) as file:
-            # df_datalog = pd.read_csv(
-            #     file,
-            #     header=0,
-            #     sep=';',
-            #     decimal=',',
-            #     skiprows=[1],
-            #     names=[
-            #         'local_time',
-            #         'elapsed_time',
-            #         'total_volume',
-            #         'conductivity',
-            #         'ph_pressure',
-            #         'temperature',
-            #     ],
-            #     parse_dates=[
-            #         'local_time',
-            #     ],
-            # )
-            # df_datalog['elapsed_time'] = df_datalog['elapsed_time'].apply(
-            #     lambda x: (
-            #         datetime.strptime(x, '%H:%M:%S')
-            #         - datetime.strptime('00:00:00', '%H:%M:%S')
-            #     ).total_seconds()
-            # )
-            # df_datalog['elapsed_time'] = df_datalog['elapsed_time'].astype(float)
             df_datalog = self.check_strings_in_first_row(archive, self.data_file)
             reactordatalog = ReactorDataLog()
             columns = df_datalog.columns
@@ -757,191 +722,6 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
 
             self.reactordatalog = reactordatalog
 
-            # figure1 = make_subplots(
-            #     specs=[[{'secondary_y': True}]]
-            # )  # (rows=1, cols=1, shared_yaxes=False)
-            # figure1.update_layout(
-            #     height=600,
-            #     width=900,
-            #     title_text='CaP Synthesis Data',
-            # )
-            # if 'total_volume' in columns:
-            #     figure1.add_trace(
-            #         go.Scatter(
-            #             mode='markers',
-            #             x=reactordatalog.elapsed_time,
-            #             y=reactordatalog.total_volume,
-            #             name='Total Volume',
-            #             marker=dict(
-            #                 color='blue',
-            #                 size=4,
-            #             ),
-            #         ),
-            #         secondary_y=True,
-            #         # showlegend=False
-            #     )
-
-            #     # first_line = px.scatter(
-            #     #     x=reactordatalog.elapsed_time,
-            #     #     y=reactordatalog.total_volume,
-            #     #     labels={'y': 'Total Volume'},
-            #     # )
-            #     # figure1.add_trace(first_line, row=1, col=1)
-            #     figure1.update_layout(
-            #         yaxis=dict(
-            #             title='Total Volume',
-            #             titlefont=dict(color='blue'),
-            #             tickfont=dict(color='blue'),
-            #         ),
-            #     )
-            # if 'temperature' in columns:
-            #     figure1.add_trace(
-            #         go.Scatter(
-            #             mode='markers',
-            #             x=reactordatalog.elapsed_time,
-            #             y=reactordatalog.temperature,
-            #             name='Total Volume',
-            #             marker=dict(
-            #                 color='red',
-            #                 size=4,
-            #             ),
-            #         ),
-            #         secondary_y=True,
-            #     )
-            #     # showlegend=False
-
-            #     # px.scatter(
-            #     #     x=reactordatalog.elapsed_time,
-            #     #     y=reactordatalog.temperature,
-            #     #     labels={'y': 'Temperature'},
-            #     # )
-            #     # figure1.add_trace(second_line, row=1, col=1)
-
-            #     figure1.update_layout(
-            #         yaxis=dict(
-            #             title='Temperature',
-            #             titlefont=dict(color='red'),
-            #             tickfont=dict(color='red'),
-            #             overlaying='y',
-            #             side='right',
-            #         ),
-            #     )
-
-            # if 'conductivity' in columns:
-            #     figure1.add_trace(
-            #         go.Scatter(
-            #             mode='markers',
-            #             x=reactordatalog.elapsed_time,
-            #             y=reactordatalog.conductivity,
-            #             name='Conductivity',
-            #             marker=dict(
-            #                 color='green',
-            #                 size=4,
-            #             ),
-            #         ),
-            #         secondary_y=True,
-            #     )
-            #     # px.scatter(
-            #     #     x=reactordatalog.elapsed_time,
-            #     #     y=reactordatalog.conductivity,
-            #     #     labels={'y': 'Conductivity'},
-            #     # )
-            #     # figure1.add_trace(third_line, row=1, col=1)
-
-            #     figure1.update_layout(
-            #         yaxis=dict(
-            #             title='Conductivity',
-            #             titlefont=dict(color='green'),
-            #             tickfont=dict(color='green'),
-            #             anchor='free',
-            #             overlaying='y',
-            #             side='left',
-            #             position=0.15,
-            #         ),
-            #     )
-            # if 'ph_pressure' in columns:
-            #     figure1.add_trace(
-            #         go.Scatter(
-            #             mode='markers',
-            #             x=reactordatalog.elapsed_time,
-            #             y=reactordatalog.ph_pressure,
-            #             name='pH-Pressure',
-            #             marker=dict(
-            #                 color='purple',
-            #                 size=4,
-            #             ),
-            #         ),
-            #         secondary_y=True,
-            #     )
-            #     # px.scatter(
-            #     #     x=reactordatalog.elapsed_time,
-            #     #     y=reactordatalog.ph_pressure,
-            #     #     labels={'y': 'pH/Pressure'},
-
-            #     # )
-            #     # figure1.add_trace(fourth_line, row=1, col=1)
-
-            #     figure1.update_layout(
-            #         yaxis=dict(
-            #             title='pH-Pressure',
-            #             titlefont=dict(color='purple'),
-            #             tickfont=dict(color='purple'),
-            #             anchor='free',
-            #             overlaying='y',
-            #             side='right',
-            #             position=0.85,
-            #         ),
-            #     )
-            # figure1.update_layout(
-            #     # height=600,
-            #     # width=900,
-            #     # title_text='CaP Synthesis Data',
-            #     # yaxis=dict(
-            #     #     title='Total Volume',
-            #     #     titlefont=dict(color='blue'),
-            #     #     tickfont=dict(color='blue'),
-            #     # ),
-            #     # yaxis2=dict(
-            #     #     title='Temperature',
-            #     #     titlefont=dict(color='red'),
-            #     #     tickfont=dict(color='red'),
-            #     #     overlaying='y',
-            #     #     side='right',
-            #     # ),
-            #     # yaxis3=dict(
-            #     #     title='Conductivity',
-            #     #     titlefont=dict(color='green'),
-            #     #     tickfont=dict(color='green'),
-            #     #     anchor='free',
-            #     #     overlaying='y',
-            #     #     side='left',
-            #     #     position=0.15,
-            #     # ),
-            #     # yaxis4=dict(
-            #     #     title='pH/Pressure',
-            #     #     titlefont=dict(color='purple'),
-            #     #     tickfont=dict(color='purple'),
-            #     #     anchor='free',
-            #     #     overlaying='y',
-            #     #     side='right',
-            #     #     position=0.85,
-            #     # ),
-            #     legend=dict(
-            #         x=1,
-            #         y=1,
-            #         traceorder='normal',
-            #         font=dict(family='sans-serif', size=12, color='black'),
-            #         bgcolor='LightSteelBlue',
-            #         bordercolor='Black',
-            #         borderwidth=2,
-            #     ),
-            # )
-
-            # # Update each trace to correspond to its respective y-axis
-            # # figure1.data[0].update(marker=dict(color='blue'))
-            # # figure1.data[1].update(yaxis='y2', marker=dict(color='red'))
-            # # figure1.data[2].update(yaxis='y3', marker=dict(color='green'))
-            # # figure1.data[3].update(yaxis='y4', marker=dict(color='purple'))
             if self.steps:
                 df_steps = pd.DataFrame(
                     columns=['stepnumber', 'name', 'duration', 'elapsed_time']
@@ -1013,6 +793,7 @@ class CaP_Experiment(Experiment, EntryData, ArchiveSection):
         super().normalize(archive, logger)
 
 
+# the classes below will be implemented soon:
 # class Excitation(ArchiveSection):
 #     '''
 #     Class autogenerated from yaml schema.
