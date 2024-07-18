@@ -293,15 +293,34 @@ class ReactorDataLog(ArchiveSection):
         description='conductivity of the solution in the reactor',
         unit='milliseconds/centimeter',
     )
-    ph_pressure = Quantity(
+    ph = Quantity(
         type=np.float64,
         shape=['*'],
-        description='pH pressure of the solution in the reactor',
+        description='pH value of the solution in the reactor',
     )
     temperature = Quantity(
         type=np.float64,
         shape=['*'],
         description='temperature of the solution in the reactor',
+        unit='\u00b0C',
+    )
+    # next quantities are from Mettler Toledo Optimax 1001, add more if needed
+    dosing1_mass_a = Quantity(
+        type=np.float64,
+        shape=['*'],
+        description='mass of dosing 1 component A',
+        unit='gram',
+    )
+    dosing2_mass_b = Quantity(
+        type=np.float64,
+        shape=['*'],
+        description='mass of dosing 2 component B',
+        unit='gram',
+    )
+    temperature_j = Quantity(
+        type=np.float64,
+        shape=['*'],
+        description='temperature of the j?',
         unit='\u00b0C',
     )
 
@@ -347,7 +366,7 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
             'elapsed_time',
             'total_volume',
             'conductivity',
-            'ph_pressure',
+            'ph',
             'temperature',
         ]
 
@@ -423,6 +442,38 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
 
         return df_renamed
 
+    def read_excel_optimax1001(self, file_path):
+        optimax_cols = [
+            'Abs. Time (UTC+02 : 00)',
+            'Rel. Time (in s)',
+            'Dosing1.MassA',
+            'Dosing2.MassB',
+            'pH1',
+            'Tj',
+            'Tr',
+            'Vr',
+        ]
+        new_column_names = [
+            'local_time',
+            'elapsed_time',
+            'dosing1_mass_a',
+            'dosing2_mass_b',
+            'ph',
+            'temperature_j',
+            'temperature',
+            'total_volume',
+            #'conductivity',
+        ]
+        column_mapping = dict(zip(optimax_cols, new_column_names))
+        df = pd.read_excel(file_path, usecols=optimax_cols, skiprows=[1])
+        df.fillna(method='ffill', inplace=True)
+        df = df.rename(
+            columns={
+                col: column_mapping[col] for col in df.columns if col in column_mapping
+            }
+        )
+        return df
+
     def check_strings_in_first_row(self, archive, file_path):
         """Checks if specified strings are in the first row of each CSV file in the directory."""
         # Find all CSV files in the directory
@@ -449,35 +500,39 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
         #     file_path = os.path.join(directory_path, file)
         # Open the file and read the first line
         # with open(file_path) as f:
-        with archive.m_context.raw_file(file_path) as f:
-            first_line = f.readline().strip()
-            for _ in range(3):
-                next(f)
-            # Read the fourth line
-            fourth_line = f.readline()
-            # Check if any of the specified strings are in the first line
-            found_strings = [s for s in strings_to_check if s in first_line]
-            found_methrom_strings = [
-                s for s in strings_to_check_methrom if s in fourth_line
-            ]
-            # Print the results
-            if found_strings:
-                # print(f"Found in {file}: {', '.join(found_strings)}")
-                df = self.read_csv(f.name)
-                return df
-            elif found_methrom_strings:
-                # print(f"Found in {file}: {', '.join(found_strings)}")
-                df = self.read_csv_methrom(f.name)
-                return df
-            else:
-                print(f'No specified strings found in the first row of {f.name}')
+        if file_path.endswith('.csv'):
+            with archive.m_context.raw_file(file_path) as f:
+                first_line = f.readline().strip()
+                for _ in range(3):
+                    next(f)
+                # Read the fourth line
+                fourth_line = f.readline()
+                # Check if any of the specified strings are in the first line
+                found_strings = [s for s in strings_to_check if s in first_line]
+                found_methrom_strings = [
+                    s for s in strings_to_check_methrom if s in fourth_line
+                ]
+                # Print the results
+                if found_strings:
+                    # print(f"Found in {file}: {', '.join(found_strings)}")
+                    df = self.read_csv(f.name)
+                    return df
+                elif found_methrom_strings:
+                    # print(f"Found in {file}: {', '.join(found_strings)}")
+                    df = self.read_csv_methrom(f.name)
+                    return df
+                else:
+                    print(f'No specified strings found in the first row of {f.name}')
+        elif file_path.endswith('.xlsx'):
+            with archive.m_context.raw_file(file_path) as f:
+                df = self.read_excel_optimax1001(f.name)
 
     def plot_multiple_y_axes_colored(self, df, df_steps):
         # Initialize the figure
         fig = go.Figure()
 
         # Colors for each line/axis
-        colors = ['blue', 'green', 'red', 'purple']
+        colors = ['blue', 'green', 'red', 'purple', 'orange', 'brown', 'pink']
 
         # Check and add traces for each column with corresponding axis settings
         if 'elapsed_time' in df.columns:
@@ -519,12 +574,12 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
                     )
                 )
 
-            if 'ph_pressure' in df.columns:
+            if 'ph' in df.columns:
                 fig.add_trace(
                     go.Scatter(
                         x=df['elapsed_time'],
-                        y=df['ph_pressure'],
-                        name='pH Pressure',
+                        y=df['ph'],
+                        name='pH',
                         marker_color=colors[2],
                         yaxis='y3',
                     )
@@ -562,18 +617,82 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
                         position=0.9,
                     )
                 )
+            if 'dosing1_mass_a' in df.columns:
+                fig.add_trace(
+                    go.Scatter(
+                        x=df['elapsed_time'],
+                        y=df['dosing1_mass_a'],
+                        name='Dosing 1 Mass A',
+                        marker_color=colors[4],
+                        yaxis='y5',
+                    )
+                )
+                fig.update_layout(
+                    yaxis5=dict(
+                        title='Dosing 1 Mass A / g',
+                        titlefont=dict(color=colors[4]),
+                        tickfont=dict(color=colors[4]),
+                        overlaying='y',
+                        side='left',
+                        anchor='free',
+                        position=0.2,
+                    )
+                )
+            if 'dosing2_mass_b' in df.columns:
+                fig.add_trace(
+                    go.Scatter(
+                        x=df['elapsed_time'],
+                        y=df['dosing2_mass_b'],
+                        name='Dosing 2 Mass B',
+                        marker_color=colors[5],
+                        yaxis='y6',
+                    )
+                )
+                fig.update_layout(
+                    yaxis6=dict(
+                        title='Dosing 2 Mass B / g',
+                        titlefont=dict(color=colors[5]),
+                        tickfont=dict(color=colors[5]),
+                        overlaying='y',
+                        side='right',
+                        anchor='free',
+                        position=0.8,
+                    )
+                )
+            if 'temperature_j' in df.columns:
+                fig.add_trace(
+                    go.Scatter(
+                        x=df['elapsed_time'],
+                        y=df['temperature_j'],
+                        name='Temperature J',
+                        marker_color=colors[6],
+                        yaxis='y7',
+                    )
+                )
+                fig.update_layout(
+                    yaxis7=dict(
+                        title='Temperature J / °C',
+                        titlefont=dict(color=colors[6]),
+                        tickfont=dict(color=colors[6]),
+                        overlaying='y',
+                        side='right',
+                        anchor='free',
+                        position=0.7,
+                    )
+                )
 
         # Update layout to adjust the right margin to accommodate the extra y-axes
         fig.update_layout(margin=dict(r=200))
-        if not df_steps['elapsed_time'].empty:
-            for index, row in df_steps.iterrows():
-                fig.add_vline(
-                    x=row['elapsed_time'],
-                    line_dash='dash',
-                    line_color='gray',
-                    # annotation_text=row['name'],
-                    # annotation_position='top right',
-                )
+        if df_steps != None:
+            if not df_steps['elapsed_time'].empty:
+                for index, row in df_steps.iterrows():
+                    fig.add_vline(
+                        x=row['elapsed_time'],
+                        line_dash='dash',
+                        line_color='gray',
+                        # annotation_text=row['name'],
+                        # annotation_position='top right',
+                    )
         return fig
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
@@ -624,10 +743,17 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
                 reactordatalog.total_volume = df_datalog['total_volume'].tolist()
             if 'conductivity' in columns:
                 reactordatalog.conductivity = df_datalog['conductivity'].tolist()
-            if 'ph_pressure' in columns:
-                reactordatalog.ph_pressure = df_datalog['ph_pressure'].tolist()
+            if 'ph' in columns:
+                reactordatalog.ph = df_datalog['ph'].tolist()
             if 'temperature' in columns:
                 reactordatalog.temperature = df_datalog['temperature'].tolist()
+            if 'dosing1_mass_a' in columns:
+                reactordatalog.dosing1_mass_a = df_datalog['dosing1_mass_a'].tolist()
+            if 'dosing2_mass_b' in columns:
+                reactordatalog.dosing2_mass_b = df_datalog['dosing2_mass_b'].tolist()
+            if 'temperature_j' in columns:
+                reactordatalog.temperature_j = df_datalog['temperature_j'].tolist()
+
             self.reactordatalog = reactordatalog
 
             # figure1 = make_subplots(
@@ -835,7 +961,8 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
                             )
                 df_steps['duration'] = df_steps['duration'].astype(float)
                 df_steps['elapsed_time'] = df_steps['elapsed_time'].astype(float)
-
+            else:
+                df_steps = None
             figure1 = self.plot_multiple_y_axes_colored(df_datalog, df_steps)
             self.figures.append(
                 PlotlyFigure(label='figure 1', figure=figure1.to_plotly_json())
