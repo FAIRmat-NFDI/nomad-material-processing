@@ -65,18 +65,11 @@ if TYPE_CHECKING:
 m_package = Package(name="Chemical Vapor Deposition")
 
 
-class ComponentConcentration(ArchiveSection):
+class ComponentConcentration(PureSubstanceComponent):
     """
     The concentration of a component in a mixed material.
     """
 
-    component_reference = Quantity(
-        type=PureSubstanceComponent,
-        description='A reference to a NOMAD `PureSubstanceComponent` sub-section.',
-        a_eln=ELNAnnotation(
-            component='ReferenceEditQuantity',
-        ),
-    )
     theoretical_concentration = Quantity(
         type=float,
         description='The concentration planned for the component.',
@@ -87,7 +80,7 @@ class ComponentConcentration(ArchiveSection):
         ),
         unit='mol / liter',
     )
-    actual_concentration = Quantity(
+    effective_concentration = Quantity(
         type=float,
         description='The concentration calculated from the component moles and total volume.',
         a_eln=ELNAnnotation(
