@@ -24,6 +24,8 @@ from nomad.metainfo import (
     Quantity,
     Section,
     SubSection,
+    Datetime,
+    MEnum,
 )
 from nomad.datamodel.metainfo.basesections import (
     ElementalComposition,
@@ -108,6 +110,33 @@ class Parallelepiped(Geometry):
         ),
         unit='meter',
     )
+    alpha = Quantity(
+        type=float,
+        description='The angle between y and z sides.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label='Alpha (∡ y-x-z)',
+        ),
+        unit='degree',
+    )
+    beta = Quantity(
+        type=float,
+        description='The angle between x and z sides.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label='Beta (∡ x-y-z)',
+        ),
+        unit='degree',
+    )
+    gamma = Quantity(
+        type=float,
+        description='The angle between x and y sides.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label='Gamma (∡ x-z-y)',
+        ),
+        unit='degree',
+    )
     surface_area = Quantity(
         type=float,
         description="""
@@ -120,6 +149,246 @@ class Parallelepiped(Geometry):
             label='Surface Area (x*y)',
         ),
         unit='meter ** 2',
+    )
+
+
+class SquareCuboid(Parallelepiped):
+    """
+    A cuboid with all sides equal in length.
+    """
+    m_def = Section()
+    height = Quantity(
+        type=float,
+        description='The z dimension of the parallelepiped.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='millimeter',
+            label='Height (z)',
+        ),
+        unit='meter',
+    )
+    side = Quantity(
+        type=float,
+        description='The x and y dimensions of the parallelepiped.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='millimeter',
+            label='Side (x = y)',
+        ),
+        unit='meter',
+    )
+    surface_area = Quantity(
+        type=float,
+        description="""
+        The product of length and width, representing the total exposed area of the
+        primary surface.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='millimeter ** 2',
+            label='Surface Area (x*y)',
+        ),
+        unit='meter ** 2',
+    )
+
+
+class RectangleCuboid(Parallelepiped):
+    """
+    A rectangular cuboid is a specific type of parallelepiped
+    where all angles between adjacent faces are right angles,
+    and all faces are rectangles.
+    """
+    m_def = Section()
+    height = Quantity(
+        type=float,
+        description='The z dimension of the parallelepiped.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='millimeter',
+            label='Height (z)',
+        ),
+        unit='meter',
+    )
+    width = Quantity(
+        type=float,
+        description='The x dimension of the parallelepiped.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='millimeter',
+            label='Width (x)',
+        ),
+        unit='meter',
+    )
+    length = Quantity(
+        type=float,
+        description='The y dimension of the parallelepiped.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='millimeter',
+            label='Length (y)',
+        ),
+        unit='meter',
+    )
+    surface_area = Quantity(
+        type=float,
+        description="""
+        The product of length and width, representing the total exposed area of the
+        primary surface.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='millimeter ** 2',
+            label='Surface Area (x*y)',
+        ),
+        unit='meter ** 2',
+    )
+
+
+class TruncatedCone(Geometry):
+    """
+    A cone with the top cut off parallel to the cone bottom.
+    """
+
+    m_def = Section()
+    height = Quantity(
+        type=float,
+        description='The z dimension of the parallelepiped.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='nanometer',
+        ),
+        label='Height (z)',
+        unit='meter',
+    )
+    lower_cap_radius = Quantity(
+        type=float,
+        description='Radius of the lower cap.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='millimeter',
+        ),
+        unit='meter',
+    )
+    upper_cap_radius = Quantity(
+        type=float,
+        description='Radius of the upper cap.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='millimeter',
+        ),
+        unit='meter',
+    )
+    lower_cap_surface_area = Quantity(
+        type=float,
+        description='Area of the lower cap.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='millimeter ** 2',
+        ),
+        unit='meter ** 2',
+    )
+    upper_cap_surface_area = Quantity(
+        type=float,
+        description='Area of the upper cap.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='millimeter ** 2',
+        ),
+        unit='meter ** 2',
+    )
+    lateral_surface_area = Quantity(
+        type=float,
+        description='Area of the lateral surface.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='millimeter ** 2',
+        ),
+        unit='meter ** 2',
+    )
+
+
+class Cylinder(Geometry):
+    """
+    A cylinder, i.e. a prism with a circular base.
+    """
+
+    m_def = Section()
+    height = Quantity(
+        type=float,
+        description='The z dimension of the parallelepiped.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='nanometer',
+        ),
+        label='Height (z)',
+        unit='meter',
+    )
+    radius = Quantity(
+        type=float,
+        description='Radius of the cylinder.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='millimeter',
+        ),
+        unit='meter',
+    )
+    lower_cap_surface_area = Quantity(
+        type=float,
+        description='Area of the lower cap.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='millimeter ** 2',
+        ),
+        unit='meter ** 2',
+    )
+    cap_surface_area = Quantity(
+        type=float,
+        description='Area of the cap.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='millimeter ** 2',
+        ),
+        unit='meter ** 2',
+    )
+    lateral_surface_area = Quantity(
+        type=float,
+        description='Area of the lateral surface.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='millimeter ** 2',
+        ),
+        unit='meter ** 2',
+    )
+
+
+class CylinderSector(Cylinder):
+    central_angle = Quantity(
+        type=float,
+        description="""The angle that defines the portion of the cylinder.
+        This angle is taken at the center of the base circle
+        and extends to the arc that defines the cylindrical sector.""",
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
+        unit='degree',
+    )
+
+
+class IrregularParallelSurfaces(Geometry):
+    """
+    A shape that does not fit into any of the other geometry classes.
+    """
+
+    m_def = Section()
+    height = Quantity(
+        type=float,
+        description='The z dimension of the irregular shape.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='nanometer',
+        ),
+        label='Height (z)',
+        unit='meter',
     )
 
 
@@ -144,7 +413,7 @@ class Miscut(ArchiveSection):
     )
     angle_deviation = Quantity(
         type=float,
-        description='The ± uncertainty in the angular displacement.',
+        description='The ± deviation in the angular displacement.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
             defaultDisplayUnit='deg',
@@ -177,6 +446,15 @@ class Dopant(ElementalComposition):
         ),
         unit='1 / m ** 3',
     )
+    doping_deviation = Quantity(
+        type=float,
+        description='The ± deviation in the doping level.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='1 / cm ** 3',
+        ),
+        unit='1 / m ** 3',
+    )
 
 
 class CrystalProperties(ArchiveSection):
@@ -191,7 +469,28 @@ class SubstrateCrystalProperties(CrystalProperties):
     """
     Crystallographic parameters such as orientation, miscut, and surface structure.
     """
-
+    bravais_lattices = Quantity(
+        type=MEnum(
+            'Triclinic',
+            'Monoclinic Simple',
+            'Monoclinic Base Centered',
+            'Orthorhombic Simple',
+            'Orthorhombic Base Centered',
+            'Orthorhombic Body Centered',
+            'Orthorhombic Face Centered',
+            'Tetragonal Simple',
+            'Tetragonal Body Centered',
+            'Cubic Simple',
+            'Cubic Body Centered',
+            'Cubic Face Centered',
+            'Trigonal',
+            'Hexagonal',
+        ),
+        description='The crystal system of the substrate.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.EnumEditQuantity,
+        ),
+    )
     orientation = Quantity(
         type=str,
         description="""
@@ -209,6 +508,34 @@ class SubstrateCrystalProperties(CrystalProperties):
         Section describing any miscut of the substrate with respect to the substrate
         orientation.
         """,
+        repeats=True,
+    )
+
+
+class ElectronicProperties(ArchiveSection):
+    """
+    The electronic properties of a material.
+    """
+
+    m_def = Section()
+
+    conductivity_type = Quantity(
+        type=MEnum(
+            'P-type',
+            'N-type',
+        ),
+        description='The type of semiconductor, N-type being electrons the majority carriers and P-type being holes the majority carriers.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.EnumEditQuantity,
+        ),
+    )
+    carrier_density = Quantity(
+        type=np.dtype(float),
+        unit='1 / cm**3',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
+        description='Concentration of free charge carriers, electrons in the conduction band and holes in the valence band.',
     )
 
 
@@ -219,12 +546,12 @@ class Substrate(CompositeSystem):
     """
 
     m_def = Section()
+
     supplier = Quantity(
         type=str,
         description='The supplier of the current substrate specimen.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
-            label='Name of Supplier',
         ),
     )
     supplier_id = Quantity(
@@ -242,6 +569,22 @@ class Substrate(CompositeSystem):
             label='Substrate ID',
         ),
     )
+    image = Quantity(
+        type=str,
+        description='A photograph or image of the substrate.',
+        a_browser={'adaptor': 'RawFileAdaptor'},
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.FileEditQuantity,
+        ),
+    )
+    information_sheet = Quantity(
+        type=str,
+        description='Pdf files containing certificate and other documentation.',
+        a_browser={'adaptor': 'RawFileAdaptor'},
+        a_eln=ELNAnnotation(
+            component='FileEditQuantity',
+        ),
+    )
 
 
 class CrystallineSubstrate(Substrate):
@@ -251,6 +594,8 @@ class CrystallineSubstrate(Substrate):
     """
 
     m_def = Section()
+
+
     geometry = SubSection(
         section_def=Geometry,
         description='Section containing the geometry of the substrate.',
@@ -258,6 +603,10 @@ class CrystallineSubstrate(Substrate):
     crystal_properties = SubSection(
         section_def=SubstrateCrystalProperties,
         description='Section containing the crystal properties of the substrate.',
+    )
+    electronic_properties = SubSection(
+        section_def=ElectronicProperties,
+        description='Section containing the electronic properties of the substrate.',
     )
     dopants = SubSection(
         section_def=Dopant,
