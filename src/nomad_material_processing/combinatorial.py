@@ -47,126 +47,19 @@ if TYPE_CHECKING:
 m_package = Package(name='Combinatorial Synthesis')
 
 
-class CombinatorialSample(CompositeSystem):
+class CombinatorialLibrary(CompositeSystem):
     '''
-    A base section for any sample of a combinatorial library.
-    '''
-    m_def = Section()
-    sample_number = Quantity(
-        type=int,
-        description='''
-        A unique number for this sample of the combinatorial library.
-        ''',
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.NumberEditQuantity,
-        ),
-    )
-    lab_id = Quantity(
-        type=str,
-        description='''
-        A unique human readable ID for the sample within the combinatorial library.
-        Suggested to be the ID of the library followed by a dash ("-") and the sample
-        number.
-        ''',
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.StringEditQuantity,
-            label='Sample ID',
-        ),
-    )
-
-    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
-        '''
-        The normalizer for the `CombinatorialSample` section.
-
-        Args:
-            archive (EntryArchive): The archive containing the section that is being
-            normalized.
-            logger (BoundLogger): A structlog logger.
-        '''
-        super(CombinatorialSample, self).normalize(archive, logger)
-
-
-class CombinatorialSampleReference(CompositeSystemReference):
-    '''
-    A section containing a reference to a combinatorial sample entry.
-    '''
-    m_def = Section(
-        label_quantity='sample_number',
-    )
-    sample_number = Quantity(
-        type=int,
-        description='''
-        A unique number for this sample of the combinatorial library.
-        ''',
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.NumberEditQuantity,
-        ),
-    )
-    reference = Quantity(
-        type=CombinatorialSample,
-        description='''
-        The reference to the combinatorial sample entry.
-        ''',
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.ReferenceEditQuantity,
-            label='Sample Reference',
-        ),
-    )
-
-    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
-        '''
-        The normalizer for the `CombinatorialSampleReference` section.
-
-        Args:
-            archive (EntryArchive): The archive containing the section that is being
-            normalized.
-            logger (BoundLogger): A structlog logger.
-        '''
-        super(CombinatorialSampleReference, self).normalize(archive, logger)
-
-
-class CombinatorialLibrary(Collection):
-    '''
-    A base section for any combinatorial library.
+    A base section for any continuous combinatorial library.
     '''
     m_def = Section()
-    lab_id = Quantity(
-        type=str,
-        description='''
-        A unique human readable ID for the combinatorial library.
-        ''',
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.StringEditQuantity,
-            label='Library ID'
-        ),
-    )
-    entities = SubSection(
-        section_def=CombinatorialSampleReference,
-        description='''
-        All the investigated samples of the combinatorial library.
-        ''',
-        repeats=True,
-        a_eln=ELNAnnotation(
-            label='Samples'
-        ),
-    )
-    # lab_id = Collection.lab_id.m_copy()
-    # lab_id.description = '''
-    #     A unique human readable ID for the combinatorial library.
-    #     '''
-    # lab_id.m_annotations['eln'].label = 'Library ID'
-    # entities = Collection.entities.m_copy()
-    # entities.section_def = CombinatorialSampleReference
-    # entities.description = '''
-    #     All the investigated samples of the combinatorial library.
-    #     '''
-    # entities.m_annotations['eln'] = ELNAnnotation(
-    #     label='Samples'
-    # )  # Currently the label cannot be overwritten.
+
+    def plot(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+        # TODO: Query the samples and plot them.
+        raise NotImplementedError('Plotting is not implemented for CombinatorialLibrary.')
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         '''
-        The normalizer for the `CombinatorialLibrary` section.
+        The normalizer for the `ContinuousCombiLibrary` section.
 
         Args:
             archive (EntryArchive): The archive containing the section that is being
@@ -221,41 +114,100 @@ class CombinatorialSamplePosition(ArchiveSection):
         super(CombinatorialSamplePosition, self).normalize(archive, logger)
 
 
-class ContinuousCombiSample(CombinatorialSample):
+class CombinatorialSample(CompositeSystem):
     '''
     A base section for any sample of a continuous combinatorial library.
     '''
     m_def = Section()
+    library = Quantity(
+        type=CombinatorialLibrary,
+        description='''
+        The reference to the combinatorial library entry.
+        ''',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.ReferenceEditQuantity,
+            label='Library Reference',
+        ),
+    )
+    sample_number = Quantity(
+        type=int,
+        description='''
+        A unique number for this sample of the combinatorial library.
+        ''',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
+    )
+    lab_id = Quantity(
+        type=str,
+        description='''
+        A unique human readable ID for the sample within the combinatorial library.
+        Suggested to be the ID of the library followed by a dash ("-") and the sample
+        number.
+        ''',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+            label='Sample ID',
+        ),
+    )
     position = SubSection(
         section_def=CombinatorialSamplePosition,
         description='''
-        The position of a sample within the continuous combinatorial library. If nothing 
-        else is specified it is the position relative to the center of mass of the 
+        The position of a sample within the continuous combinatorial library. If nothing
+        else is specified it is the position relative to the center of mass of the
         library.
         ''',
     )
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         '''
-        The normalizer for the `ContinuousCombiSample` section.
+        The normalizer for the `CombinatorialSample` section.
 
         Args:
             archive (EntryArchive): The archive containing the section that is being
             normalized.
             logger (BoundLogger): A structlog logger.
         '''
-        super(ContinuousCombiSample, self).normalize(archive, logger)
+        super(CombinatorialSample, self).normalize(archive, logger)
 
 
-class ContinuousCombiSampleReference(CombinatorialSampleReference):
+class DiscreteCombinatorialSample(CompositeSystem):
     '''
-    A section containing a reference to a continuous combinatorial sample entry.
+    A base section for any sample of a combinatorial library.
+    '''
+    m_def = Section()
+
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+        '''
+        The normalizer for the `CombinatorialSample` section.
+
+        Args:
+            archive (EntryArchive): The archive containing the section that is being
+            normalized.
+            logger (BoundLogger): A structlog logger.
+        '''
+        super(DiscreteCombinatorialSample, self).normalize(archive, logger)
+
+
+# Discrete combinatorial library classes:
+class DiscreteCombinatorialSampleReference(CompositeSystemReference):
+    '''
+    A section containing a reference to a combinatorial sample entry.
     '''
     m_def = Section(
         label_quantity='sample_number',
     )
+    sample_number = Quantity(
+        type=int,
+        description='''
+        A unique number for this sample of the combinatorial library.
+        ''',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
+    )
     reference = Quantity(
-        type=ContinuousCombiSample,
+        type=DiscreteCombinatorialSample,
         description='''
         The reference to the combinatorial sample entry.
         ''',
@@ -264,36 +216,36 @@ class ContinuousCombiSampleReference(CombinatorialSampleReference):
             label='Sample Reference',
         ),
     )
-    # reference = CombinatorialSampleReference.reference.m_copy()
-    # reference.type = ContinuousCombiSample  # Specializing custom types is currently not supported.
-    position = SubSection(
-        section_def=CombinatorialSamplePosition,
-        description='''
-        The position of a sample within the continuous combinatorial library. If nothing 
-        else is specified it is the position relative to the center of mass of the 
-        library.
-        ''',
-    )
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         '''
-        The normalizer for the `ContinuousCombiSampleReference` section.
+        The normalizer for the `CombinatorialSampleReference` section.
 
         Args:
             archive (EntryArchive): The archive containing the section that is being
             normalized.
             logger (BoundLogger): A structlog logger.
         '''
-        super(ContinuousCombiSampleReference, self).normalize(archive, logger)
+        super(DiscreteCombinatorialSampleReference, self).normalize(archive, logger)
 
 
-class ContinuousCombiLibrary(CombinatorialLibrary):
+class DiscreteCombinatorialLibrary(Collection):
     '''
-    A base section for any continuous combinatorial library.
+    A base section for any combinatorial library.
     '''
     m_def = Section()
+    lab_id = Quantity(
+        type=str,
+        description='''
+        A unique human readable ID for the combinatorial library.
+        ''',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+            label='Library ID'
+        ),
+    )
     entities = SubSection(
-        section_def=ContinuousCombiSampleReference,
+        section_def=DiscreteCombinatorialSampleReference,
         description='''
         All the investigated samples of the combinatorial library.
         ''',
@@ -305,14 +257,14 @@ class ContinuousCombiLibrary(CombinatorialLibrary):
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         '''
-        The normalizer for the `ContinuousCombiLibrary` section.
+        The normalizer for the `DiscreteCombinatorialLibrary` section.
 
         Args:
             archive (EntryArchive): The archive containing the section that is being
             normalized.
             logger (BoundLogger): A structlog logger.
         '''
-        super(ContinuousCombiLibrary, self).normalize(archive, logger)
+        super(DiscreteCombinatorialLibrary, self).normalize(archive, logger)
 
 
 m_package.__init_metainfo__()
