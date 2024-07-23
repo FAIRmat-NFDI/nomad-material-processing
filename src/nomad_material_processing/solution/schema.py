@@ -302,7 +302,7 @@ class AddMaterial(SolutionPreparationStep):
         type=MEnum(
             'Solvent',
             'Solute',
-            'Compound',
+            'Solution',
         ),
         description="""
         The type of material added to the solution.
@@ -310,7 +310,7 @@ class AddMaterial(SolutionPreparationStep):
         | ------------- | ----------- |
         | Solvent       | Solvent added to the solution. |
         | Solute        | Solute added to the solution. |
-        | Compound      | A compound that does not dissolve in the solution. |
+        | Solution      | An existing solution added to the solution. |
         """,
         a_eln=ELNAnnotation(
             component='EnumEditQuantity',
@@ -325,9 +325,22 @@ class AddMaterial(SolutionPreparationStep):
                 self.name = f'Add {self.material_type}'
             else:
                 self.name = 'Add Material'
-        return super().normalize(archive, logger)
-        # TODO based on the material type, add the material to the solvent or solute
-        # if the material type is compound, only add it to the components list
+
+        if self.solution_component:
+            if isinstance(self.solution_component, SolutionComponentReference):
+                component = self.solution_component.reference
+            else:
+                component = self.solution_component
+
+            if self.material_type == 'Solute':
+                archive.data.solutes.append(component)
+            elif self.material_type == 'Solvent':
+                archive.data.solvents.append(component)
+            elif self.material_type == 'Solution':
+                self.data.solvents.extend(component.solvents)
+                self.data.solutes.extend(component.solutes)
+
+        super().normalize(archive, logger)
 
 
 class Agitation(SolutionPreparationStep):
