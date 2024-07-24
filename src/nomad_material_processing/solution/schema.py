@@ -330,6 +330,7 @@ class AddSolid(SolutionPreparationStep):
                 self.name = 'Add Solid Component'
 
         if self.solution_component:
+            archive.data.solution_components.append(self.solution_component)
             if self.component_role == 'Solute':
                 archive.data.solutes.append(self.solution_component)
             elif self.component_role == 'Solvent':
@@ -380,6 +381,7 @@ class AddLiquid(SolutionPreparationStep):
                 self.name = 'Add Liquid Component'
 
         if self.solution_component:
+            archive.data.solution_components.append(self.solution_component)
             if self.component_role == 'Solute':
                 archive.data.solutes.append(self.solution_component)
             elif self.component_role == 'Solvent':
@@ -411,6 +413,7 @@ class AddSolution(SolutionPreparationStep):
 
         if self.solution_component:
             component = self.solution_component.reference
+            archive.data.solution_components.extend(component.components)
             archive.data.solvents.extend(component.solvents)
             archive.data.solutes.extend(component.solutes)
 
@@ -499,9 +502,10 @@ class SolutionPreparation(Process, EntryData):
                     'lab_id',
                     'location',
                     'description',
+                    'steps',
+                    'solution_components',
                     'solvents',
                     'solutes',
-                    'steps',
                     'instruments',
                 ],
             ),
@@ -524,6 +528,10 @@ class SolutionPreparation(Process, EntryData):
         """,
         repeats=True,
     )
+    solution_components = SubSection(
+        section_def=BaseSolutionComponent,
+        repeats=True,
+    )
     solution = SubSection(
         section_def=SolutionReference,
     )
@@ -536,10 +544,15 @@ class SolutionPreparation(Process, EntryData):
     )
 
     def normalize(self, archive, logger) -> None:
-        # TODO create an entry for the solution once the solvent and solutes are added
-        # and update the reference to the solution in the solution section.
+        super().normalize(archive, logger)
 
-        super(SolutionPreparation, self).normalize(archive, logger)
+        self.solvents = []
+        self.solutes = []
+        self.solution_components = []
+
+        for step in self.steps:
+            if isinstance(step, (AddSolid, AddLiquid, AddSolution)):
+                step.normalize(archive, logger)
 
 
 class SolutionStorage(ArchiveSection):
