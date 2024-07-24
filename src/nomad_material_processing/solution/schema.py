@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING, Union
+from nomad.units import ureg
 import numpy as np
 from nomad.datamodel.data import (
     ArchiveSection,
@@ -26,6 +28,9 @@ from nomad.metainfo import (
 from nomad_material_processing.solution.utils import (
     create_archive,
 )
+
+if TYPE_CHECKING:
+    from structlog.stdlib import BoundLogger
 
 
 class BaseSolutionComponent(ArchiveSection):
@@ -245,28 +250,86 @@ class Solution(CompositeSystem, EntryData):
         repeats=True,
     )
 
+    @staticmethod
+    def compute_component_moles(
+        component: Union[LiquidSolutionComponent, SolidSolutionComponent],
+        logger: 'BoundLogger' = None,
+    ) -> Union[float, None]:
+        """
+        Compute the moles of a component in the solution.
+
+        Args:
+            component (Union[LiquidSolutionComponent, SolidSolutionComponent]): component
+                to compute the moles for.
+            logger (BoundLogger): A structlog logger.
+
+        Returns:
+            Union[float, None]: The moles of the component in the solution.
+        """
+
+        if not component.pure_substance.molecular_mass:
+            if logger:
+                logger.warning(
+                    f'Could not calculate moles of the "{component.name}" as molecular '
+                    'mass is missing.'
+                )
+            return
+        if component.mass:
+            moles = component.mass.to('grams') / (
+                component.pure_substance.molecular_mass.to('Da').magnitude
+                * ureg('g/mol')
+            )
+        elif isinstance(component, SolidSolutionComponent):
+            if logger:
+                logger.warning(
+                    f'Could not calculate moles of the "{component.name}" as mass is '
+                    'missing.'
+                )
+            return
+        elif isinstance(component, LiquidSolutionComponent):
+            if component.volume and component.density:
+                mass = component.volume.to('liters') * component.density.to(
+                    'grams/liters'
+                )
+                moles = mass / (
+                    component.pure_substance.molecular_mass.to('Da').magnitude
+                    * ureg('g/mol')
+                )
+            else:
+                if logger:
+                    logger.warning(
+                        f'Could not calculate mass of "{component.name}" as either '
+                        'volume or density is missing.'
+                    )
+                return
+        return moles
 
     def normalize(self, archive, logger) -> None:
-        if self.solutes:
-            self.components.extend(self.solutes)
-        if self.solvents:
-            self.components.extend(self.solvents)
-        # super().normalize(archive, logger)
-
+        super().normalize(archive, logger)
         # TODO combine together the same type of components
-
-        # TODO
-        # generate the solution properties section
-        # - calculate the total volume of the solution
-        #   by summing the volumes of the liquid components and solution from references
-        # - calculate the actual_concentration of the components
-        #   solids: calculate the moles based on molar mass and mass
-        #   liquids: calculate the moles based on the volume and density
-        #     use the total volume of the solution to calculate the concentration
-        #   solution reference: get each component from the reference and recompute the
-        #     molarity based on the new concentration
         # also, when adding a new component, always check if it already exists, in which
         # case, update the concentration.
+
+        self.theoretical_volume = 0
+        for component in self.components:
+            if isinstance(component, LiquidSolutionComponent):
+                if not component.volume:
+                    logger.warning(f'Volume of component {component.name} is missing.')
+                    continue
+                self.theoretical_volume += component.volume
+
+        if self.observed_volume:
+            volume = self.observed_volume
+        else:
+            volume = self.theoretical_volume
+
+        for idx, component in enumerate(self.components):
+            if isinstance(component, (LiquidSolutionComponent, SolidSolutionComponent)):
+                self.components[idx].molar_concentration = MolarConcentration(
+                    theoretical_concentration=(
+                        self.compute_component_moles(component, logger) / volume
+                    ),
+                )
 
 
 class SolutionReference(CompositeSystemReference):
