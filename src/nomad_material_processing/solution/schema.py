@@ -37,6 +37,38 @@ class BaseSolutionComponent(ArchiveSection):
     )
 
 
+class MolarConcentration(ArchiveSection):
+    """
+    The molar concentration of a component in a solution.
+    """
+
+    theoretical_concentration = Quantity(
+        type=np.float64,
+        description=(
+            'The expected concentration calculated from the component moles and '
+            'total volume.'
+        ),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='mol / liter',
+            minValue=0,
+        ),
+        unit='mol / liter',
+    )
+    observed_concentration = Quantity(
+        type=np.float64,
+        description=(
+            'The concentration observed or measured with some characterization technique.'
+        ),
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='mol / liter',
+            minValue=0,
+        ),
+        unit='mol / liter',
+    )
+
+
 class SolutionComponent(BaseSolutionComponent, PureSubstanceComponent):
     m_def = Section(
         a_eln=ELNAnnotation(
@@ -82,6 +114,7 @@ class SolutionComponent(BaseSolutionComponent, PureSubstanceComponent):
         ),
         unit='gram',
     )
+    molar_concentration = SubSection(section_def=MolarConcentration)
 
 
 class SolidSolutionComponent(SolutionComponent):
@@ -133,40 +166,6 @@ class LiquidSolutionComponent(SolutionComponent):
             minValue=0,
         ),
         unit='gram / liter',
-    )
-
-
-class ComponentConcentration(ArchiveSection):
-    """
-    The concentration of a component in a mixed material.
-    """
-
-    component_reference = Quantity(
-        type=SolutionComponent,
-        description='A reference to a NOMAD `SolutionComponent` sub-section.',
-        a_eln=ELNAnnotation(
-            component='ReferenceEditQuantity',
-        ),
-    )
-    theoretical_concentration = Quantity(
-        type=np.float64,
-        description='The concentration planned for the component.',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity',
-            defaultDisplayUnit='mol / liter',
-            minValue=0,
-        ),
-        unit='mol / liter',
-    )
-    actual_concentration = Quantity(
-        type=np.float64,
-        description='The concentration calculated from the component moles and total volume.',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity',
-            defaultDisplayUnit='mol / liter',
-            minValue=0,
-        ),
-        unit='mol / liter',
     )
 
 
