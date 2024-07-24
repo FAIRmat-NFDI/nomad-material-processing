@@ -170,17 +170,33 @@ class ComponentConcentration(ArchiveSection):
     )
 
 
-class SolutionProperties(ArchiveSection):
+class Solution(CompositeSystem, EntryData):
     """
-    Solution properties class.
+    Base class for a solution
     """
 
     m_def = Section(
         description="""
-        The properties of the solution.
+        The resulting liquid obtained after the Solution preparation steps.
         """,
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                order=[
+                    'name',
+                    'datetime',
+                    'lab_id',
+                    'ph_value',
+                    'theoretical_volume',
+                    'observed_volume',
+                    'description',
+                    'components',
+                    'elemental_composition',
+                    'solvents',
+                    'solutes',
+                ],
+            ),
+        ),
     )
-
     ph_value = Quantity(
         description='The pH value of the solution.',
         type=np.float64,
@@ -190,8 +206,8 @@ class SolutionProperties(ArchiveSection):
             maxValue=14,
         ),
     )
-    final_volume = Quantity(
-        description="""The final volume of the solution, which is the sum of
+    theoretical_volume = Quantity(
+        description="""The final expected volume of the solution, which is the sum of
         volume of its liquid components.
         """,
         type=np.float64,
@@ -202,21 +218,15 @@ class SolutionProperties(ArchiveSection):
         ),
         unit='milliliter',
     )
-    components_concentration = SubSection(
-        section_def=ComponentConcentration,
-        repeats=True,
-    )
-
-
-class Solution(CompositeSystem, EntryData):
-    """
-    Base class for a solution
-    """
-
-    m_def = Section(
-        description="""
-        The resulting liquid obtained after the Solution preparation steps.
-        """,
+    observed_volume = Quantity(
+        description='The final observed volume of the solution.',
+        type=np.float64,
+        a_eln=dict(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='milliliter',
+            minValue=0,
+        ),
+        unit='milliliter',
     )
     solvents = SubSection(
         link='https://doi.org/10.1351/goldbook.S05751',
@@ -235,7 +245,7 @@ class Solution(CompositeSystem, EntryData):
         """,
         repeats=True,
     )
-    properties = SubSection(section_def=SolutionProperties)
+
 
     def normalize(self, archive, logger) -> None:
         if self.solutes:
