@@ -314,11 +314,19 @@ class Pressure(TimeSeries):
         type=float,
         unit='pascal',
         shape=['*'],
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label='Set value',
+        ),
     )
     set_time = Quantity(
         type=float,
         unit='second',
         shape=['*'],
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label='Set time',
+        ),
     )
 
 
