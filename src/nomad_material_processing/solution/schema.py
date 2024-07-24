@@ -23,6 +23,9 @@ from nomad.metainfo import (
     Section,
     SubSection,
 )
+from nomad_material_processing.solution.utils import (
+    create_archive,
+)
 
 
 class BaseSolutionComponent(ArchiveSection):
@@ -543,6 +546,33 @@ class SolutionPreparation(Process, EntryData):
         repeats=True,
     )
 
+    def create_solution_entry(self, archive, logger):
+        from nomad.datamodel.datamodel import EntryArchive
+
+        solution = Solution()
+        solution.name = f'Solution created from {archive.data.name} entry'
+        solution_file_name = (
+            f'solution_{archive.data.name.replace(" ", "_")}.archive.json'
+        )
+
+        solution.components = self.solution_components
+        solution.solutes = self.solutes
+        solution.solvents = self.solvents
+
+        solution.normalize(archive, logger)
+
+        solution_entry = EntryArchive(data=solution)
+        solution_reference = create_archive(
+            entry_dict=solution_entry.m_to_dict(with_root_def=True),
+            context=archive.m_context,
+            filename=solution_file_name,
+            file_type='json',
+            logger=logger,
+            overwrite=True,
+        )
+
+        return solution_reference
+
     def normalize(self, archive, logger) -> None:
         super().normalize(archive, logger)
 
@@ -553,6 +583,10 @@ class SolutionPreparation(Process, EntryData):
         for step in self.steps:
             if isinstance(step, (AddSolid, AddLiquid, AddSolution)):
                 step.normalize(archive, logger)
+
+        if not self.solution:
+            self.solution = SolutionReference()
+        self.solution.reference = self.create_solution_entry(archive, logger)
 
 
 class SolutionStorage(ArchiveSection):
