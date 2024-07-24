@@ -122,6 +122,11 @@ class SolutionComponent(BaseSolutionComponent, PureSubstanceComponent):
     )
     molar_concentration = SubSection(section_def=MolarConcentration)
 
+    def normalize(self, archive, logger: BoundLogger) -> None:
+        super().normalize(archive, logger)
+        if self.gross_mass and self.container_mass:
+            self.mass = self.gross_mass - self.container_mass
+
 
 class SolidSolutionComponent(SolutionComponent):
     pass
@@ -173,6 +178,11 @@ class LiquidSolutionComponent(SolutionComponent):
         ),
         unit='gram / liter',
     )
+
+    def normalize(self, archive, logger: BoundLogger) -> None:
+        super().normalize(archive, logger)
+        if self.volume and self.density:
+            self.mass = self.volume.to('liters') * self.density.to('grams/liter')
 
 
 class Solution(CompositeSystem, EntryData):
@@ -275,37 +285,20 @@ class Solution(CompositeSystem, EntryData):
                     'mass is missing.'
                 )
             return
-        if component.mass:
-            moles = component.mass.to('grams') / (
-                component.pure_substance.molecular_mass.to('Da').magnitude
-                * ureg('g/mol')
-            )
-        elif isinstance(component, SolidSolutionComponent):
+        if not component.mass:
             if logger:
                 logger.warning(
                     f'Could not calculate moles of the "{component.name}" as mass is '
                     'missing.'
                 )
             return
-        elif isinstance(component, LiquidSolutionComponent):
-            if component.volume and component.density:
-                mass = component.volume.to('liters') * component.density.to(
-                    'grams/liters'
-                )
-                moles = mass / (
-                    component.pure_substance.molecular_mass.to('Da').magnitude
-                    * ureg('g/mol')
-                )
-            else:
-                if logger:
-                    logger.warning(
-                        f'Could not calculate mass of "{component.name}" as either '
-                        'volume or density is missing.'
-                    )
-                return
+        moles = component.mass.to('grams') / (
+            component.pure_substance.molecular_mass.to('Da').magnitude * ureg('g/mol')
+        )
         return moles
 
     def normalize(self, archive, logger) -> None:
+        self.elemental_composition = []
         super().normalize(archive, logger)
         # TODO combine together the same type of components
         # also, when adding a new component, always check if it already exists, in which
@@ -326,11 +319,16 @@ class Solution(CompositeSystem, EntryData):
 
         for idx, component in enumerate(self.components):
             if isinstance(component, (LiquidSolutionComponent, SolidSolutionComponent)):
-                self.components[idx].molar_concentration = MolarConcentration(
-                    theoretical_concentration=(
-                        self.compute_component_moles(component, logger) / volume
-                    ),
-                )
+                if not component.molar_concentration:
+                    self.components[idx].molar_concentration = MolarConcentration()
+                moles = self.compute_component_moles(component, logger)
+                print(moles)
+                if moles:
+                    self.components[
+                        idx
+                    ].molar_concentration.theoretical_concentration = moles / volume.to(
+                        'liters'
+                    )
 
 
 class SolutionReference(CompositeSystemReference):
