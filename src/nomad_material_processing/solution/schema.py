@@ -25,6 +25,7 @@ from nomad.metainfo import (
     Section,
     SubSection,
 )
+from structlog.stdlib import BoundLogger
 from nomad_material_processing.solution.utils import (
     create_archive,
 )
