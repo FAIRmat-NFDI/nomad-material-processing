@@ -81,6 +81,10 @@ class SolutionComponent(BaseSolutionComponent, PureSubstanceComponent):
     )
 
 
+class SolidSolutionComponent(SolutionComponent):
+    pass
+
+
 class LiquidSolutionComponent(SolutionComponent):
     m_def = Section(
         description="""
@@ -231,6 +235,14 @@ class Solution(CompositeSystem, EntryData):
     properties = SubSection(section_def=SolutionProperties)
 
     def normalize(self, archive, logger) -> None:
+        if self.solutes:
+            self.components.extend(self.solutes)
+        if self.solvents:
+            self.components.extend(self.solvents)
+        # super().normalize(archive, logger)
+
+        # TODO combine together the same type of components
+
         # TODO
         # generate the solution properties section
         # - calculate the total volume of the solution
@@ -243,13 +255,6 @@ class Solution(CompositeSystem, EntryData):
         #     molarity based on the new concentration
         # also, when adding a new component, always check if it already exists, in which
         # case, update the concentration.
-        super(Solution, self).normalize(archive, logger)
-
-        self.components = []
-        if self.solutes:
-            self.components.extend(self.solutes)
-        if self.solvents:
-            self.components.extend(self.solvents)
 
 
 class SolutionReference(CompositeSystemReference):
@@ -283,14 +288,14 @@ class SolutionPreparationStep(ProcessStep):
     )
 
 
-class AddMaterial(SolutionPreparationStep):
+class AddSolid(SolutionPreparationStep):
     m_def = Section(
         a_eln=ELNAnnotation(
             properties=SectionProperties(
                 order=[
                     'name',
                     'start_time',
-                    'material_type',
+                    'component_role',
                     'comment',
                     'duration',
                     'material',
@@ -298,47 +303,116 @@ class AddMaterial(SolutionPreparationStep):
             ),
         ),
     )
-    material_type = Quantity(
+    component_role = Quantity(
         type=MEnum(
             'Solvent',
             'Solute',
-            'Solution',
         ),
         description="""
-        The type of material added to the solution.
-        | material type | description |
+        The role of the component added to the solution.
+        | role | description |
         | ------------- | ----------- |
-        | Solvent       | Solvent added to the solution. |
-        | Solute        | Solute added to the solution. |
-        | Solution      | An existing solution added to the solution. |
+        | Solvent       | The term applied to the whole initial liquid phase containing the extractant. |
+        | Solute        | The minor component of a solution which is regarded as having been dissolved by the solvent. |
         """,
         a_eln=ELNAnnotation(
             component='EnumEditQuantity',
         ),
     )
 
-    solution_component = SubSection(section_def=BaseSolutionComponent)
+    solution_component = SubSection(section_def=SolidSolutionComponent)
 
     def normalize(self, archive, logger):
         if not self.name:
-            if self.material_type:
-                self.name = f'Add {self.material_type}'
+            if self.component_role:
+                self.name = f'Add {self.component_role}'
             else:
-                self.name = 'Add Material'
+                self.name = 'Add Solid Component'
 
         if self.solution_component:
-            if isinstance(self.solution_component, SolutionComponentReference):
-                component = self.solution_component.reference
-            else:
-                component = self.solution_component
+            if self.component_role == 'Solute':
+                archive.data.solutes.append(self.solution_component)
+            elif self.component_role == 'Solvent':
+                archive.data.solvents.append(self.solution_component)
 
-            if self.material_type == 'Solute':
-                archive.data.solutes.append(component)
-            elif self.material_type == 'Solvent':
-                archive.data.solvents.append(component)
-            elif self.material_type == 'Solution':
-                self.data.solvents.extend(component.solvents)
-                self.data.solutes.extend(component.solutes)
+        super().normalize(archive, logger)
+
+
+class AddLiquid(SolutionPreparationStep):
+    m_def = Section(
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                order=[
+                    'name',
+                    'start_time',
+                    'component_role',
+                    'comment',
+                    'duration',
+                    'material',
+                ],
+            ),
+        ),
+    )
+    component_role = Quantity(
+        type=MEnum(
+            'Solvent',
+            'Solute',
+        ),
+        description="""
+        The role of the component added to the solution.
+        | role | description |
+        | ------------- | ----------- |
+        | Solvent       | The term applied to the whole initial liquid phase containing the extractant. |
+        | Solute        | The minor component of a solution which is regarded as having been dissolved by the solvent. |
+        """,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+        ),
+    )
+
+    solution_component = SubSection(section_def=LiquidSolutionComponent)
+
+    def normalize(self, archive, logger):
+        if not self.name:
+            if self.component_role:
+                self.name = f'Add {self.component_role}'
+            else:
+                self.name = 'Add Liquid Component'
+
+        if self.solution_component:
+            if self.component_role == 'Solute':
+                archive.data.solutes.append(self.solution_component)
+            elif self.component_role == 'Solvent':
+                archive.data.solvents.append(self.solution_component)
+
+        super().normalize(archive, logger)
+
+
+class AddSolution(SolutionPreparationStep):
+    m_def = Section(
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                order=[
+                    'name',
+                    'start_time',
+                    'comment',
+                    'duration',
+                    'material',
+                ],
+            ),
+        ),
+    )
+
+    solution_component = SubSection(section_def=SolutionReference)
+
+    def normalize(self, archive, logger):
+        if not self.name:
+            self.name = 'Add Solution'
+
+        if self.solution_component:
+            component = self.solution_component.reference
+            archive.data.solvents.extend(component.solvents)
+            archive.data.solutes.extend(component.solutes)
 
         super().normalize(archive, logger)
 
