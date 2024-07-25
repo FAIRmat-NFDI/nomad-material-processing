@@ -82,8 +82,7 @@ class SolutionComponent(BaseSolutionComponent, PureSubstanceComponent):
                 order=[
                     'name',
                     'substance_name',
-                    'container_mass',
-                    'gross_mass',
+                    'purity_fraction',
                     'mass',
                     'mass_fraction',
                 ],
@@ -92,13 +91,22 @@ class SolutionComponent(BaseSolutionComponent, PureSubstanceComponent):
     )
     mass = Quantity(
         type=np.float64,
-        description='The mass of the material without the container.',
+        description='The mass of the component without the container.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             defaultDisplayUnit='gram',
             minValue=0,
         ),
         unit='gram',
+    )
+    purity_fraction = Quantity(
+        type=np.float64,
+        description='The purity of the component in fraction.',
+        a_eln=dict(
+            component='NumberEditQuantity',
+            maxValue=100,
+            minValue=0,
+        ),
     )
     molar_concentration = SubSection(section_def=MolarConcentration)
 
@@ -117,9 +125,9 @@ class LiquidSolutionComponent(SolutionComponent):
                 order=[
                     'name',
                     'substance_name',
+                    'purity_fraction',
                     'volume',
                     'density',
-                    'purity_percentage',
                 ],
             ),
         ),
@@ -143,15 +151,6 @@ class LiquidSolutionComponent(SolutionComponent):
             minValue=0,
         ),
         unit='gram / liter',
-    )
-    purity_percentage = Quantity(
-        type=np.float64,
-        description='The purity of the liquid component in fraction.',
-        a_eln=dict(
-            component='NumberEditQuantity',
-            maxValue=100,
-            minValue=0,
-        ),
     )
 
     def normalize(self, archive, logger: BoundLogger) -> None:
@@ -290,7 +289,8 @@ class Solution(CompositeSystem, EntryData):
         logger: 'BoundLogger' = None,
     ) -> Union[Quantity, None]:
         """
-        Compute the moles of a component in the solution.
+        Compute the moles of a component in the solution. If purity fraction of component
+        is provided, the calculated moles is multiplied with it.
 
         Args:
             component (Union[LiquidSolutionComponent, SolidSolutionComponent]): component
@@ -318,12 +318,13 @@ class Solution(CompositeSystem, EntryData):
         moles = component.mass.to('grams') / (
             component.pure_substance.molecular_mass.to('Da').magnitude * ureg('g/mol')
         )
+        if getattr(component, 'purity_fraction', None):
+            moles *= component.purity_fraction
         return moles
 
     def normalize(self, archive, logger) -> None:
         self.combine_solution_components(logger)
 
-        # get total volume of the solution
         self.compute_theoretical_volume(logger)
         if self.observed_volume:
             volume = self.observed_volume
