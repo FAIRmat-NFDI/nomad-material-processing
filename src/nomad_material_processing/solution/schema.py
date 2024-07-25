@@ -236,6 +236,39 @@ class Solution(CompositeSystem, EntryData):
         repeats=True,
     )
 
+    def combine_solution_components(self, logger: 'BoundLogger') -> None:
+        """
+        Combine the solution components with the same IUPAC name.
+        Following properties are accumulated for combined components: mass, volume.
+        """
+        combined_components = {}
+        unprocessed_components = []
+        for component in self.components:
+            if not isinstance(
+                component, (LiquidSolutionComponent, SolidSolutionComponent)
+            ):
+                unprocessed_components.append(component)
+                continue
+            if not component.pure_substance or not component.pure_substance.iupac_name:
+                unprocessed_components.append(component)
+                continue
+            comparison_key = component.pure_substance.iupac_name
+            if comparison_key in combined_components:
+                for prop in ['mass', 'volume']:
+                    val1 = getattr(combined_components[comparison_key], prop, None)
+                    val2 = getattr(component, prop, None)
+                    if val1 and val2:
+                        setattr(combined_components[comparison_key], prop, val1 + val2)
+                    elif val1:
+                        setattr(combined_components[comparison_key], prop, val1)
+                    elif val2:
+                        setattr(combined_components[comparison_key], prop, val2)
+            else:
+                combined_components[comparison_key] = component
+
+        self.components = list(combined_components.values())
+        self.components.extend(unprocessed_components)
+
     def compute_theoretical_volume(self, logger: 'BoundLogger') -> None:
         """
         Compute the theoretical volume of the solution.
@@ -288,7 +321,7 @@ class Solution(CompositeSystem, EntryData):
         return moles
 
     def normalize(self, archive, logger) -> None:
-        # TODO combine together the same type of components
+        self.combine_solution_components(logger)
 
         # get total volume of the solution
         self.compute_theoretical_volume(logger)
