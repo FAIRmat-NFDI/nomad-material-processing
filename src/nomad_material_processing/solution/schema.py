@@ -90,26 +90,6 @@ class SolutionComponent(BaseSolutionComponent, PureSubstanceComponent):
             ),
         ),
     )
-    container_mass = Quantity(
-        type=np.float64,
-        description='The mass of the container.',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity',
-            defaultDisplayUnit='gram',
-            minValue=0,
-        ),
-        unit='gram',
-    )
-    gross_mass = Quantity(
-        type=np.float64,
-        description='The mass of the material including the container.',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity',
-            defaultDisplayUnit='gram',
-            minValue=0,
-        ),
-        unit='gram',
-    )
     mass = Quantity(
         type=np.float64,
         description='The mass of the material without the container.',
@@ -121,11 +101,6 @@ class SolutionComponent(BaseSolutionComponent, PureSubstanceComponent):
         unit='gram',
     )
     molar_concentration = SubSection(section_def=MolarConcentration)
-
-    def normalize(self, archive, logger: BoundLogger) -> None:
-        super().normalize(archive, logger)
-        if self.gross_mass and self.container_mass:
-            self.mass = self.gross_mass - self.container_mass
 
 
 class SolidSolutionComponent(SolutionComponent):
@@ -159,15 +134,6 @@ class LiquidSolutionComponent(SolutionComponent):
         ),
         unit='milliliter',
     )
-    purity_percentage = Quantity(
-        type=np.float64,
-        description='The purity of the liquid component in fraction.',
-        a_eln=dict(
-            component='NumberEditQuantity',
-            maxValue=100,
-            minValue=0,
-        ),
-    )
     density = Quantity(
         type=np.float64,
         description='The density of the liquid component.',
@@ -177,6 +143,15 @@ class LiquidSolutionComponent(SolutionComponent):
             minValue=0,
         ),
         unit='gram / liter',
+    )
+    purity_percentage = Quantity(
+        type=np.float64,
+        description='The purity of the liquid component in fraction.',
+        a_eln=dict(
+            component='NumberEditQuantity',
+            maxValue=100,
+            minValue=0,
+        ),
     )
 
     def normalize(self, archive, logger: BoundLogger) -> None:
