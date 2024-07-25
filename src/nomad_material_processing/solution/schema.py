@@ -408,12 +408,12 @@ class AddSolid(SolutionPreparationStep):
             else:
                 self.name = 'Add Solid Component'
 
-        if self.solution_component:
-            archive.data.solution_components.append(self.solution_component)
+        if self.solution_component and archive.data.solution:
+            archive.data.solution.components.append(self.solution_component)
             if self.component_role == 'Solute':
-                archive.data.solutes.append(self.solution_component)
+                archive.data.solution.solutes.append(self.solution_component)
             elif self.component_role == 'Solvent':
-                archive.data.solvents.append(self.solution_component)
+                archive.data.solution.solvents.append(self.solution_component)
 
         super().normalize(archive, logger)
 
@@ -459,12 +459,12 @@ class AddLiquid(SolutionPreparationStep):
             else:
                 self.name = 'Add Liquid Component'
 
-        if self.solution_component:
-            archive.data.solution_components.append(self.solution_component)
+        if self.solution_component and archive.data.solution:
+            archive.data.solution.components.append(self.solution_component)
             if self.component_role == 'Solute':
-                archive.data.solutes.append(self.solution_component)
+                archive.data.solution.solutes.append(self.solution_component)
             elif self.component_role == 'Solvent':
-                archive.data.solvents.append(self.solution_component)
+                archive.data.solution.solvents.append(self.solution_component)
 
         super().normalize(archive, logger)
 
@@ -490,11 +490,11 @@ class AddSolution(SolutionPreparationStep):
         if not self.name:
             self.name = 'Add Solution'
 
-        if self.solution_component:
+        if self.solution_component and archive.data.solution:
             component = self.solution_component.reference
-            archive.data.solution_components.extend(component.components)
-            archive.data.solvents.extend(component.solvents)
-            archive.data.solutes.extend(component.solutes)
+            archive.data.solution.components.extend(component.components)
+            archive.data.solution.solvents.extend(component.solvents)
+            archive.data.solution.solutes.extend(component.solutes)
 
         super().normalize(archive, logger)
 
@@ -584,37 +584,14 @@ class SolutionPreparation(Process, EntryData):
                     'location',
                     'description',
                     'steps',
-                    'solution_components',
-                    'solvents',
-                    'solutes',
+                    'solution',
                     'instruments',
                 ],
             ),
         ),
     )
-    solvents = SubSection(
-        link='https://doi.org/10.1351/goldbook.S05751',
-        section_def=SolutionComponent,
-        description="""
-        The term applied to the whole initial liquid phase containing the extractant.
-        """,
-        repeats=True,
-    )
-    solutes = SubSection(
-        link='https://doi.org/10.1351/goldbook.S05744',
-        section_def=SolutionComponent,
-        description="""
-        The minor component of a solution which is regarded as having been dissolved
-        by the solvent.
-        """,
-        repeats=True,
-    )
-    solution_components = SubSection(
-        section_def=SolutionComponent,
-        repeats=True,
-    )
     solution = SubSection(
-        section_def=SolutionReference,
+        section_def=Solution,
     )
     steps = SubSection(
         section_def=SolutionPreparationStep,
@@ -627,19 +604,11 @@ class SolutionPreparation(Process, EntryData):
     def create_solution_entry(self, archive, logger):
         from nomad.datamodel.datamodel import EntryArchive
 
-        solution = Solution()
-        solution.name = f'Solution created from {archive.data.name} entry'
         solution_file_name = (
             f'solution_{archive.data.name.replace(" ", "_")}.archive.json'
         )
 
-        solution.components = self.solution_components
-        solution.solutes = self.solutes
-        solution.solvents = self.solvents
-
-        solution.normalize(archive, logger)
-
-        solution_entry = EntryArchive(data=solution)
+        solution_entry = EntryArchive(data=archive.data.solution)
         solution_reference = create_archive(
             entry_dict=solution_entry.m_to_dict(with_root_def=True),
             context=archive.m_context,
@@ -652,19 +621,22 @@ class SolutionPreparation(Process, EntryData):
         return solution_reference
 
     def normalize(self, archive, logger) -> None:
-        super().normalize(archive, logger)
+        if not self.solution:
+            self.solution = Solution(
+                name=f'Solution created from {archive.data.name} entry'
+            )
 
-        self.solvents = []
-        self.solutes = []
-        self.solution_components = []
+        self.solution.solutes = []
+        self.solution.solvents = []
+        self.solution.components = []
 
         for step in self.steps:
             if isinstance(step, (AddSolid, AddLiquid, AddSolution)):
                 step.normalize(archive, logger)
 
-        if not self.solution:
-            self.solution = SolutionReference()
-        self.solution.reference = self.create_solution_entry(archive, logger)
+        self.solution.normalize(archive, logger)
+
+        super().normalize(archive, logger)
 
 
 class SolutionStorage(ArchiveSection):
