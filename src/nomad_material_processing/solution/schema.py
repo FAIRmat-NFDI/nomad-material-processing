@@ -261,11 +261,26 @@ class Solution(CompositeSystem, EntryData):
         repeats=True,
     )
 
+    def compute_theoretical_volume(self, logger: 'BoundLogger') -> None:
+        """
+        Compute the theoretical volume of the solution.
+
+        Args:
+            logger (BoundLogger): A structlog logger.
+        """
+        self.theoretical_volume = 0 * ureg('milliliter')
+        for component in self.components:
+            if isinstance(component, LiquidSolutionComponent):
+                if not component.volume:
+                    logger.warning(f'Volume of component {component.name} is missing.')
+                    continue
+                self.theoretical_volume += component.volume
+
     @staticmethod
     def compute_component_moles(
         component: Union[LiquidSolutionComponent, SolidSolutionComponent],
         logger: 'BoundLogger' = None,
-    ) -> Union[float, None]:
+    ) -> Union[Quantity, None]:
         """
         Compute the moles of a component in the solution.
 
@@ -275,7 +290,7 @@ class Solution(CompositeSystem, EntryData):
             logger (BoundLogger): A structlog logger.
 
         Returns:
-            Union[float, None]: The moles of the component in the solution.
+            Union[Quantity, None]: The moles of the component in the solution.
         """
 
         if not component.pure_substance.molecular_mass:
@@ -298,37 +313,36 @@ class Solution(CompositeSystem, EntryData):
         return moles
 
     def normalize(self, archive, logger) -> None:
-        self.elemental_composition = []
-        super().normalize(archive, logger)
         # TODO combine together the same type of components
-        # also, when adding a new component, always check if it already exists, in which
-        # case, update the concentration.
 
-        self.theoretical_volume = 0
-        for component in self.components:
-            if isinstance(component, LiquidSolutionComponent):
-                if not component.volume:
-                    logger.warning(f'Volume of component {component.name} is missing.')
-                    continue
-                self.theoretical_volume += component.volume
-
+        # get total volume of the solution
+        self.compute_theoretical_volume(logger)
         if self.observed_volume:
             volume = self.observed_volume
         else:
             volume = self.theoretical_volume
 
+        # get molar concentration of components
         for idx, component in enumerate(self.components):
             if isinstance(component, (LiquidSolutionComponent, SolidSolutionComponent)):
                 if not component.molar_concentration:
                     self.components[idx].molar_concentration = MolarConcentration()
-                moles = self.compute_component_moles(component, logger)
-                print(moles)
-                if moles:
-                    self.components[
-                        idx
-                    ].molar_concentration.theoretical_concentration = moles / volume.to(
-                        'liters'
+                molar_concentration = None
+                if not volume:
+                    logger.warning(
+                        f'Volume of the solution is missing, could not calculate the '
+                        f'concentration of the component {component.name}.'
                     )
+                else:
+                    moles = self.compute_component_moles(component, logger)
+                    if moles:
+                        molar_concentration = moles / volume
+                self.components[
+                    idx
+                ].molar_concentration.theoretical_concentration = molar_concentration
+
+        self.elemental_composition = []
+        super().normalize(archive, logger)
 
 
 class SolutionReference(CompositeSystemReference):
