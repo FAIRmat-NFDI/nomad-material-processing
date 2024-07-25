@@ -163,6 +163,8 @@ class Solution(CompositeSystem, EntryData):
     Base class for a solution
     """
 
+    # TODO make the solvents, solutes, and elemental_composition sub-section non-editable.
+
     m_def = Section(
         description="""
         The resulting liquid obtained after the Solution preparation steps.
@@ -581,6 +583,8 @@ class SolutionPreparation(Process, EntryData):
     """
     Solution preparation class
     """
+
+    # TODO make the solvents and solutes sub-sections non-editable.
 
     m_def = Section(
         a_eln=ELNAnnotation(
