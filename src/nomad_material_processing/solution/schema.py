@@ -67,6 +67,19 @@ class MolarConcentration(ArchiveSection):
 
 
 class SolutionComponent(PureSubstanceComponent):
+    m_def = Section(
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                order=[
+                    'name',
+                    'substance_name',
+                    'purity_fraction',
+                    'mass',
+                    'mass_fraction',
+                ],
+            ),
+        ),
+    )
     mass = Quantity(
         type=np.float64,
         description='The mass of the component without the container.',
@@ -87,22 +100,6 @@ class SolutionComponent(PureSubstanceComponent):
         ),
     )
     molar_concentration = SubSection(section_def=MolarConcentration)
-
-
-class SolidSolutionComponent(SolutionComponent):
-    m_def = Section(
-        a_eln=ELNAnnotation(
-            properties=SectionProperties(
-                order=[
-                    'name',
-                    'substance_name',
-                    'purity_fraction',
-                    'mass',
-                    'mass_fraction',
-                ],
-            ),
-        ),
-    )
 
 
 class LiquidSolutionComponent(SolutionComponent):
