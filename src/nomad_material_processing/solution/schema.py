@@ -34,15 +34,6 @@ if TYPE_CHECKING:
     from structlog.stdlib import BoundLogger
 
 
-class BaseSolutionComponent(ArchiveSection):
-    m_def = Section(
-        description="""
-        Base class to put together `SolutionComponent` and `SolutionComponentReference`
-        classes.
-        """,
-    )
-
-
 class MolarConcentration(ArchiveSection):
     """
     The molar concentration of a component in a solution.
@@ -75,7 +66,7 @@ class MolarConcentration(ArchiveSection):
     )
 
 
-class SolutionComponent(BaseSolutionComponent, PureSubstanceComponent):
+class SolutionComponent(PureSubstanceComponent):
     mass = Quantity(
         type=np.float64,
         description='The mass of the component without the container.',
@@ -218,9 +209,16 @@ class Solution(CompositeSystem, EntryData):
         ),
         unit='milliliter',
     )
+    components = SubSection(
+        section_def=SolutionComponent,
+        description="""
+        The components of the solution.
+        """,
+        repeats=True,
+    )
     solvents = SubSection(
         link='https://doi.org/10.1351/goldbook.S05751',
-        section_def=BaseSolutionComponent,
+        section_def=SolutionComponent,
         description="""
         The term applied to the whole initial liquid phase containing the extractant.
         """,
@@ -228,7 +226,7 @@ class Solution(CompositeSystem, EntryData):
     )
     solutes = SubSection(
         link='https://doi.org/10.1351/goldbook.S05744',
-        section_def=BaseSolutionComponent,
+        section_def=SolutionComponent,
         description="""
         The minor component of a solution which is regarded as having been dissolved
         by the solvent.
@@ -367,14 +365,6 @@ class SolutionReference(CompositeSystemReference):
             component='ReferenceEditQuantity',
             label='Solution Reference',
         ),
-    )
-
-
-class SolutionComponentReference(BaseSolutionComponent, SolutionReference):
-    m_def = Section(
-        description="""
-        Reference to another solution used as component in the solution preparation.
-        """,
     )
 
 
@@ -613,7 +603,7 @@ class SolutionPreparation(Process, EntryData):
     )
     solvents = SubSection(
         link='https://doi.org/10.1351/goldbook.S05751',
-        section_def=BaseSolutionComponent,
+        section_def=SolutionComponent,
         description="""
         The term applied to the whole initial liquid phase containing the extractant.
         """,
@@ -621,7 +611,7 @@ class SolutionPreparation(Process, EntryData):
     )
     solutes = SubSection(
         link='https://doi.org/10.1351/goldbook.S05744',
-        section_def=BaseSolutionComponent,
+        section_def=SolutionComponent,
         description="""
         The minor component of a solution which is regarded as having been dissolved
         by the solvent.
@@ -629,7 +619,7 @@ class SolutionPreparation(Process, EntryData):
         repeats=True,
     )
     solution_components = SubSection(
-        section_def=BaseSolutionComponent,
+        section_def=SolutionComponent,
         repeats=True,
     )
     solution = SubSection(
