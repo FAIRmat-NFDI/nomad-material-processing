@@ -239,11 +239,6 @@ class Solution(CompositeSystem, EntryData):
         combined_components = {}
         unprocessed_components = []
         for component in self.components:
-            if not isinstance(
-                component, (LiquidSolutionComponent, SolidSolutionComponent)
-            ):
-                unprocessed_components.append(component)
-                continue
             if not component.pure_substance or not component.pure_substance.iupac_name:
                 unprocessed_components.append(component)
                 continue
@@ -281,7 +276,7 @@ class Solution(CompositeSystem, EntryData):
 
     @staticmethod
     def compute_component_moles(
-        component: Union[LiquidSolutionComponent, SolidSolutionComponent],
+        component: SolutionComponent,
         logger: 'BoundLogger' = None,
     ) -> Union[Quantity, None]:
         """
@@ -289,8 +284,7 @@ class Solution(CompositeSystem, EntryData):
         is provided, the calculated moles is multiplied with it.
 
         Args:
-            component (Union[LiquidSolutionComponent, SolidSolutionComponent]): component
-                to compute the moles for.
+            component (SolutionComponent): component to compute the moles for.
             logger (BoundLogger): A structlog logger.
 
         Returns:
@@ -329,7 +323,7 @@ class Solution(CompositeSystem, EntryData):
 
         # get molar concentration of components
         for idx, component in enumerate(self.components):
-            if isinstance(component, (LiquidSolutionComponent, SolidSolutionComponent)):
+            if isinstance(component, SolutionComponent):
                 if not component.molar_concentration:
                     self.components[idx].molar_concentration = MolarConcentration()
                 molar_concentration = None
@@ -405,7 +399,7 @@ class AddSolid(SolutionPreparationStep):
         ),
     )
 
-    solution_component = SubSection(section_def=SolidSolutionComponent)
+    solution_component = SubSection(section_def=SolutionComponent)
 
     def normalize(self, archive, logger):
         if not self.name:
