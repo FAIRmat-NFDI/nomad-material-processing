@@ -424,9 +424,6 @@ class AddSolid(SolutionPreparationStep):
             else:
                 self.name = 'Add Solid Component'
 
-        if self.solution_component and archive.data.solution:
-            archive.data.solution.components.append(self.solution_component)
-
         super().normalize(archive, logger)
 
 
@@ -452,9 +449,6 @@ class AddLiquid(SolutionPreparationStep):
                 self.name = f'Add {self.solution_component.component_role}'
             else:
                 self.name = 'Add Liquid Component'
-
-        if self.solution_component and archive.data.solution:
-            archive.data.solution.components.append(self.solution_component)
 
         super().normalize(archive, logger)
 
@@ -491,11 +485,10 @@ class AddSolution(SolutionPreparationStep):
         if not self.name:
             self.name = 'Add Solution'
 
-        if self.solution_component and archive.data.solution:
-            component = self.solution_component.reference
-            archive.data.solution.components.extend(component.components)
-            archive.data.solution.solvents.extend(component.solvents)
-            archive.data.solution.solutes.extend(component.solutes)
+        if self.solution_component:
+            if not self.volume:
+                # assume entire volume of the solution is used
+                self.volume = self.solution_component.reference.theoretical_volume
 
         super().normalize(archive, logger)
 
@@ -633,8 +626,36 @@ class SolutionPreparation(Process, EntryData):
         self.solution.solvents = []
         self.solution.components = []
         for step in self.steps:
-            if isinstance(step, (AddSolid, AddLiquid, AddSolution)):
-                step.normalize(archive, logger)
+            if isinstance(step, (AddSolid, AddLiquid)):
+                if step.solution_component:
+                    self.solution.components.append(step.solution_component)
+            elif isinstance(step, AddSolution):
+                # add components from the solution while taking the volume used into
+                # account
+                try:
+                    component = step.solution_component.reference.m_copy()
+                except AttributeError:
+                    logger.error(
+                        f'Could not copy the solution reference for the step {step.name}.'
+                    )
+                    continue
+                if not component.components:
+                    continue
+                try:
+                    scaler = (
+                        step.volume
+                        / step.solution_component.reference.theoretical_volume
+                    )
+                    for idx, comp in enumerate(component.components):
+                        if getattr(comp, 'mass', None):
+                            component.components[idx].mass = comp.mass * scaler
+                        if getattr(comp, 'volume', None):
+                            component.components[idx].volume = comp.volume * scaler
+                except Exception as e:
+                    logger.warning(
+                        f'Could not scale the components for the step {step.name}.\n{e}.'
+                    )
+                self.solution.components.extend(component.components)
         if not self.solution.name:
             self.solution.name = f'Solution from {self.name}'
         self.solution.normalize(archive, logger)
