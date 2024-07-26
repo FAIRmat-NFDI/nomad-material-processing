@@ -585,6 +585,7 @@ class SolutionPreparation(Process, EntryData):
                     'description',
                     'steps',
                     'solution',
+                    'solution_reference',
                     'instruments',
                 ],
             ),
@@ -592,6 +593,9 @@ class SolutionPreparation(Process, EntryData):
     )
     solution = SubSection(
         section_def=Solution,
+    )
+    solution_reference = SubSection(
+        section_def=SolutionReference,
     )
     steps = SubSection(
         section_def=SolutionPreparationStep,
@@ -621,20 +625,23 @@ class SolutionPreparation(Process, EntryData):
         return solution_reference
 
     def normalize(self, archive, logger) -> None:
+        # prepare the solution
         if not self.solution:
-            self.solution = Solution(
-                name=f'Solution created from {archive.data.name} entry'
-            )
-
+            self.solution = Solution()
         self.solution.solutes = []
         self.solution.solvents = []
         self.solution.components = []
-
         for step in self.steps:
             if isinstance(step, (AddSolid, AddLiquid, AddSolution)):
                 step.normalize(archive, logger)
-
+        if not self.solution.name:
+            self.solution.name = f'Solution from {self.name}'
         self.solution.normalize(archive, logger)
+
+        # create a reference to the solution
+        if self.solution and not self.solution_reference:
+            self.solution_reference = SolutionReference()
+        self.solution_reference.reference = self.create_solution_entry(archive, logger)
 
         super().normalize(archive, logger)
 
