@@ -73,11 +73,28 @@ class SolutionComponent(PureSubstanceComponent):
                 order=[
                     'name',
                     'substance_name',
+                    'component_role',
                     'purity_fraction',
                     'mass',
                     'mass_fraction',
                 ],
             ),
+        ),
+    )
+    component_role = Quantity(
+        type=MEnum(
+            'Solvent',
+            'Solute',
+        ),
+        description="""
+        The role of the component added to the solution.
+        | role | description |
+        | ------------- | ----------- |
+        | Solvent       | The term applied to the whole initial liquid phase containing the extractant. |
+        | Solute        | The minor component of a solution which is regarded as having been dissolved by the solvent. |
+        """,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
         ),
     )
     mass = Quantity(
@@ -112,6 +129,7 @@ class LiquidSolutionComponent(SolutionComponent):
                 order=[
                     'name',
                     'substance_name',
+                    'component_role',
                     'purity_fraction',
                     'volume',
                     'density',
@@ -253,6 +271,14 @@ class Solution(CompositeSystem, EntryData):
                         setattr(combined_components[comparison_key], prop, val1)
                     elif val2:
                         setattr(combined_components[comparison_key], prop, val2)
+                for prop in ['component_role']:
+                    # combine the component role if they are the same
+                    val1 = getattr(combined_components[comparison_key], prop, None)
+                    val2 = getattr(component, prop, None)
+                    if val1 and val2 and val1 == val2:
+                        setattr(combined_components[comparison_key], prop, val1)
+                    else:
+                        setattr(combined_components[comparison_key], prop, None)
             else:
                 combined_components[comparison_key] = component
 
@@ -340,6 +366,14 @@ class Solution(CompositeSystem, EntryData):
                     idx
                 ].molar_concentration.theoretical_concentration = molar_concentration
 
+        # fill the solvents and solutes
+        self.solvents, self.solutes = [], []
+        for component in self.components:
+            if component.component_role == 'Solvent':
+                self.solvents.append(component)
+            elif component.component_role == 'Solute':
+                self.solutes.append(component)
+
         self.elemental_composition = []
         super().normalize(archive, logger)
 
@@ -374,7 +408,6 @@ class AddSolid(SolutionPreparationStep):
                 order=[
                     'name',
                     'start_time',
-                    'component_role',
                     'comment',
                     'duration',
                     'material',
@@ -382,38 +415,17 @@ class AddSolid(SolutionPreparationStep):
             ),
         ),
     )
-    component_role = Quantity(
-        type=MEnum(
-            'Solvent',
-            'Solute',
-        ),
-        description="""
-        The role of the component added to the solution.
-        | role | description |
-        | ------------- | ----------- |
-        | Solvent       | The term applied to the whole initial liquid phase containing the extractant. |
-        | Solute        | The minor component of a solution which is regarded as having been dissolved by the solvent. |
-        """,
-        a_eln=ELNAnnotation(
-            component='EnumEditQuantity',
-        ),
-    )
-
     solution_component = SubSection(section_def=SolutionComponent)
 
     def normalize(self, archive, logger):
         if not self.name:
-            if self.component_role:
-                self.name = f'Add {self.component_role}'
+            if self.solution_component.component_role:
+                self.name = f'Add {self.solution_component.component_role}'
             else:
                 self.name = 'Add Solid Component'
 
         if self.solution_component and archive.data.solution:
             archive.data.solution.components.append(self.solution_component)
-            if self.component_role == 'Solute':
-                archive.data.solution.solutes.append(self.solution_component)
-            elif self.component_role == 'Solvent':
-                archive.data.solution.solvents.append(self.solution_component)
 
         super().normalize(archive, logger)
 
@@ -425,7 +437,6 @@ class AddLiquid(SolutionPreparationStep):
                 order=[
                     'name',
                     'start_time',
-                    'component_role',
                     'comment',
                     'duration',
                     'material',
@@ -433,38 +444,17 @@ class AddLiquid(SolutionPreparationStep):
             ),
         ),
     )
-    component_role = Quantity(
-        type=MEnum(
-            'Solvent',
-            'Solute',
-        ),
-        description="""
-        The role of the component added to the solution.
-        | role | description |
-        | ------------- | ----------- |
-        | Solvent       | The term applied to the whole initial liquid phase containing the extractant. |
-        | Solute        | The minor component of a solution which is regarded as having been dissolved by the solvent. |
-        """,
-        a_eln=ELNAnnotation(
-            component='EnumEditQuantity',
-        ),
-    )
-
     solution_component = SubSection(section_def=LiquidSolutionComponent)
 
     def normalize(self, archive, logger):
         if not self.name:
-            if self.component_role:
-                self.name = f'Add {self.component_role}'
+            if self.solution_component.component_role:
+                self.name = f'Add {self.solution_component.component_role}'
             else:
                 self.name = 'Add Liquid Component'
 
         if self.solution_component and archive.data.solution:
             archive.data.solution.components.append(self.solution_component)
-            if self.component_role == 'Solute':
-                archive.data.solution.solutes.append(self.solution_component)
-            elif self.component_role == 'Solvent':
-                archive.data.solution.solvents.append(self.solution_component)
 
         super().normalize(archive, logger)
 
