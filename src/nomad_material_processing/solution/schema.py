@@ -408,9 +408,9 @@ class AddSolid(SolutionPreparationStep):
                 order=[
                     'name',
                     'start_time',
-                    'comment',
                     'duration',
-                    'material',
+                    'comment',
+                    'solution_component',
                 ],
             ),
         ),
@@ -437,9 +437,9 @@ class AddLiquid(SolutionPreparationStep):
                 order=[
                     'name',
                     'start_time',
-                    'comment',
                     'duration',
-                    'material',
+                    'comment',
+                    'solution_component',
                 ],
             ),
         ),
@@ -466,14 +466,25 @@ class AddSolution(SolutionPreparationStep):
                 order=[
                     'name',
                     'start_time',
-                    'comment',
+                    'volume',
                     'duration',
-                    'material',
+                    'comment',
+                    'solution_component',
                 ],
             ),
         ),
     )
 
+    volume = Quantity(
+        type=np.float64,
+        description='The volume of the solution used.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='milliliter',
+            minValue=0,
+        ),
+        unit='milliliter',
+    )
     solution_component = SubSection(section_def=SolutionReference)
 
     def normalize(self, archive, logger):
