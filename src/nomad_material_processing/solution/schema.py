@@ -164,6 +164,58 @@ class LiquidSolutionComponent(SolutionComponent):
             self.mass = self.volume.to('liters') * self.density.to('grams/liter')
 
 
+class SolutionStorage(ArchiveSection):
+    """
+    Solution storage class
+    """
+
+    start_date = Quantity(
+        type=Datetime,
+        a_eln=dict(
+            component='DateTimeEditQuantity',
+        ),
+    )
+
+    end_date = Quantity(
+        type=Datetime,
+        a_eln=dict(
+            component='DateTimeEditQuantity',
+        ),
+    )
+
+    storage_condition = Quantity(
+        type=str,
+        a_eln=dict(
+            component='StringEditQuantity',
+        ),
+    )
+    temperature = Quantity(
+        type=np.float64,
+        a_eln=dict(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='celsius',
+        ),
+        unit='celsius',
+    )
+
+    atmosphere = Quantity(
+        type=str,
+        a_eln=dict(
+            component='EnumEditQuantity',
+            props=dict(
+                suggestions=['Ar', 'N2', 'Air'],
+            ),
+        ),
+    )
+
+    comments = Quantity(
+        type=str,
+        a_eln=dict(
+            component='RichTextEditQuantity',
+        ),
+    )
+
+
 class Solution(CompositeSystem, EntryData):
     """
     Base class for a solution
@@ -247,6 +299,12 @@ class Solution(CompositeSystem, EntryData):
         by the solvent.
         """,
         repeats=True,
+    )
+    solution_storage = SubSection(
+        section_def=SolutionStorage,
+        description="""
+        The storage conditions of the solution.
+        """,
     )
 
     def combine_solution_components(self, logger: 'BoundLogger') -> None:
@@ -672,102 +730,3 @@ class SolutionPreparation(Process, EntryData):
         self.solution_reference.reference = self.create_solution_entry(archive, logger)
 
         super().normalize(archive, logger)
-
-
-class SolutionStorage(ArchiveSection):
-    """
-    Solution storage class
-    """
-
-    start_date = Quantity(
-        type=Datetime,
-        a_eln=dict(
-            component='DateTimeEditQuantity',
-        ),
-    )
-
-    end_date = Quantity(
-        type=Datetime,
-        a_eln=dict(
-            component='DateTimeEditQuantity',
-        ),
-    )
-
-    storage_condition = Quantity(
-        type=str,
-        a_eln=dict(
-            component='StringEditQuantity',
-        ),
-    )
-    temperature = Quantity(
-        type=np.float64,
-        a_eln=dict(
-            component='NumberEditQuantity',
-            defaultDisplayUnit='celsius',
-        ),
-        unit='celsius',
-    )
-
-    atmosphere = Quantity(
-        type=str,
-        a_eln=dict(
-            component='EnumEditQuantity',
-            props=dict(
-                suggestions=['Ar', 'N2', 'Air'],
-            ),
-        ),
-    )
-
-    comments = Quantity(
-        type=str,
-        a_eln=dict(
-            component='RichTextEditQuantity',
-        ),
-    )
-
-
-# class SolutionPreparationIKZ(Process, EntryData):
-#     """
-#     Solution preparation class
-#     """
-
-#     method = Quantity(
-#         type=MEnum('Shaker', 'Ultrasoncic', 'Waiting', 'Stirring'),
-#         shape=[],
-#         a_eln=dict(
-#             component='EnumEditQuantity',
-#         ),
-#         # categories=[IKZCategory],
-#     )
-#     description = Quantity(
-#         type=str,
-#         description='The description of the solution preparation.',
-#         a_eln={'component': 'StringEditQuantity'},
-#     )
-#     atmosphere = Quantity(
-#         type=str,
-#         description='The atmosphere used for the solution preparation.',
-#         a_eln={'component': 'StringEditQuantity'},
-#     )
-#     intended_tot_volume = Quantity(
-#         type=float,
-#         description='The planned total volume of the solution.',
-#         a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'liter'},
-#         unit='liter',
-#     )
-#     obtained_tot_volume = Quantity(
-#         type=float,
-#         description='The obtained total volume of the solution.',
-#         a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'liter'},
-#         unit=' liter',
-#     )
-#     solution = SubSection(
-#         section_def=SolutionReference,
-#         description="""
-#         The obtained solution, composed by the sum of each mixing step.
-#         """,
-#     )
-#     steps = SubSection(
-#         section_def=SolutionPreparationStep,
-#         repeats=True,
-#     )
