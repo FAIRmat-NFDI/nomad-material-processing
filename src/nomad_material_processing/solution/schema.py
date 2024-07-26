@@ -523,7 +523,7 @@ class Agitation(SolutionPreparationStep):
     def normalize(self, archive, logger):
         if not self.name:
             self.name = 'Agitation'
-        return super().normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 class Sonication(Agitation):
@@ -540,7 +540,7 @@ class Sonication(Agitation):
     def normalize(self, archive, logger):
         if not self.name:
             self.name = 'Sonication'
-        return super().normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 class MechanicalStirring(Agitation):
@@ -557,7 +557,7 @@ class MechanicalStirring(Agitation):
     def normalize(self, archive, logger):
         if not self.name:
             self.name = 'Mechanical Stirring'
-        return super().normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 class SolutionPreparation(Process, EntryData):
