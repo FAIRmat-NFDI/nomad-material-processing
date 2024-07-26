@@ -272,7 +272,7 @@ class Solution(CompositeSystem, EntryData):
                     elif val2:
                         setattr(combined_components[comparison_key], prop, val2)
                 for prop in ['component_role']:
-                    # combine the component role if they are the same
+                    # combine the component role (solvent or solute) if they are the same
                     val1 = getattr(combined_components[comparison_key], prop, None)
                     val2 = getattr(component, prop, None)
                     if val1 and val2 and val1 == val2:
@@ -418,8 +418,10 @@ class AddSolid(SolutionPreparationStep):
     solution_component = SubSection(section_def=SolutionComponent)
 
     def normalize(self, archive, logger):
-        if not self.name:
-            if self.solution_component.component_role:
+        if not self.name and self.solution_component:
+            if self.solution_component.name:
+                self.name = f'Add {self.solution_component.name}'
+            elif self.solution_component.component_role:
                 self.name = f'Add {self.solution_component.component_role}'
             else:
                 self.name = 'Add Solid Component'
@@ -444,8 +446,10 @@ class AddLiquid(SolutionPreparationStep):
     solution_component = SubSection(section_def=LiquidSolutionComponent)
 
     def normalize(self, archive, logger):
-        if not self.name:
-            if self.solution_component.component_role:
+        if not self.name and self.solution_component:
+            if self.solution_component.name:
+                self.name = f'Add {self.solution_component.name}'
+            elif self.solution_component.component_role:
                 self.name = f'Add {self.solution_component.component_role}'
             else:
                 self.name = 'Add Liquid Component'
@@ -482,11 +486,13 @@ class AddSolution(SolutionPreparationStep):
     solution_component = SubSection(section_def=SolutionReference)
 
     def normalize(self, archive, logger):
-        if not self.name:
-            self.name = 'Add Solution'
-
-        if self.solution_component:
-            if not self.volume:
+        if self.solution_component and self.solution_component.reference:
+            if not self.name:
+                if self.solution_component.reference.name:
+                    self.name = f'Add {self.solution_component.reference.name}'
+                else:
+                    self.name = 'Add Solution'
+            if not self.volume and self.solution_component.reference.theoretical_volume:
                 # assume entire volume of the solution is used
                 self.volume = self.solution_component.reference.theoretical_volume
 
@@ -559,7 +565,7 @@ class SolutionPreparation(Process, EntryData):
     Solution preparation class
     """
 
-    # TODO make the solvents and solutes sub-sections non-editable.
+    # TODO make the solution and solution_reference sub-sections non-editable.
 
     m_def = Section(
         a_eln=ELNAnnotation(
