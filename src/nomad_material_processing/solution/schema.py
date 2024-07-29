@@ -534,9 +534,12 @@ class AddSolution(SolutionPreparationStep):
                     self.name = f'Add {self.solution_component.reference.name}'
                 else:
                     self.name = 'Add Solution'
-            if not self.volume and self.solution_component.reference.calculated_volume:
+            if not self.volume:
                 # assume entire volume of the solution is used
-                self.volume = self.solution_component.reference.calculated_volume
+                if self.solution_component.reference.calculated_volume:
+                    self.volume = self.solution_component.reference.calculated_volume
+                if self.solution_component.reference.measured_volume:
+                    self.volume = self.solution_component.reference.measured_volume
 
         super().normalize(archive, logger)
 
@@ -699,10 +702,10 @@ class SolutionPreparation(Process, EntryData):
                 if not component.components:
                     continue
                 try:
-                    scaler = (
-                        step.volume
-                        / step.solution_component.reference.calculated_volume
-                    )
+                    total_available_volume = component.calculated_volume
+                    if component.measured_volume:
+                        total_available_volume = component.measured_volume
+                    scaler = step.volume / total_available_volume
                     for idx, comp in enumerate(component.components):
                         if getattr(comp, 'mass', None):
                             component.components[idx].mass = comp.mass * scaler
