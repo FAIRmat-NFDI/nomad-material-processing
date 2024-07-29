@@ -65,94 +65,6 @@ class MolarConcentration(ArchiveSection):
     )
 
 
-class SolutionComponent(PureSubstanceComponent):
-    m_def = Section(
-        a_eln=ELNAnnotation(
-            properties=SectionProperties(
-                order=[
-                    'name',
-                    'substance_name',
-                    'component_role',
-                    'mass',
-                    'mass_fraction',
-                ],
-            ),
-        ),
-    )
-    component_role = Quantity(
-        type=MEnum(
-            'Solvent',
-            'Solute',
-        ),
-        description="""
-        The role of the component added to the solution.
-        | role | description |
-        | ------------- | ----------- |
-        | Solvent       | The term applied to the whole initial liquid phase containing the extractant. |
-        | Solute        | The minor component of a solution which is regarded as having been dissolved by the solvent. |
-        """,
-        a_eln=ELNAnnotation(
-            component='EnumEditQuantity',
-        ),
-    )
-    mass = Quantity(
-        type=np.float64,
-        description='The mass of the component without the container.',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity',
-            defaultDisplayUnit='gram',
-            minValue=0,
-        ),
-        unit='gram',
-    )
-    molar_concentration = SubSection(section_def=MolarConcentration)
-    pure_substance = SubSection(section_def=PubChemPureSubstanceSection)
-
-
-class LiquidSolutionComponent(SolutionComponent):
-    m_def = Section(
-        description="""
-        The liquid component of a mixed material.
-        """,
-        a_eln=ELNAnnotation(
-            properties=SectionProperties(
-                order=[
-                    'name',
-                    'substance_name',
-                    'component_role',
-                    'volume',
-                    'density',
-                ],
-            ),
-        ),
-    )
-    volume = Quantity(
-        type=np.float64,
-        description='The volume of the liquid component.',
-        a_eln=dict(
-            component='NumberEditQuantity',
-            defaultDisplayUnit='milliliter',
-            minValue=0,
-        ),
-        unit='milliliter',
-    )
-    density = Quantity(
-        type=np.float64,
-        description='The density of the liquid component.',
-        a_eln=dict(
-            component='NumberEditQuantity',
-            defaultDisplayUnit='gram / liter',
-            minValue=0,
-        ),
-        unit='gram / liter',
-    )
-
-    def normalize(self, archive, logger: BoundLogger) -> None:
-        super().normalize(archive, logger)
-        if self.volume and self.density:
-            self.mass = self.volume.to('liters') * self.density.to('grams/liter')
-
-
 class SolutionStorage(ArchiveSection):
     """
     Solution storage class
@@ -203,6 +115,82 @@ class SolutionStorage(ArchiveSection):
             component='RichTextEditQuantity',
         ),
     )
+
+
+class BaseSolutionComponent(Component):
+    pass
+
+
+class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
+    m_def = Section(
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                order=[
+                    'name',
+                    'substance_name',
+                    'component_role',
+                    'volume',
+                    'density',
+                    'mass',
+                    'molar_concentration',
+                ],
+                visible=Filter(
+                    exclude=[
+                        'mass_fraction',
+                    ],
+                ),
+            ),
+        ),
+    )
+    component_role = Quantity(
+        type=MEnum(
+            'Solvent',
+            'Solute',
+        ),
+        default='Solvent',
+        description="""
+        The role of the component added to the solution.
+        | role | description |
+        | ------------- | ----------- |
+        | Solvent       | The term applied to the whole initial liquid phase containing the extractant. |
+        | Solute        | The minor component of a solution which is regarded as having been dissolved by the solvent. |
+        """,
+        a_eln=ELNAnnotation(
+            component='EnumEditQuantity',
+        ),
+    )
+    mass = Quantity(
+        type=np.float64,
+        description='The mass of the component without the container.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='gram',
+            minValue=0,
+        ),
+        unit='gram',
+    )
+    volume = Quantity(
+        type=np.float64,
+        description='The volume of the liquid component.',
+        a_eln=dict(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='milliliter',
+            minValue=0,
+        ),
+        unit='milliliter',
+    )
+    density = Quantity(
+        type=np.float64,
+        description='The density of the liquid component.',
+        a_eln=dict(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='gram / liter',
+            minValue=0,
+        ),
+        unit='gram / liter',
+    )
+    molar_concentration = SubSection(section_def=MolarConcentration)
+    pure_substance = SubSection(section_def=PubChemPureSubstanceSection)
 
 
 class Solution(CompositeSystem, EntryData):
