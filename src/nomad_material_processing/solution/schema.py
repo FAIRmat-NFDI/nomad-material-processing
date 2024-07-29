@@ -74,7 +74,6 @@ class SolutionComponent(PureSubstanceComponent):
                     'name',
                     'substance_name',
                     'component_role',
-                    'purity_fraction',
                     'mass',
                     'mass_fraction',
                 ],
@@ -107,15 +106,6 @@ class SolutionComponent(PureSubstanceComponent):
         ),
         unit='gram',
     )
-    purity_fraction = Quantity(
-        type=np.float64,
-        description='The purity of the component in fraction.',
-        a_eln=dict(
-            component='NumberEditQuantity',
-            maxValue=100,
-            minValue=0,
-        ),
-    )
     molar_concentration = SubSection(section_def=MolarConcentration)
 
 
@@ -130,7 +120,6 @@ class LiquidSolutionComponent(SolutionComponent):
                     'name',
                     'substance_name',
                     'component_role',
-                    'purity_fraction',
                     'volume',
                     'density',
                 ],
@@ -364,8 +353,7 @@ class Solution(CompositeSystem, EntryData):
         logger: 'BoundLogger' = None,
     ) -> Union[Quantity, None]:
         """
-        Compute the moles of a component in the solution. If purity fraction of component
-        is provided, the calculated moles is multiplied with it.
+        Compute the moles of a component in the solution.
 
         Args:
             component (SolutionComponent): component to compute the moles for.
@@ -392,8 +380,6 @@ class Solution(CompositeSystem, EntryData):
         moles = component.mass.to('grams') / (
             component.pure_substance.molecular_mass.to('Da').magnitude * ureg('g/mol')
         )
-        if getattr(component, 'purity_fraction', None):
-            moles *= component.purity_fraction
         return moles
 
     def normalize(self, archive, logger) -> None:
