@@ -17,6 +17,7 @@ from nomad.datamodel.metainfo.basesections import (
     Process,
     ProcessStep,
     PureSubstanceComponent,
+    PubChemPureSubstanceSection,
 )
 from nomad.metainfo import (
     Datetime,
@@ -105,6 +106,7 @@ class SolutionComponent(PureSubstanceComponent):
         unit='gram',
     )
     molar_concentration = SubSection(section_def=MolarConcentration)
+    pure_substance = SubSection(section_def=PubChemPureSubstanceSection)
 
 
 class LiquidSolutionComponent(SolutionComponent):
@@ -294,16 +296,16 @@ class Solution(CompositeSystem, EntryData):
 
     def combine_solution_components(self, logger: 'BoundLogger') -> None:
         """
-        Combine the solution components with the same IUPAC name.
+        Combine the solution components with the same CAS number.
         Following properties are accumulated for combined components: mass, volume.
         """
         combined_components = {}
         unprocessed_components = []
         for component in self.components:
-            if not component.pure_substance or not component.pure_substance.iupac_name:
+            if not component.pure_substance or not component.pure_substance.cas_number:
                 unprocessed_components.append(component)
                 continue
-            comparison_key = component.pure_substance.iupac_name
+            comparison_key = component.pure_substance.cas_number
             if comparison_key in combined_components:
                 for prop in ['mass', 'volume']:
                     val1 = getattr(combined_components[comparison_key], prop, None)
