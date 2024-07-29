@@ -14,6 +14,7 @@ from nomad.datamodel.metainfo.basesections import (
     Component,
     CompositeSystem,
     CompositeSystemReference,
+    InstrumentReference,
     Process,
     ProcessStep,
     PureSubstanceComponent,
@@ -542,6 +543,38 @@ class SolutionPreparationStep(ProcessStep):
     )
 
 
+class MeasurementMethodology(ArchiveSection):
+    instrument = SubSection(section_def=InstrumentReference)
+
+
+class Pipetting(MeasurementMethodology):
+    pipette_volume = Quantity()  # TODO populate from the instrument section
+
+
+class Scaling(MeasurementMethodology):
+    precision = Quantity()  # TODO populate from the instrument section
+    container_mass = Quantity(
+        type=np.float64,
+        description='The mass of the container.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='gram',
+            minValue=0,
+        ),
+        unit='gram',
+    )
+    gross_mass = Quantity(
+        type=np.float64,
+        description='The mass of the material including the container.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='gram',
+            minValue=0,
+        ),
+        unit='gram',
+    )
+
+
 class AddSolutionComponent(SolutionPreparationStep):
     m_def = Section(
         a_eln=ELNAnnotation(
@@ -557,6 +590,7 @@ class AddSolutionComponent(SolutionPreparationStep):
         ),
     )
     solution_component = SubSection(section_def=BaseSolutionComponent)
+    measurement = SubSection(section_def=MeasurementMethodology)
 
     def normalize(self, archive, logger):
         if self.solution_component and isinstance(
