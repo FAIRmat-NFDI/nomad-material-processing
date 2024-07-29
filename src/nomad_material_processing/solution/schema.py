@@ -268,9 +268,11 @@ class Solution(CompositeSystem, EntryData):
                     'name',
                     'datetime',
                     'lab_id',
-                    'ph_value',
                     'calculated_volume',
                     'measured_volume',
+                    'mass',
+                    'density',
+                    'ph_value',
                     'description',
                     'components',
                     'elemental_composition',
@@ -288,6 +290,26 @@ class Solution(CompositeSystem, EntryData):
             minValue=0,
             maxValue=14,
         ),
+    )
+    density = Quantity(
+        description='The density of the solution.',
+        type=np.float64,
+        a_eln=dict(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='gram / milliliter',
+            minValue=0,
+        ),
+        unit='gram / milliliter',
+    )
+    mass = Quantity(
+        description='The mass of the solution.',
+        type=np.float64,
+        a_eln=dict(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='gram',
+            minValue=0,
+        ),
+        unit='gram',
     )
     calculated_volume = Quantity(
         description="""The final expected volume of the solution, which is the sum of
