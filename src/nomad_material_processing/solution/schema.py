@@ -736,3 +736,5 @@ class SolutionPreparation(Process, EntryData):
         if self.solution and not self.solution_reference:
             self.solution_reference = SolutionReference()
         self.solution_reference.reference = self.create_solution_entry(archive, logger)
+
+        super().normalize(archive, logger)
