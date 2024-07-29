@@ -683,6 +683,15 @@ class SolutionPreparation(Process, EntryData):
         return solution_reference
 
     def normalize(self, archive, logger) -> None:
+        super().normalize(archive, logger)
+        component_added = False
+        for step in self.steps:
+            if isinstance(step, (AddSolid, AddLiquid, AddSolution)):
+                component_added = True
+                break
+        if not component_added:
+            return
+
         # prepare the solution
         if not self.solution:
             self.solution = Solution()
@@ -728,5 +737,3 @@ class SolutionPreparation(Process, EntryData):
         if self.solution and not self.solution_reference:
             self.solution_reference = SolutionReference()
         self.solution_reference.reference = self.create_solution_entry(archive, logger)
-
-        super().normalize(archive, logger)
