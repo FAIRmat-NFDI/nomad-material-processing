@@ -600,7 +600,7 @@ class SolutionPreparation(Process, EntryData):
         super().normalize(archive, logger)
         component_added = False
         for step in self.steps:
-            if isinstance(step, (AddSolid, AddLiquid, AddSolution)):
+            if isinstance(step, AddSolutionComponent):
                 component_added = True
                 break
         if not component_added:
@@ -613,36 +613,10 @@ class SolutionPreparation(Process, EntryData):
         self.solution.solvents = []
         self.solution.components = []
         for step in self.steps:
-            if isinstance(step, (AddSolid, AddLiquid)):
+            if isinstance(step, AddSolutionComponent):
                 if step.solution_component:
                     self.solution.components.append(step.solution_component)
-            elif isinstance(step, AddSolution):
-                # add components from the solution while taking the volume used into
-                # account
-                try:
-                    component = step.solution_component.reference.m_copy()
-                except AttributeError:
-                    logger.error(
-                        f'Could not copy the solution reference for the step {step.name}.'
-                    )
-                    continue
-                if not component.components:
-                    continue
-                try:
-                    total_available_volume = component.calculated_volume
-                    if component.measured_volume:
-                        total_available_volume = component.measured_volume
-                    scaler = step.volume / total_available_volume
-                    for idx, comp in enumerate(component.components):
-                        if getattr(comp, 'mass', None):
-                            component.components[idx].mass = comp.mass * scaler
-                        if getattr(comp, 'volume', None):
-                            component.components[idx].volume = comp.volume * scaler
-                except Exception as e:
-                    logger.warning(
-                        f'Could not scale the components for the step {step.name}.\n{e}.'
-                    )
-                self.solution.components.extend(component.components)
+
         if not self.solution.name:
             self.solution.name = f'Solution from {self.name}'
         self.solution.normalize(archive, logger)
