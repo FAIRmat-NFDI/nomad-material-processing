@@ -423,6 +423,60 @@ class SolutionReference(CompositeSystemReference):
     )
 
 
+class SolutionComponentReference(SolutionReference, BaseSolutionComponent):
+    m_def = Section(
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                order=[
+                    'name',
+                    'reference',
+                    'lab_id',
+                    'volume',
+                ],
+                visible=Filter(
+                    exclude=[
+                        'mass_fraction',
+                        'mass',
+                    ],
+                ),
+            ),
+        )
+    )
+    volume = Quantity(
+        type=np.float64,
+        description='The volume of the solution used.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='milliliter',
+            minValue=0,
+        ),
+        unit='milliliter',
+    )
+
+    def normalize(self, archive, logger):
+        if self.reference:
+            if not self.name:
+                self.name = self.reference.name
+            # assume entire volume of the solution is used
+            if self.reference.measured_volume:
+                available_volume = self.reference.measured_volume
+            elif self.reference.calculated_volume:
+                available_volume = self.reference.calculated_volume
+            else:
+                available_volume = None
+        if not self.volume and available_volume:
+            self.volume = available_volume
+        if self.volume and available_volume:
+            if self.volume > available_volume:
+                logger.warning(
+                    f'The volume used for the "{self.name}" is greater than the '
+                    'available volume of the solution. Setting it to the available '
+                    'volume.'
+                )
+            self.volume = available_volume
+        super().normalize(archive, logger)
+
+
 class SolutionPreparationStep(ProcessStep):
     m_def = Section(
         description="""
