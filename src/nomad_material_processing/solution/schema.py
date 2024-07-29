@@ -39,20 +39,18 @@ class MolarConcentration(ArchiveSection):
     The molar concentration of a component in a solution.
     """
 
-    theoretical_concentration = Quantity(
+    calculated_concentration = Quantity(
         type=np.float64,
         description=(
             'The expected concentration calculated from the component moles and '
             'total volume.'
         ),
         a_eln=ELNAnnotation(
-            component='NumberEditQuantity',
             defaultDisplayUnit='mol / liter',
-            minValue=0,
         ),
         unit='mol / liter',
     )
-    observed_concentration = Quantity(
+    measured_concentration = Quantity(
         type=np.float64,
         description=(
             'The concentration observed or measured with some characterization technique.'
@@ -223,8 +221,8 @@ class Solution(CompositeSystem, EntryData):
                     'datetime',
                     'lab_id',
                     'ph_value',
-                    'theoretical_volume',
-                    'observed_volume',
+                    'calculated_volume',
+                    'measured_volume',
                     'description',
                     'components',
                     'elemental_composition',
@@ -243,20 +241,18 @@ class Solution(CompositeSystem, EntryData):
             maxValue=14,
         ),
     )
-    theoretical_volume = Quantity(
+    calculated_volume = Quantity(
         description="""The final expected volume of the solution, which is the sum of
         volume of its liquid components.
         """,
         type=np.float64,
         a_eln=dict(
-            component='NumberEditQuantity',
             defaultDisplayUnit='milliliter',
-            minValue=0,
         ),
         unit='milliliter',
     )
-    observed_volume = Quantity(
-        description='The final observed volume of the solution.',
+    measured_volume = Quantity(
+        description='The volume of the solution as observed or measured.',
         type=np.float64,
         a_eln=dict(
             component='NumberEditQuantity',
@@ -332,20 +328,20 @@ class Solution(CompositeSystem, EntryData):
         self.components = list(combined_components.values())
         self.components.extend(unprocessed_components)
 
-    def compute_theoretical_volume(self, logger: 'BoundLogger') -> None:
+    def compute_volume(self, logger: 'BoundLogger') -> None:
         """
-        Compute the theoretical volume of the solution.
+        Compute the volume of the solution.
 
         Args:
             logger (BoundLogger): A structlog logger.
         """
-        self.theoretical_volume = 0 * ureg('milliliter')
+        self.calculated_volume = 0 * ureg('milliliter')
         for component in self.components:
             if isinstance(component, LiquidSolutionComponent):
                 if not component.volume:
                     logger.warning(f'Volume of component {component.name} is missing.')
                     continue
-                self.theoretical_volume += component.volume
+                self.calculated_volume += component.volume
 
     @staticmethod
     def compute_component_moles(
@@ -385,11 +381,11 @@ class Solution(CompositeSystem, EntryData):
     def normalize(self, archive, logger) -> None:
         self.combine_solution_components(logger)
 
-        self.compute_theoretical_volume(logger)
-        if self.observed_volume:
-            volume = self.observed_volume
+        self.compute_volume(logger)
+        if self.measured_volume:
+            volume = self.measured_volume
         else:
-            volume = self.theoretical_volume
+            volume = self.calculated_volume
 
         # get molar concentration of components
         for idx, component in enumerate(self.components):
@@ -408,7 +404,7 @@ class Solution(CompositeSystem, EntryData):
                         molar_concentration = moles / volume
                 self.components[
                     idx
-                ].molar_concentration.theoretical_concentration = molar_concentration
+                ].molar_concentration.calculated_concentration = molar_concentration
 
         # fill the solvents and solutes
         self.solvents, self.solutes = [], []
@@ -536,9 +532,9 @@ class AddSolution(SolutionPreparationStep):
                     self.name = f'Add {self.solution_component.reference.name}'
                 else:
                     self.name = 'Add Solution'
-            if not self.volume and self.solution_component.reference.theoretical_volume:
+            if not self.volume and self.solution_component.reference.calculated_volume:
                 # assume entire volume of the solution is used
-                self.volume = self.solution_component.reference.theoretical_volume
+                self.volume = self.solution_component.reference.calculated_volume
 
         super().normalize(archive, logger)
 
@@ -703,7 +699,7 @@ class SolutionPreparation(Process, EntryData):
                 try:
                     scaler = (
                         step.volume
-                        / step.solution_component.reference.theoretical_volume
+                        / step.solution_component.reference.calculated_volume
                     )
                     for idx, comp in enumerate(component.components):
                         if getattr(comp, 'mass', None):
