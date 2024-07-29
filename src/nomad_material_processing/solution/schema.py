@@ -252,7 +252,7 @@ class Solution(CompositeSystem, EntryData):
         unit='milliliter',
     )
     components = SubSection(
-        section_def=SolutionComponent,
+        section_def=BaseSolutionComponent,
         description="""
         The components of the solution.
         """,
@@ -431,7 +431,7 @@ class SolutionPreparationStep(ProcessStep):
     )
 
 
-class AddSolid(SolutionPreparationStep):
+class AddSolutionComponent(SolutionPreparationStep):
     m_def = Section(
         a_eln=ELNAnnotation(
             properties=SectionProperties(
@@ -445,89 +445,28 @@ class AddSolid(SolutionPreparationStep):
             ),
         ),
     )
-    solution_component = SubSection(section_def=SolutionComponent)
+    solution_component = SubSection(section_def=BaseSolutionComponent)
 
     def normalize(self, archive, logger):
-        if not self.name and self.solution_component:
-            if self.solution_component.name:
-                self.name = f'Add {self.solution_component.name}'
-            elif self.solution_component.component_role:
-                self.name = f'Add {self.solution_component.component_role}'
-            else:
-                self.name = 'Add Solid Component'
-
-        super().normalize(archive, logger)
-
-
-class AddLiquid(SolutionPreparationStep):
-    m_def = Section(
-        a_eln=ELNAnnotation(
-            properties=SectionProperties(
-                order=[
-                    'name',
-                    'start_time',
-                    'duration',
-                    'comment',
-                    'solution_component',
-                ],
-            ),
-        ),
-    )
-    solution_component = SubSection(section_def=LiquidSolutionComponent)
-
-    def normalize(self, archive, logger):
-        if not self.name and self.solution_component:
-            if self.solution_component.name:
-                self.name = f'Add {self.solution_component.name}'
-            elif self.solution_component.component_role:
-                self.name = f'Add {self.solution_component.component_role}'
-            else:
-                self.name = 'Add Liquid Component'
-
-        super().normalize(archive, logger)
-
-
-class AddSolution(SolutionPreparationStep):
-    m_def = Section(
-        a_eln=ELNAnnotation(
-            properties=SectionProperties(
-                order=[
-                    'name',
-                    'start_time',
-                    'volume',
-                    'duration',
-                    'comment',
-                    'solution_component',
-                ],
-            ),
-        ),
-    )
-
-    volume = Quantity(
-        type=np.float64,
-        description='The volume of the solution used.',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity',
-            defaultDisplayUnit='milliliter',
-            minValue=0,
-        ),
-        unit='milliliter',
-    )
-    solution_component = SubSection(section_def=SolutionReference)
-
-    def normalize(self, archive, logger):
-        if self.solution_component and self.solution_component.reference:
+        if self.solution_component and isinstance(
+            self.solution_component, SolutionComponent
+        ):
             if not self.name:
-                if self.solution_component.reference.name:
-                    self.name = f'Add {self.solution_component.reference.name}'
+                if self.solution_component.name:
+                    self.name = f'Add {self.solution_component.name}'
+                else:
+                    self.name = f'Add {self.solution_component.component_role}'
+        elif (
+            self.solution_component
+            and isinstance(self.solution_component, SolutionComponentReference)
+            and self.solution_component.reference
+        ):
+            solution = self.solution_component.reference
+            if not self.name:
+                if solution.name:
+                    self.name = f'Add {solution.name}'
                 else:
                     self.name = 'Add Solution'
-            if not self.volume:
-                # assume entire volume of the solution is used
-                if self.solution_component.reference.calculated_volume:
-                    self.volume = self.solution_component.reference.calculated_volume
-                if self.solution_component.reference.measured_volume:
-                    self.volume = self.solution_component.reference.measured_volume
 
         super().normalize(archive, logger)
 
