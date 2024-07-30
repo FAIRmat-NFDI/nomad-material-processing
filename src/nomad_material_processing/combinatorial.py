@@ -1,3 +1,5 @@
+import json
+
 #
 # Copyright The NOMAD Authors.
 #
@@ -18,6 +20,11 @@
 from typing import (
     TYPE_CHECKING,
 )
+import plotly.graph_objects as go
+from nomad.datamodel.metainfo.plot import (
+    PlotlyFigure,
+    PlotSection,
+)
 from nomad.metainfo import (
     Package,
     Quantity,
@@ -26,6 +33,7 @@ from nomad.metainfo import (
 )
 from nomad.datamodel.data import (
     ArchiveSection,
+    EntryData,
 )
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
@@ -47,15 +55,121 @@ if TYPE_CHECKING:
 m_package = Package(name='Combinatorial Synthesis')
 
 
-class CombinatorialLibrary(CompositeSystem):
+class CombinatorialLibrary(CompositeSystem, EntryData, PlotSection):
     '''
     A base section for any continuous combinatorial library.
     '''
     m_def = Section()
 
     def plot(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
-        # TODO: Query the samples and plot them.
-        raise NotImplementedError('Plotting is not implemented for CombinatorialLibrary.')
+        from nomad.search import (
+            search,
+            MetadataPagination,
+        )
+        query = {
+            "section_defs.definition_qualified_name:all": [
+            "nomad_material_processing.combinatorial.CombinatorialSample"
+            ],
+            "entry_references.target_entry_id:all": [
+            archive.metadata.entry_id
+            ]
+        }
+        search_result = search(
+            owner='all',
+            query=query,
+            pagination=MetadataPagination(page_size=1),
+            user_id=archive.metadata.main_author.user_id,
+        )
+        references = []
+        x_values = []
+        y_values = []
+        z_values = []
+        if search_result.pagination.total > 0:
+            # print(json.dumps(search_result.data, indent=2))
+            for res in search_result.data:
+                entry_id = res['entry_id']
+                upload_id = res['upload_id']
+                reference = f'../../../{upload_id}/entry/id/{entry_id}'
+                x, y, z = None, None, None
+                for quantity in res['search_quantities']:
+                    if quantity['path_archive'] == 'data.position.x':
+                        x = quantity['float_value']
+                    if quantity['path_archive'] == 'data.position.y':
+                        y = quantity['float_value']
+                    if quantity['path_archive'] == 'data.position.z':
+                        z = quantity['float_value']
+                references.append(reference)
+                x_values.append(x)
+                y_values.append(y)
+                z_values.append(z)
+            print(f'Found {search_result.pagination.total} activities.')
+        fig = go.Figure(data=go.Scatter(
+            x=x_values,
+            y=y_values,
+            mode='markers',
+            customdata=references,
+            marker=dict(color='#2A4CDF'),
+            hovertemplate='<a href="%{customdata}">Link</a><extra></extra>'
+        ))
+
+        # Set plot title and axis labels
+        fig.update_layout(
+            template='plotly_white',
+            hovermode='closest',
+            dragmode='zoom',
+            title='Scatter Plot of x and y Coordinates',
+            xaxis_title='x',
+            yaxis_title='y'
+        )
+        # fig = go.Figure()
+        # for step in self.steps:
+        #     fig.add_trace(
+        #         go.Scatter(
+        #             x=x,
+        #             y=y,
+        #             name=step.name,
+        #             line=dict(color='#2A4CDF', width=2),
+        #             yaxis='y',
+        #         ),
+        #     )
+        # fig.update_layout(
+        #     template='plotly_white',
+        #     hovermode='closest',
+        #     dragmode='zoom',
+        #     xaxis=dict(
+        #         fixedrange=False,
+        #         autorange=True,
+        #         rangeslider=dict(
+        #             autorange=True,
+        #             borderwidth=1,
+        #         ),
+        #         title='Process time / s',
+        #         mirror='all',
+        #         showline=True,
+        #         gridcolor='#EAEDFC',
+        #     ),
+        #     yaxis=dict(
+        #         fixedrange=False,
+        #         type='log',
+        #         anchor='x',
+        #         title='Chamber pressure / mbar',
+        #         domain=[0, 0.48],
+        #         titlefont=dict(color='#2A4CDF'),
+        #         tickfont=dict(color='#2A4CDF'),
+        #         gridcolor='#EAEDFC',
+        #     ),
+        # )
+        plot_json = fig.to_plotly_json()
+        plot_json['config'] = dict(
+            scrollZoom=False,
+        )
+        self.figures.append(
+            PlotlyFigure(
+                label='Power, pressure, and temperature',
+                figure=plot_json,
+            )
+        )
+
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         '''
@@ -67,6 +181,8 @@ class CombinatorialLibrary(CompositeSystem):
             logger (BoundLogger): A structlog logger.
         '''
         super(CombinatorialLibrary, self).normalize(archive, logger)
+        self.figures = []
+        self.plot(archive, logger)
 
 
 class CombinatorialSamplePosition(ArchiveSection):
@@ -114,7 +230,7 @@ class CombinatorialSamplePosition(ArchiveSection):
         super(CombinatorialSamplePosition, self).normalize(archive, logger)
 
 
-class CombinatorialSample(CompositeSystem):
+class CombinatorialSample(CompositeSystem, EntryData):
     '''
     A base section for any sample of a continuous combinatorial library.
     '''
