@@ -537,6 +537,16 @@ class ElectronicProperties(ArchiveSection):
         ),
         description='Concentration of free charge carriers, electrons in the conduction band and holes in the valence band.',
     )
+    electrical_resistivity = Quantity(
+        type=float,
+        links=['http://fairmat-nfdi.eu/taxonomy/ElectricalResistivity'],
+        description='Resistance of the charges to move in the presence of an electric current.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='ohm cm',
+        ),
+        unit='ohm m',
+    )
 
 
 class Substrate(CompositeSystem):
