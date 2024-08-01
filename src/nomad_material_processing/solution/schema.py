@@ -485,7 +485,12 @@ class SolutionReference(CompositeSystemReference):
 
 
 class SolutionComponentReference(SolutionReference, BaseSolutionComponent):
+    """
+    Section for referencing a solution that is being used as a component.
+    """
+
     m_def = Section(
+        description='A reference to the solution that is being used a component.',
         a_eln=ELNAnnotation(
             properties=SectionProperties(
                 order=[
@@ -501,7 +506,7 @@ class SolutionComponentReference(SolutionReference, BaseSolutionComponent):
                     ],
                 ),
             ),
-        )
+        ),
     )
     volume = Quantity(
         type=np.float64,
@@ -514,18 +519,23 @@ class SolutionComponentReference(SolutionReference, BaseSolutionComponent):
         unit='milliliter',
     )
 
-    def normalize(self, archive, logger):
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+        """
+        Normalize method for the `SolutionComponentReference` section. Sets the name and
+        volume of the component solution based on the reference.
+
+        Args:
+            archive (EntryArchive): A NOMAD archive.
+            logger (BoundLogger): A structlog logger.
+        """
         if self.reference:
             if not self.name:
                 self.name = self.reference.name
-            # assume entire volume of the solution is used
+            available_volume = self.reference.calculated_volume
             if self.reference.measured_volume:
                 available_volume = self.reference.measured_volume
-            elif self.reference.calculated_volume:
-                available_volume = self.reference.calculated_volume
-            else:
-                available_volume = None
         if not self.volume and available_volume:
+            # assume entire volume of the solution is used
             self.volume = available_volume
         if self.volume and available_volume:
             if self.volume > available_volume:
