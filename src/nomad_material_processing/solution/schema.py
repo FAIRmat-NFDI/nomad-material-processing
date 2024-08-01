@@ -651,8 +651,12 @@ class AddSolutionComponent(SolutionPreparationStep):
 
 
 class Agitation(SolutionPreparationStep):
+    """
+    Section for agitation or mixing step.
+    """
+
     m_def = Section(
-        a_eln=None,
+        description='Generic agitation or mixing step for solution preparation.',
     )
     temperature = Quantity(
         type=np.float64,
@@ -671,13 +675,27 @@ class Agitation(SolutionPreparationStep):
         ),
     )
 
-    def normalize(self, archive, logger):
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+        """
+        Normalize method for the `Agitation` section. Sets the name of the step.
+
+        Args:
+            archive (EntryArchive): A NOMAD archive.
+            logger (BoundLogger): A structlog logger.
+        """
         if not self.name:
-            self.name = 'Agitation'
+            self.name = self.__class__.__name__
         super().normalize(archive, logger)
 
 
 class Sonication(Agitation):
+    """
+    Section for sonication step.
+    """
+
+    m_def = Section(
+        description='Sonication step for solution preparation.',
+    )
     frequency = Quantity(
         type=np.float64,
         description='The frequency of the sonication instrument.',
@@ -688,27 +706,24 @@ class Sonication(Agitation):
         unit='Hz',
     )
 
-    def normalize(self, archive, logger):
-        if not self.name:
-            self.name = 'Sonication'
-        super().normalize(archive, logger)
-
 
 class MechanicalStirring(Agitation):
+    """
+    Section for mechanical stirring step.
+    """
+
+    m_def = Section(
+        description='Mechanical stirring step for solution preparation.',
+    )
     rotation_speed = Quantity(
         type=np.float64,
-        description='The rotation speed of the mixing process.',
+        description='The rotation speed of the stirrer.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             defaultDisplayUnit='rpm',
         ),
         unit='rpm',
     )
-
-    def normalize(self, archive, logger):
-        if not self.name:
-            self.name = 'Mechanical Stirring'
-        super().normalize(archive, logger)
 
 
 class SolutionPreparation(Process, EntryData):
@@ -719,6 +734,7 @@ class SolutionPreparation(Process, EntryData):
 
     # TODO populate the instruments section based on the steps.methodology.instrument
     m_def = Section(
+        description='Section for describing steps of solution preparation.',
         a_eln=ELNAnnotation(
             properties=SectionProperties(
                 visible=Filter(
