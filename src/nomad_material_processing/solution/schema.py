@@ -271,15 +271,12 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
 
 class Solution(CompositeSystem, EntryData):
     """
-    Base class for a solution
+    Section for decribing liquid solutions.
     """
 
     # TODO make the solvents, solutes, and elemental_composition sub-section non-editable.
-
     m_def = Section(
-        description="""
-        The resulting liquid obtained after the Solution preparation steps.
-        """,
+        description='A homogeneous liquid mixture composed of two or more substances.',
         a_eln=ELNAnnotation(
             properties=SectionProperties(
                 order=[
@@ -303,7 +300,7 @@ class Solution(CompositeSystem, EntryData):
     ph_value = Quantity(
         description='The pH value of the solution.',
         type=np.float64,
-        a_eln=dict(
+        a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             minValue=0,
             maxValue=14,
@@ -312,7 +309,7 @@ class Solution(CompositeSystem, EntryData):
     density = Quantity(
         description='The density of the solution.',
         type=np.float64,
-        a_eln=dict(
+        a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             defaultDisplayUnit='gram / milliliter',
             minValue=0,
@@ -322,7 +319,7 @@ class Solution(CompositeSystem, EntryData):
     mass = Quantity(
         description='The mass of the solution.',
         type=np.float64,
-        a_eln=dict(
+        a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             defaultDisplayUnit='gram',
             minValue=0,
@@ -334,7 +331,7 @@ class Solution(CompositeSystem, EntryData):
         volume of its liquid components.
         """,
         type=np.float64,
-        a_eln=dict(
+        a_eln=ELNAnnotation(
             defaultDisplayUnit='milliliter',
         ),
         unit='milliliter',
@@ -342,7 +339,7 @@ class Solution(CompositeSystem, EntryData):
     measured_volume = Quantity(
         description='The volume of the solution as observed or measured.',
         type=np.float64,
-        a_eln=dict(
+        a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             defaultDisplayUnit='milliliter',
             minValue=0,
@@ -351,9 +348,7 @@ class Solution(CompositeSystem, EntryData):
     )
     components = SubSection(
         section_def=BaseSolutionComponent,
-        description="""
-        The components of the solution.
-        """,
+        description='The components of the solution',
         repeats=True,
     )
     solvents = SubSection(
@@ -385,12 +380,17 @@ class Solution(CompositeSystem, EntryData):
         """
         Combine multiple `SolutionComponent` instances with the same CAS number.
         Following properties are accumulated for combined components: mass, volume.
+        If the mass or volume is not provided for a component, it is not combined.
+
+        Args:
+            component_list (list): A list of `SolutionComponent` instances.
+            logger (BoundLogger): A structlog logger.
         """
         combined_components = {}
         unprocessed_components = []
         for component in component_list:
             if not component.pure_substance or not component.pure_substance.cas_number:
-                unprocessed_components.append(component)
+                unprocessed_components.append(component.m_copy())
                 continue
             comparison_key = component.pure_substance.cas_number
             if comparison_key in combined_components:
@@ -404,16 +404,16 @@ class Solution(CompositeSystem, EntryData):
                     elif val2:
                         setattr(combined_components[comparison_key], prop, val2)
             else:
-                combined_components[comparison_key] = component
+                combined_components[comparison_key] = component.m_copy()
 
         combined_components = list(combined_components.values())
         combined_components.extend(unprocessed_components)
 
         return combined_components
 
-    def compute_volume(self, logger: 'BoundLogger') -> None:
+    def compute_volume(self, logger: 'BoundLogger' = None) -> None:
         """
-        Compute the volume of the solution.
+        Compute the volume of the solution by adding the volumes of its components.
 
         Args:
             logger (BoundLogger): A structlog logger.
@@ -424,14 +424,24 @@ class Solution(CompositeSystem, EntryData):
                 if component.volume:
                     self.calculated_volume += component.volume
 
-    def normalize(self, archive, logger) -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+        """
+        Normalize method for the `Solution` section. Compute the total volume of the
+        solution. Populates the solvents and solutes based on the `component_role`. In
+        case of components that are solutions, the quantity of their solvents and solutes
+        is scaled based on their volume used. Finally, combines the components with the
+        same CAS number.
+
+        Args:
+            archive (EntryArchive): A NOMAD archive.
+            logger (BoundLogger): A structlog logger.
+        """
         self.solvents, self.solutes = [], []
 
         self.compute_volume(logger)
+        volume = self.calculated_volume
         if self.measured_volume:
             volume = self.measured_volume
-        else:
-            volume = self.calculated_volume
 
         for component in self.components:
             if isinstance(component, SolutionComponent):
@@ -448,12 +458,9 @@ class Solution(CompositeSystem, EntryData):
                     scaler = 1
                     if component.volume:
                         # update scaler based on the volume used
+                        total_available_volume = component.reference.calculated_volume
                         if component.reference.measured_volume:
                             total_available_volume = component.reference.measured_volume
-                        else:
-                            total_available_volume = (
-                                component.reference.calculated_volume
-                            )
                         if total_available_volume:
                             scaler = component.volume / total_available_volume
 
@@ -464,9 +471,6 @@ class Solution(CompositeSystem, EntryData):
                                 self.solvents[-1].volume *= scaler
                             if self.solvents[-1].mass:
                                 self.solvents[-1].mass *= scaler
-                            self.solvents[-1].compute_molar_concentration(
-                                volume, logger
-                            )
                     if component.reference.solutes:
                         for solute in component.reference.solutes:
                             self.solutes.append(solute.m_copy())
@@ -474,7 +478,6 @@ class Solution(CompositeSystem, EntryData):
                                 self.solutes[-1].volume *= scaler
                             if self.solutes[-1].mass:
                                 self.solutes[-1].mass *= scaler
-                            self.solutes[-1].compute_molar_concentration(volume, logger)
 
         self.solvents = self.combine_components(self.solvents, logger)
         self.solutes = self.combine_components(self.solutes, logger)
