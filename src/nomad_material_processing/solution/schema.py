@@ -562,7 +562,7 @@ class SolutionComponentReference(SolutionReference, BaseSolutionComponent):
                     'available volume of the solution. Setting it to the available '
                     'volume.'
                 )
-            self.volume = available_volume
+                self.volume = available_volume
         super().normalize(archive, logger)
 
 
