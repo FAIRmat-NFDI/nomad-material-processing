@@ -126,7 +126,13 @@ class BaseSolutionComponent(Component):
 
 
 class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
+    """
+    Section for a component added to the solution.
+    """
+
+    # TODO get the density of the component automatically if not provided
     m_def = Section(
+        description='A component added to the solution.',
         a_eln=ELNAnnotation(
             properties=SectionProperties(
                 order=[
@@ -176,7 +182,7 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
     volume = Quantity(
         type=np.float64,
         description='The volume of the liquid component.',
-        a_eln=dict(
+        a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             defaultDisplayUnit='milliliter',
             minValue=0,
@@ -186,7 +192,7 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
     density = Quantity(
         type=np.float64,
         description='The density of the liquid component.',
-        a_eln=dict(
+        a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             defaultDisplayUnit='gram / liter',
             minValue=0,
@@ -196,12 +202,12 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
     molar_concentration = SubSection(section_def=MolarConcentration)
     pure_substance = SubSection(section_def=PubChemPureSubstanceSection)
 
-    def compute_moles(self, logger: 'BoundLogger' = None) -> Union[Quantity, None]:
+    def __compute_moles(self, logger: 'BoundLogger' = None) -> Union[Quantity, None]:
         """
-        Compute the moles of a component in the solution.
+        A private method to compute the moles of a component in the solution.
 
         Args:
-            component (SolutionComponent): component to compute the moles for.
+            component (SolutionComponent): The component to compute the moles for.
             logger (BoundLogger): A structlog logger.
 
         Returns:
@@ -222,13 +228,13 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
                     'missing.'
                 )
             return
-        moles = self.mass.to('grams') / (
+        moles = self.mass / (
             self.pure_substance.molecular_mass.to('Da').magnitude * ureg('g/mol')
         )
         return moles
 
     def compute_molar_concentration(
-        self, volume: Quantity, logger: 'BoundLogger'
+        self, volume: Quantity, logger: 'BoundLogger' = None
     ) -> None:
         """
         Compute the molar concentration of the component in a given volume of solution.
@@ -245,14 +251,22 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
             return
         if not self.molar_concentration:
             self.molar_concentration = MolarConcentration()
-        moles = self.compute_moles(logger)
+        moles = self.__compute_moles(logger)
         if moles:
             self.molar_concentration.calculated_concentration = moles / volume
 
-    def normalize(self, archive, logger: BoundLogger) -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+        """
+        Normalize method for the `SolutionComponent` section. Sets the mass if volume and
+        density are provided.
+
+        Args:
+            archive (EntryArchive): A NOMAD archive.
+            logger (BoundLogger): A structlog logger.
+        """
         PureSubstanceComponent.normalize(self, archive, logger)
         if self.volume and self.density:
-            self.mass = self.volume.to('liters') * self.density.to('grams/liter')
+            self.mass = self.volume * self.density
 
 
 class Solution(CompositeSystem, EntryData):
