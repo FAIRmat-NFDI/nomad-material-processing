@@ -34,6 +34,7 @@ from nomad_material_processing.solution.utils import (
 
 if TYPE_CHECKING:
     from structlog.stdlib import BoundLogger
+    from nomad.datamodel import EntryArchive
 
 
 class MolarConcentration(ArchiveSection):
@@ -548,6 +549,7 @@ class MeasurementMethodology(ArchiveSection):
     Base section for measurement methodology. This class can be extended to describe
     specific measurement methodologies, associated errors bounds, and instrument used.
     """
+
     instrument = SubSection(section_def=InstrumentReference)
 
 
@@ -555,6 +557,7 @@ class Pipetting(MeasurementMethodology):
     """
     Section for pipetting of liquids.
     """
+
     # TODO populate `pipette_volume` from the instrument
     pipette_volume = Quantity(
         type=np.float64,
@@ -572,6 +575,7 @@ class Scaling(MeasurementMethodology):
     """
     Section for scaling or weighing substances.
     """
+
     # TODO populate `precision` from the instrument
     precision = Quantity(
         type=np.float64,
@@ -709,11 +713,11 @@ class MechanicalStirring(Agitation):
 
 class SolutionPreparation(Process, EntryData):
     """
-    Solution preparation class
+    Section for solution preparation. This section can be used to describe the steps
+    involved in preparing a solution and create a `Solution` entry based on them.
     """
 
-    # TODO make the solution and solution_reference sub-sections non-editable.
-
+    # TODO populate the instruments section based on the steps.methodology.instrument
     m_def = Section(
         a_eln=ELNAnnotation(
             properties=SectionProperties(
@@ -725,6 +729,7 @@ class SolutionPreparation(Process, EntryData):
                 ),
                 order=[
                     'name',
+                    'solution_name',
                     'datetime',
                     'end_time',
                     'lab_id',
@@ -732,16 +737,19 @@ class SolutionPreparation(Process, EntryData):
                     'description',
                     'steps',
                     'solution',
-                    'solution_reference',
                     'instruments',
                 ],
             ),
         ),
     )
-    solution = SubSection(
-        section_def=Solution,
+    solution_name = Quantity(
+        type=str,
+        description='The name of the solution.',
+        a_eln=ELNAnnotation(
+            component='StringEditQuantity',
+        ),
     )
-    solution_reference = SubSection(
+    solution = SubSection(
         section_def=SolutionReference,
     )
     steps = SubSection(
@@ -752,14 +760,26 @@ class SolutionPreparation(Process, EntryData):
         repeats=True,
     )
 
-    def create_solution_entry(self, archive, logger):
-        from nomad.datamodel.datamodel import EntryArchive
+    def create_solution_entry(
+        self, solution: 'Solution', archive: 'EntryArchive', logger: 'BoundLogger'
+    ) -> str:
+        """
+        Create an entry using the solution section and return the reference to it.
+
+        Args:
+            solution (Solution): The solution section.
+            archive (EntryArchive): A NOMAD archive.
+            logger (BoundLogger): A structlog logger.
+
+        Returns:
+            str: The reference to the solution entry.
+        """
+        from nomad.datamodel import EntryArchive
 
         solution_file_name = (
-            f'solution_{archive.data.name.replace(" ", "_")}.archive.json'
+            f'{self.solution_name.lower().replace(" ", "_")}.archive.json'
         )
-
-        solution_entry = EntryArchive(data=archive.data.solution)
+        solution_entry = EntryArchive(data=solution)
         solution_reference = create_archive(
             entry_dict=solution_entry.m_to_dict(with_root_def=True),
             context=archive.m_context,
@@ -771,8 +791,20 @@ class SolutionPreparation(Process, EntryData):
 
         return solution_reference
 
-    def normalize(self, archive, logger) -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+        """
+        Normalize method for the `SolutionPreparation` section. Sets the solution name,
+        creates a `Solution` section, and adds the solution components to it. Then,
+        creates an entry for the solution and adds a reference to it.
+
+        Args:
+            archive (EntryArchive): A NOMAD archive.
+            logger (BoundLogger): A structlog logger.
+        """
         super().normalize(archive, logger)
+        if not self.solution_name:
+            self.solution_name = f'Solution from {self.name}'
+
         component_added = False
         for step in self.steps:
             if isinstance(step, AddSolutionComponent):
@@ -782,23 +814,16 @@ class SolutionPreparation(Process, EntryData):
             return
 
         # prepare the solution
-        if not self.solution:
-            self.solution = Solution()
-        self.solution.solutes = []
-        self.solution.solvents = []
-        self.solution.components = []
+        solution = Solution(
+            name=self.solution_name,
+        )
+        solution.components = []
         for step in self.steps:
             if isinstance(step, AddSolutionComponent):
                 if step.solution_component:
-                    self.solution.components.append(step.solution_component)
+                    solution.components.append(step.solution_component.m_copy())
+        solution.normalize(archive, logger)
 
-        if not self.solution.name:
-            self.solution.name = f'Solution from {self.name}'
-        self.solution.normalize(archive, logger)
-
-        # create a reference to the solution
-        if self.solution and not self.solution_reference:
-            self.solution_reference = SolutionReference()
-        self.solution_reference.reference = self.create_solution_entry(archive, logger)
-
-        super().normalize(archive, logger)
+        if not self.solution:
+            self.solution = SolutionReference()
+        self.solution.reference = self.create_solution_entry(solution, archive, logger)
