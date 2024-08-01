@@ -483,6 +483,11 @@ class Solution(CompositeSystem, EntryData):
         self.solvents = self.combine_components(self.solvents, logger)
         self.solutes = self.combine_components(self.solutes, logger)
 
+        for component in self.solvents:
+            component.compute_molar_concentration(volume, logger)
+        for component in self.solutes:
+            component.compute_molar_concentration(volume, logger)
+
         self.elemental_composition = []
         super().normalize(archive, logger)
 
