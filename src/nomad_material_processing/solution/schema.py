@@ -213,6 +213,8 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         Returns:
             Union[Quantity, None]: The moles of the component in the solution.
         """
+        if self.volume and self.density:
+            self.mass = self.volume * self.density
 
         if not self.pure_substance.molecular_mass:
             if logger:
