@@ -244,10 +244,11 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
             logger (BoundLogger): A structlog logger.
         """
         if not volume:
-            logger.warning(
-                f'Volume of the solution is missing, can not calculate the '
-                f'concentration of the component {self.name}.'
-            )
+            if logger:
+                logger.warning(
+                    f'Volume of the solution is missing, can not calculate the '
+                    f'concentration of the component {self.name}.'
+                )
             return
         if not self.molar_concentration:
             self.molar_concentration = MolarConcentration()
