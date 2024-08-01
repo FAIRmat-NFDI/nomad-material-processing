@@ -391,7 +391,7 @@ class Solution(CompositeSystem, EntryData):
         unprocessed_components = []
         for component in component_list:
             if not component.pure_substance or not component.pure_substance.cas_number:
-                unprocessed_components.append(component.m_copy())
+                unprocessed_components.append(component.m_copy(deep=True))
                 continue
             comparison_key = component.pure_substance.cas_number
             if comparison_key in combined_components:
@@ -405,7 +405,7 @@ class Solution(CompositeSystem, EntryData):
                     elif val2:
                         setattr(combined_components[comparison_key], prop, val2)
             else:
-                combined_components[comparison_key] = component.m_copy()
+                combined_components[comparison_key] = component.m_copy(deep=True)
 
         combined_components = list(combined_components.values())
         combined_components.extend(unprocessed_components)
@@ -449,9 +449,9 @@ class Solution(CompositeSystem, EntryData):
                 component.mass_fraction = None
                 component.compute_molar_concentration(volume, logger)
                 if component.component_role == 'Solvent':
-                    self.solvents.append(component.m_copy())
+                    self.solvents.append(component.m_copy(deep=True))
                 elif component.component_role == 'Solute':
-                    self.solutes.append(component.m_copy())
+                    self.solutes.append(component.m_copy(deep=True))
             elif isinstance(component, SolutionComponentReference):
                 # add solutes and solvents from the solution
                 # while taking the volume used into account
@@ -467,14 +467,14 @@ class Solution(CompositeSystem, EntryData):
 
                     if component.reference.solvents:
                         for solvent in component.reference.solvents:
-                            self.solvents.append(solvent.m_copy())
+                            self.solvents.append(solvent.m_copy(deep=True))
                             if self.solvents[-1].volume:
                                 self.solvents[-1].volume *= scaler
                             if self.solvents[-1].mass:
                                 self.solvents[-1].mass *= scaler
                     if component.reference.solutes:
                         for solute in component.reference.solutes:
-                            self.solutes.append(solute.m_copy())
+                            self.solutes.append(solute.m_copy(deep=True))
                             if self.solutes[-1].volume:
                                 self.solutes[-1].volume *= scaler
                             if self.solutes[-1].mass:
@@ -878,7 +878,9 @@ class SolutionPreparation(Process, EntryData):
         for step in self.steps:
             if isinstance(step, AddSolutionComponent):
                 if step.solution_component:
-                    solution.components.append(step.solution_component.m_copy())
+                    solution.components.append(
+                        step.solution_component.m_copy(deep=True)
+                    )
         solution.normalize(archive, logger)
 
         if not self.solution:
