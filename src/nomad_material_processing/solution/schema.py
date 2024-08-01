@@ -42,6 +42,9 @@ class MolarConcentration(ArchiveSection):
     The molar concentration of a component in a solution.
     """
 
+    m_def = Section(
+        description='The molar concentration of a component in a solution.',
+    )
     calculated_concentration = Quantity(
         type=np.float64,
         description=(
@@ -69,58 +72,57 @@ class MolarConcentration(ArchiveSection):
 
 class SolutionStorage(ArchiveSection):
     """
-    Solution storage class
+    Section for description of solution storage conditions.
     """
 
+    m_def = Section(
+        description='The storage conditions of the solution.',
+    )
     start_date = Quantity(
         type=Datetime,
-        a_eln=dict(
+        description='The start date and time of the storage.',
+        a_eln=ELNAnnotation(
             component='DateTimeEditQuantity',
         ),
     )
-
     end_date = Quantity(
         type=Datetime,
-        a_eln=dict(
+        description='The expiry date and time of the storage.',
+        a_eln=ELNAnnotation(
             component='DateTimeEditQuantity',
-        ),
-    )
-
-    storage_condition = Quantity(
-        type=str,
-        a_eln=dict(
-            component='StringEditQuantity',
         ),
     )
     temperature = Quantity(
         type=np.float64,
-        a_eln=dict(
+        description='The temperature of the storage.',
+        a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             defaultDisplayUnit='celsius',
         ),
         unit='celsius',
     )
-
     atmosphere = Quantity(
         type=str,
-        a_eln=dict(
+        description='The atmosphere of the storage.',
+        a_eln=ELNAnnotation(
             component='EnumEditQuantity',
             props=dict(
                 suggestions=['Ar', 'N2', 'Air'],
             ),
         ),
     )
-
     comments = Quantity(
         type=str,
-        a_eln=dict(
+        a_eln=ELNAnnotation(
             component='RichTextEditQuantity',
         ),
     )
 
 
 class BaseSolutionComponent(Component):
-    pass
+    """
+    Base class for a component added to the solution.
+    """
 
 
 class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
@@ -537,11 +539,9 @@ class SolutionComponentReference(SolutionReference, BaseSolutionComponent):
 
 
 class SolutionPreparationStep(ProcessStep):
-    m_def = Section(
-        description="""
-        Class to put together the steps of a solution preparation.
-        """,
-    )
+    """
+    Base section for steps of a solution preparation process.
+    """
 
 
 class MeasurementMethodology(ArchiveSection):
@@ -610,7 +610,12 @@ class Scaling(MeasurementMethodology):
 
 
 class AddSolutionComponent(SolutionPreparationStep):
+    """
+    Section for adding a component to the solution.
+    """
+
     m_def = Section(
+        description='Step for adding a component to the solution.',
         a_eln=ELNAnnotation(
             properties=SectionProperties(
                 order=[
@@ -626,7 +631,15 @@ class AddSolutionComponent(SolutionPreparationStep):
     solution_component = SubSection(section_def=BaseSolutionComponent)
     measurement = SubSection(section_def=MeasurementMethodology)
 
-    def normalize(self, archive, logger):
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+        """
+        Normalize method for the `AddSolutionComponent` section. Sets the name of the
+        step based on component name or component role.
+
+        Args:
+            archive (EntryArchive): A NOMAD archive.
+            logger (BoundLogger): A structlog logger.
+        """
         if self.solution_component and isinstance(
             self.solution_component, SolutionComponent
         ):
