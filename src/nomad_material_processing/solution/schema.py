@@ -544,15 +544,45 @@ class SolutionPreparationStep(ProcessStep):
 
 
 class MeasurementMethodology(ArchiveSection):
+    """
+    Base section for measurement methodology. This class can be extended to describe
+    specific measurement methodologies, associated errors bounds, and instrument used.
+    """
     instrument = SubSection(section_def=InstrumentReference)
 
 
 class Pipetting(MeasurementMethodology):
-    pipette_volume = Quantity()  # TODO populate from the instrument section
+    """
+    Section for pipetting of liquids.
+    """
+    # TODO populate `pipette_volume` from the instrument
+    pipette_volume = Quantity(
+        type=np.float64,
+        description='The volume of the pipette used.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='milliliter',
+            minValue=0,
+        ),
+        unit='liter',
+    )
 
 
 class Scaling(MeasurementMethodology):
-    precision = Quantity()  # TODO populate from the instrument section
+    """
+    Section for scaling or weighing substances.
+    """
+    # TODO populate `precision` from the instrument
+    precision = Quantity(
+        type=np.float64,
+        description='The precision of the weighing instrument.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='gram',
+            minValue=0,
+        ),
+        unit='gram',
+    )
     container_mass = Quantity(
         type=np.float64,
         description='The mass of the container.',
