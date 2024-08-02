@@ -14,6 +14,7 @@ from nomad.datamodel.metainfo.basesections import (
     Component,
     CompositeSystem,
     CompositeSystemReference,
+    SystemComponent,
     InstrumentReference,
     Process,
     ProcessStep,
@@ -457,25 +458,25 @@ class Solution(CompositeSystem, EntryData):
             elif isinstance(component, SolutionComponentReference):
                 # add solutes and solvents from the solution
                 # while taking the volume used into account
-                if component.reference:
+                if component.system:
                     scaler = 1
                     if component.volume:
                         # update scaler based on the volume used
-                        total_available_volume = component.reference.calculated_volume
-                        if component.reference.measured_volume:
-                            total_available_volume = component.reference.measured_volume
+                        total_available_volume = component.system.calculated_volume
+                        if component.system.measured_volume:
+                            total_available_volume = component.system.measured_volume
                         if total_available_volume:
                             scaler = component.volume / total_available_volume
 
-                    if component.reference.solvents:
-                        for solvent in component.reference.solvents:
+                    if component.system.solvents:
+                        for solvent in component.system.solvents:
                             self.solvents.append(solvent.m_copy(deep=True))
                             if self.solvents[-1].volume:
                                 self.solvents[-1].volume *= scaler
                             if self.solvents[-1].mass:
                                 self.solvents[-1].mass *= scaler
-                    if component.reference.solutes:
-                        for solute in component.reference.solutes:
+                    if component.system.solutes:
+                        for solute in component.system.solutes:
                             self.solutes.append(solute.m_copy(deep=True))
                             if self.solutes[-1].volume:
                                 self.solutes[-1].volume *= scaler
@@ -509,19 +510,18 @@ class SolutionReference(CompositeSystemReference):
     )
 
 
-class SolutionComponentReference(SolutionReference, BaseSolutionComponent):
+class SolutionComponentReference(SystemComponent, BaseSolutionComponent):
     """
     Section for referencing a solution that is being used as a component.
     """
 
     m_def = Section(
-        description='A reference to the solution that is being used a component.',
+        description='A reference to the solution that is being used as a component.',
         a_eln=ELNAnnotation(
             properties=SectionProperties(
                 order=[
                     'name',
-                    'reference',
-                    'lab_id',
+                    'system',
                     'volume',
                 ],
                 visible=Filter(
@@ -532,6 +532,11 @@ class SolutionComponentReference(SolutionReference, BaseSolutionComponent):
                 ),
             ),
         ),
+    )
+    system = Quantity(
+        type=Solution,  # Reference(System.m_def)
+        description='A reference to the solution.',
+        a_eln=dict(component='ReferenceEditQuantity'),
     )
     volume = Quantity(
         type=np.float64,
@@ -553,12 +558,12 @@ class SolutionComponentReference(SolutionReference, BaseSolutionComponent):
             archive (EntryArchive): A NOMAD archive.
             logger (BoundLogger): A structlog logger.
         """
-        if self.reference:
+        if self.system:
             if not self.name:
-                self.name = self.reference.name
-            available_volume = self.reference.calculated_volume
-            if self.reference.measured_volume:
-                available_volume = self.reference.measured_volume
+                self.name = self.system.name
+            available_volume = self.system.calculated_volume
+            if self.system.measured_volume:
+                available_volume = self.system.measured_volume
         if not self.volume and available_volume:
             # assume entire volume of the solution is used
             self.volume = available_volume

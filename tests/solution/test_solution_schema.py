@@ -79,7 +79,7 @@ def test_solution():
         name='Diluted Solution',
         components=[
             SolutionComponentReference(
-                reference=starter_solution,
+                system=starter_solution,
                 volume=100 * ureg('ml'),
             ),
         ],
@@ -110,7 +110,7 @@ def test_solution():
         name='Diluted Solution',
         components=[
             SolutionComponentReference(
-                reference=starter_solution,
+                system=starter_solution,
                 volume=100 * ureg('ml'),
             ),
             SolutionComponent(
