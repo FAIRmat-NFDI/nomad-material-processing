@@ -287,11 +287,11 @@ class Solution(CompositeSystem, EntryData):
                     'name',
                     'datetime',
                     'lab_id',
+                    'ph_value',
                     'calculated_volume',
                     'measured_volume',
                     'mass',
                     'density',
-                    'ph_value',
                     'description',
                     'components',
                     'elemental_composition',
@@ -314,9 +314,7 @@ class Solution(CompositeSystem, EntryData):
         description='The density of the solution.',
         type=np.float64,
         a_eln=ELNAnnotation(
-            component='NumberEditQuantity',
             defaultDisplayUnit='gram / milliliter',
-            minValue=0,
         ),
         unit='gram / milliliter',
     )
@@ -324,9 +322,7 @@ class Solution(CompositeSystem, EntryData):
         description='The mass of the solution.',
         type=np.float64,
         a_eln=ELNAnnotation(
-            component='NumberEditQuantity',
             defaultDisplayUnit='gram',
-            minValue=0,
         ),
         unit='gram',
     )
@@ -535,7 +531,6 @@ class SolutionComponentReference(SystemComponent, BaseSolutionComponent):
                 visible=Filter(
                     exclude=[
                         'mass_fraction',
-                        'mass',
                     ],
                 ),
             ),
@@ -556,6 +551,15 @@ class SolutionComponentReference(SystemComponent, BaseSolutionComponent):
         ),
         unit='milliliter',
     )
+    mass = Quantity(
+        type=np.float64,
+        description='The mass of the solution used.',
+        a_eln=ELNAnnotation(
+            defaultDisplayUnit='gram',
+            minValue=0,
+        ),
+        unit='gram',
+    )
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
@@ -572,10 +576,10 @@ class SolutionComponentReference(SystemComponent, BaseSolutionComponent):
             available_volume = self.system.calculated_volume
             if self.system.measured_volume:
                 available_volume = self.system.measured_volume
-        if not self.volume and available_volume:
+        if not self.volume:
             # assume entire volume of the solution is used
             self.volume = available_volume
-        if self.volume and available_volume:
+        else:
             if self.volume > available_volume:
                 logger.warning(
                     f'The volume used for the "{self.name}" is greater than the '
@@ -700,9 +704,9 @@ class AddSolutionComponent(SolutionPreparationStep):
         elif (
             self.solution_component
             and isinstance(self.solution_component, SolutionComponentReference)
-            and self.solution_component.reference
+            and self.solution_component.system
         ):
-            solution = self.solution_component.reference
+            solution = self.solution_component.system
             if not self.name:
                 if solution.name:
                     self.name = f'Add {solution.name}'
