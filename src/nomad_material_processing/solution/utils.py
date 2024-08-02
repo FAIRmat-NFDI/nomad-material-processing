@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from typing import TYPE_CHECKING
 
 import json
 import math
@@ -22,6 +23,9 @@ import re
 
 import pandas as pd
 import yaml
+
+if TYPE_CHECKING:
+    from nomad.datamodel import EntryArchive
 
 
 def get_reference(upload_id, entry_id):
@@ -104,3 +108,27 @@ def create_archive(
             f'To do so, remove the existing archive and click reprocess again.'
         )
     return get_hash_ref(context.upload_id, filename)
+
+
+def create_unique_filename(
+    archive: 'EntryArchive',
+    prefix: str = 'Unnamed',
+    suffix: str = 'archive.json',
+):
+    """
+    Create a unique filename of the form '{prefix}_{iterator}'. If the filename already
+    exists, the iterator is incremented until a unique filename is found.
+
+    Args:
+        archive: The archive object.
+        prefix: Part of the filename before the iterator. Default is 'Unnamed'.
+        suffix: Usually the file extension. Default is 'archive.json'.
+    """
+    i = 0
+    template = lambda i: f'{prefix}_{i}'
+    if not archive.m_context.raw_path_exists(template(i) + f'.{suffix}'):
+        return template(i)
+    while True:
+        i += 1
+        if not archive.m_context.raw_path_exists(template(i) + f'.{suffix}'):
+            return template(i)

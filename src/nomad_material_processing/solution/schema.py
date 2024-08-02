@@ -31,6 +31,7 @@ from nomad.metainfo import (
 from structlog.stdlib import BoundLogger
 from nomad_material_processing.solution.utils import (
     create_archive,
+    create_unique_filename,
 )
 
 if TYPE_CHECKING:
@@ -885,7 +886,9 @@ class SolutionPreparation(Process, EntryData):
         """
         super().normalize(archive, logger)
         if not self.solution_name:
-            self.solution_name = f'Solution from {self.name}'
+            self.solution_name = create_unique_filename(
+                archive=archive, prefix='Unnamed_Solution'
+            )
 
         component_added = False
         for step in self.steps:
