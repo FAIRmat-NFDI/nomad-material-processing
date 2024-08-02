@@ -491,6 +491,13 @@ class Solution(CompositeSystem, EntryData):
         for component in self.solutes:
             component.compute_molar_concentration(volume, logger)
 
+        mass = 0
+        for component in self.solvents + self.solutes:
+            mass += component.mass
+        if mass:
+            self.mass = mass
+            self.density = self.mass / volume
+
         self.elemental_composition = []
         super().normalize(archive, logger)
 
@@ -523,6 +530,7 @@ class SolutionComponentReference(SystemComponent, BaseSolutionComponent):
                     'name',
                     'system',
                     'volume',
+                    'mass',
                 ],
                 visible=Filter(
                     exclude=[
@@ -575,6 +583,7 @@ class SolutionComponentReference(SystemComponent, BaseSolutionComponent):
                     'volume.'
                 )
                 self.volume = available_volume
+        self.mass = self.system.density * self.volume
         super().normalize(archive, logger)
 
 
