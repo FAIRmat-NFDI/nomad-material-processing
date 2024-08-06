@@ -577,18 +577,19 @@ class SolutionComponentReference(SystemComponent, BaseSolutionComponent):
             available_volume = self.system.calculated_volume
             if self.system.measured_volume:
                 available_volume = self.system.measured_volume
-        if not self.volume:
-            # assume entire volume of the solution is used
-            self.volume = available_volume
-        else:
-            if self.volume > available_volume:
-                logger.warning(
-                    f'The volume used for the "{self.name}" is greater than the '
-                    'available volume of the solution. Setting it to the available '
-                    'volume.'
-                )
+            if not self.volume:
+                # assume entire volume of the solution is used
                 self.volume = available_volume
-        self.mass = self.system.density * self.volume
+            else:
+                if self.volume > available_volume:
+                    logger.warning(
+                        f'The volume used for the "{self.name}" is greater than the '
+                        'available volume of the solution. Setting it to the available '
+                        'volume.'
+                    )
+                    self.volume = available_volume
+            if self.system.density:
+                self.mass = self.system.density * self.volume
         super().normalize(archive, logger)
 
 
