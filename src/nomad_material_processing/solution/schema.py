@@ -495,6 +495,8 @@ class Solution(CompositeSystem, EntryData):
             self.mass = mass
             self.density = self.mass / volume
 
+        # TODO check if the elemental_composition is adjusted based on the volume used
+        # of the starter solutions
         self.elemental_composition = []
         super().normalize(archive, logger)
 
@@ -834,7 +836,7 @@ class SolutionPreparation(Process, EntryData):
         ),
     )
     solution = SubSection(
-        section_def=SolutionReference,
+        section_def=Solution,
     )
     steps = SubSection(
         section_def=SolutionPreparationStep,
@@ -911,7 +913,9 @@ class SolutionPreparation(Process, EntryData):
                         step.solution_component.m_copy(deep=True)
                     )
         solution.normalize(archive, logger)
+        self.solution = solution
 
-        if not self.solution:
-            self.solution = SolutionReference()
-        self.solution.reference = self.create_solution_entry(solution, archive, logger)
+        # TODO create a solution entry and add a reference: after fixing m_to_dict
+        # if not self.solution:
+        #     self.solution = SolutionReference()
+        # self.solution.reference = self.create_solution_entry(solution, archive, logger)
