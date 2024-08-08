@@ -836,7 +836,7 @@ class SolutionPreparation(Process, EntryData):
         ),
     )
     solution = SubSection(
-        section_def=Solution,
+        section_def=SolutionReference,
     )
     steps = SubSection(
         section_def=SolutionPreparationStep,
@@ -865,7 +865,7 @@ class SolutionPreparation(Process, EntryData):
         solution_file_name = (
             f'{self.solution_name.lower().replace(" ", "_")}.archive.json'
         )
-        solution_entry = EntryArchive(data=solution)
+        solution_entry = EntryArchive(data=solution, m_context=archive.m_context)
         solution_reference = create_archive(
             entry_dict=solution_entry.m_to_dict(with_root_def=True),
             context=archive.m_context,
@@ -913,9 +913,7 @@ class SolutionPreparation(Process, EntryData):
                         step.solution_component.m_copy(deep=True)
                     )
         solution.normalize(archive, logger)
-        self.solution = solution
 
-        # TODO create a solution entry and add a reference: after fixing m_to_dict
-        # if not self.solution:
-        #     self.solution = SolutionReference()
-        # self.solution.reference = self.create_solution_entry(solution, archive, logger)
+        if not self.solution:
+            self.solution = SolutionReference()
+        self.solution.reference = self.create_solution_entry(solution, archive, logger)
