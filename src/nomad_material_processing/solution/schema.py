@@ -28,7 +28,6 @@ from nomad.metainfo import (
     Section,
     SubSection,
 )
-from structlog.stdlib import BoundLogger
 from nomad_material_processing.solution.utils import (
     create_archive,
     create_unique_filename,
@@ -893,12 +892,7 @@ class SolutionPreparation(Process, EntryData):
                 archive=archive, prefix='Unnamed_Solution'
             )
 
-        component_added = False
-        for step in self.steps:
-            if isinstance(step, AddSolutionComponent):
-                component_added = True
-                break
-        if not component_added:
+        if not any(isinstance(s, AddSolutionComponent) for s in self.steps):
             return
 
         # prepare the solution
