@@ -101,7 +101,7 @@ class SolutionStorage(ArchiveSection):
             component='NumberEditQuantity',
             defaultDisplayUnit='celsius',
         ),
-        unit='celsius',
+        unit='kelvin',
     )
     atmosphere = Quantity(
         type=str,
@@ -179,7 +179,7 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
             defaultDisplayUnit='gram',
             minValue=0,
         ),
-        unit='gram',
+        unit='kilogram',
     )
     volume = Quantity(
         type=np.float64,
@@ -189,7 +189,7 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
             defaultDisplayUnit='milliliter',
             minValue=0,
         ),
-        unit='milliliter',
+        unit='liter',
     )
     density = Quantity(
         type=np.float64,
@@ -199,7 +199,7 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
             defaultDisplayUnit='gram / liter',
             minValue=0,
         ),
-        unit='gram / liter',
+        unit='kilogram / liter',
     )
     molar_concentration = SubSection(section_def=MolarConcentration)
     pure_substance = SubSection(section_def=PubChemPureSubstanceSection)
@@ -317,7 +317,7 @@ class Solution(CompositeSystem, EntryData):
         a_eln=ELNAnnotation(
             defaultDisplayUnit='gram / milliliter',
         ),
-        unit='gram / milliliter',
+        unit='kilogram / liter',
     )
     mass = Quantity(
         description='The mass of the solution.',
@@ -325,7 +325,7 @@ class Solution(CompositeSystem, EntryData):
         a_eln=ELNAnnotation(
             defaultDisplayUnit='gram',
         ),
-        unit='gram',
+        unit='kilogram',
     )
     calculated_volume = Quantity(
         description="""The final expected volume of the solution, which is the sum of
@@ -335,7 +335,7 @@ class Solution(CompositeSystem, EntryData):
         a_eln=ELNAnnotation(
             defaultDisplayUnit='milliliter',
         ),
-        unit='milliliter',
+        unit='liter',
     )
     measured_volume = Quantity(
         description='The volume of the solution as observed or measured.',
@@ -345,7 +345,7 @@ class Solution(CompositeSystem, EntryData):
             defaultDisplayUnit='milliliter',
             minValue=0,
         ),
-        unit='milliliter',
+        unit='liter',
     )
     components = SubSection(
         section_def=BaseSolutionComponent,
@@ -419,7 +419,7 @@ class Solution(CompositeSystem, EntryData):
         Args:
             logger (BoundLogger): A structlog logger.
         """
-        self.calculated_volume = 0 * ureg('milliliter')
+        self.calculated_volume = ureg.Quantity(0, 'milliliter')
         for component in self.components:
             if isinstance(component, (SolutionComponent, SolutionComponentReference)):
                 if component.volume:
@@ -552,7 +552,7 @@ class SolutionComponentReference(SystemComponent, BaseSolutionComponent):
             defaultDisplayUnit='milliliter',
             minValue=0,
         ),
-        unit='milliliter',
+        unit='liter',
     )
     mass = Quantity(
         type=np.float64,
@@ -561,7 +561,7 @@ class SolutionComponentReference(SystemComponent, BaseSolutionComponent):
             defaultDisplayUnit='gram',
             minValue=0,
         ),
-        unit='gram',
+        unit='kilogram',
     )
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
@@ -642,7 +642,7 @@ class Scaling(MeasurementMethodology):
             defaultDisplayUnit='gram',
             minValue=0,
         ),
-        unit='gram',
+        unit='kilogram',
     )
     container_mass = Quantity(
         type=np.float64,
@@ -652,7 +652,7 @@ class Scaling(MeasurementMethodology):
             defaultDisplayUnit='gram',
             minValue=0,
         ),
-        unit='gram',
+        unit='kilogram',
     )
     gross_mass = Quantity(
         type=np.float64,
@@ -662,7 +662,7 @@ class Scaling(MeasurementMethodology):
             defaultDisplayUnit='gram',
             minValue=0,
         ),
-        unit='gram',
+        unit='kilogram',
     )
 
 
@@ -735,7 +735,7 @@ class Agitation(SolutionPreparationStep):
             component='NumberEditQuantity',
             defaultDisplayUnit='celsius',
         ),
-        unit='celsius',
+        unit='kelvin',
     )
     container_type = Quantity(
         type=str,
