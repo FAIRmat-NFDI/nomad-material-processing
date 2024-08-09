@@ -25,7 +25,7 @@ def test_solution_component():
     normalize_all(archive)
 
     volume = 1 * ureg('liter')
-    archive.data.compute_molar_concentration(volume)
+    archive.data.calculate_molar_concentration(volume)
 
     assert round(archive.data.mass, 3) == 1.000 * ureg('kg')
     assert round(
@@ -67,9 +67,9 @@ def test_solution():
         3,
     )
     starter_salt_mass = round(starter_solution_archive.data.solutes[0].mass, 3)
-    assert round(starter_water_concentration, 3) == 55.523 * ureg('mol/l')
-    assert round(starter_salt_concentration, 3) == 0.345 * ureg('mol/l')
-    assert round(starter_salt_mass, 3) == 10.0 * ureg('g')
+    assert starter_water_concentration == 55.523 * ureg('mol/l')
+    assert starter_salt_concentration == 0.345 * ureg('mol/l')
+    assert starter_salt_mass == 10.0 * ureg('g')
 
     ## making the main solution using starter solution
     main_solution_archive = parse('tests/data/test_solution.archive.yaml')[0]

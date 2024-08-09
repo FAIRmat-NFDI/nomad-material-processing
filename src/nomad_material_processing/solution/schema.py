@@ -203,12 +203,12 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
     molar_concentration = SubSection(section_def=MolarConcentration)
     pure_substance = SubSection(section_def=PubChemPureSubstanceSection)
 
-    def __compute_moles(self, logger: 'BoundLogger' = None) -> Union[Quantity, None]:
+    def _calculate_moles(self, logger: 'BoundLogger' = None) -> Union[Quantity, None]:
         """
-        A private method to compute the moles of a component in the solution.
+        A private method to calculate the moles of a component in the solution.
 
         Args:
-            component (SolutionComponent): The component to compute the moles for.
+            component (SolutionComponent): The component to calculate the moles for.
             logger (BoundLogger): A structlog logger.
 
         Returns:
@@ -236,11 +236,11 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         )
         return moles
 
-    def compute_molar_concentration(
+    def calculate_molar_concentration(
         self, volume: Quantity, logger: 'BoundLogger' = None
     ) -> None:
         """
-        Compute the molar concentration of the component in a given volume of solution.
+        Calculate the molar concentration of the component in a given volume of solution.
 
         Args:
             volume (Quantity): The volume of the solution.
@@ -255,7 +255,7 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
             return
         if not self.molar_concentration:
             self.molar_concentration = MolarConcentration()
-        moles = self.__compute_moles(logger)
+        moles = self._calculate_moles(logger)
         if moles:
             self.molar_concentration.calculated_concentration = moles / volume
 
@@ -411,9 +411,9 @@ class Solution(CompositeSystem, EntryData):
 
         return combined_components
 
-    def compute_volume(self, logger: 'BoundLogger' = None) -> None:
+    def calculate_volume(self, logger: 'BoundLogger' = None) -> None:
         """
-        Compute the volume of the solution by adding the volumes of its components.
+        Calculate the volume of the solution by adding the volumes of its components.
 
         Args:
             logger (BoundLogger): A structlog logger.
@@ -426,7 +426,7 @@ class Solution(CompositeSystem, EntryData):
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
-        Normalize method for the `Solution` section. Compute the total volume of the
+        Normalize method for the `Solution` section. Calculate the total volume of the
         solution. Populates the solvents and solutes based on the `component_role`. In
         case of components that are solutions, the quantity of their solvents and solutes
         is scaled based on their volume used. Finally, combines the components with the
@@ -438,7 +438,7 @@ class Solution(CompositeSystem, EntryData):
         """
         self.solvents, self.solutes = [], []
 
-        self.compute_volume(logger)
+        self.calculate_volume(logger)
         volume = self.calculated_volume
         if self.measured_volume:
             volume = self.measured_volume
@@ -446,7 +446,7 @@ class Solution(CompositeSystem, EntryData):
         for component in self.components:
             if isinstance(component, SolutionComponent):
                 component.mass_fraction = None
-                component.compute_molar_concentration(volume, logger)
+                component.calculate_molar_concentration(volume, logger)
                 if component.component_role == 'Solvent':
                     self.solvents.append(component.m_copy(deep=True))
                 elif component.component_role == 'Solute':
@@ -483,9 +483,9 @@ class Solution(CompositeSystem, EntryData):
         self.solutes = self.combine_components(self.solutes, logger)
 
         for component in self.solvents:
-            component.compute_molar_concentration(volume, logger)
+            component.calculate_molar_concentration(volume, logger)
         for component in self.solutes:
-            component.compute_molar_concentration(volume, logger)
+            component.calculate_molar_concentration(volume, logger)
 
         mass = 0
         for component in self.solvents + self.solutes:
