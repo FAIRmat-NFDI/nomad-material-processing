@@ -1,3 +1,5 @@
+import pytest
+
 from nomad.client import parse, normalize_all
 from nomad.units import ureg
 from nomad.datamodel.metainfo.basesections import PubChemPureSubstanceSection
@@ -16,8 +18,8 @@ def test_solution_component():
     """
     archive = parse('tests/data/test_solution_component.archive.yaml')[0]
     archive.data = SolutionComponent(
-        volume=1000 * ureg('ml'),
-        density=1.0 * ureg('g/ml'),
+        volume=1.0 * ureg('l'),
+        density=1.0 * ureg('kg/l'),
         pure_substance=PubChemPureSubstanceSection(
             name='Water',
         ),
@@ -27,9 +29,9 @@ def test_solution_component():
     volume = 1 * ureg('liter')
     archive.data.calculate_molar_concentration(volume)
 
-    assert round(archive.data.mass, 3) == 1.000 * ureg('kg')
-    assert round(
-        archive.data.molar_concentration.calculated_concentration, 3
+    assert pytest.approx(archive.data.mass, 1e-3) == 1.0 * ureg('kg')
+    assert pytest.approx(
+        archive.data.molar_concentration.calculated_concentration, 1e-3
     ) == 55.523 * ureg('mol/l')
 
 
@@ -41,12 +43,12 @@ def test_solution():
         name='Starter solution',
         components=[
             SolutionComponent(
-                volume=500 * ureg('ml'),
-                density=1.0 * ureg('g/ml'),
+                volume=0.50 * ureg('l'),
+                density=1.0 * ureg('kg/l'),
                 pure_substance=water,
             ),
             SolutionComponent(
-                mass=10 * ureg('g'),
+                mass=0.01 * ureg('kg'),
                 pure_substance=salt,
                 component_role='Solute',
             ),
@@ -54,22 +56,17 @@ def test_solution():
     )
     starter_solution_archive.data = starter_solution
     normalize_all(starter_solution_archive)
-    starter_water_concentration = round(
-        starter_solution_archive.data.solvents[
-            0
-        ].molar_concentration.calculated_concentration,
-        3,
-    )
-    starter_salt_concentration = round(
-        starter_solution_archive.data.solutes[
-            0
-        ].molar_concentration.calculated_concentration,
-        3,
-    )
-    starter_salt_mass = round(starter_solution_archive.data.solutes[0].mass, 3)
-    assert starter_water_concentration == 55.523 * ureg('mol/l')
-    assert starter_salt_concentration == 0.345 * ureg('mol/l')
-    assert starter_salt_mass == 10.0 * ureg('g')
+    starter_water_concentration = starter_solution_archive.data.solvents[
+        0
+    ].molar_concentration.calculated_concentration
+    starter_salt_concentration = starter_solution_archive.data.solutes[
+        0
+    ].molar_concentration.calculated_concentration
+    starter_salt_mass = starter_solution_archive.data.solutes[0].mass
+
+    assert pytest.approx(starter_water_concentration, 1e-3) == 55.523 * ureg('mol/l')
+    assert pytest.approx(starter_salt_concentration, 1e-3) == 0.345 * ureg('mol/l')
+    assert pytest.approx(starter_salt_mass, 1e-3) == 0.01 * ureg('kg')
 
     ## making the main solution using starter solution
     main_solution_archive = parse('tests/data/test_solution.archive.yaml')[0]
@@ -80,30 +77,33 @@ def test_solution():
         components=[
             SolutionComponentReference(
                 system=starter_solution,
-                volume=100 * ureg('ml'),
+                volume=0.1 * ureg('l'),
             ),
         ],
     )
     normalize_all(main_solution_archive)
     assert (
-        round(
+        pytest.approx(
             main_solution_archive.data.solvents[
                 0
             ].molar_concentration.calculated_concentration,
-            3,
+            1e-3,
         )
         == starter_water_concentration
     )
     assert (
-        round(
+        pytest.approx(
             main_solution_archive.data.solutes[
                 0
             ].molar_concentration.calculated_concentration,
-            3,
+            1e-3,
         )
         == starter_salt_concentration
     )
-    assert round(main_solution_archive.data.solutes[0].mass, 3) == starter_salt_mass / 5
+    assert (
+        pytest.approx(main_solution_archive.data.solutes[0].mass, 1e-3)
+        == starter_salt_mass / 5
+    )
 
     # step 2: diluting the solution (double the volume of water)
     main_solution_archive.data = Solution(
@@ -111,54 +111,63 @@ def test_solution():
         components=[
             SolutionComponentReference(
                 system=starter_solution,
-                volume=100 * ureg('ml'),
+                volume=0.1 * ureg('l'),
             ),
             SolutionComponent(
-                volume=100 * ureg('ml'),
-                density=1.0 * ureg('g/ml'),
+                volume=0.1 * ureg('l'),
+                density=1.0 * ureg('kg/l'),
                 pure_substance=water,
             ),
         ],
     )
     normalize_all(main_solution_archive)
     assert (
-        round(
+        pytest.approx(
             main_solution_archive.data.solvents[
                 0
             ].molar_concentration.calculated_concentration,
-            3,
+            1e-3,
         )
         == starter_water_concentration
     )
-    assert round(
-        main_solution_archive.data.solutes[
-            0
-        ].molar_concentration.calculated_concentration,
-        2,
-    ) == round(starter_salt_concentration / 2, 2)
-    assert round(main_solution_archive.data.solutes[0].mass, 3) == starter_salt_mass / 5
+    assert (
+        pytest.approx(
+            main_solution_archive.data.solutes[
+                0
+            ].molar_concentration.calculated_concentration,
+            1e-3,
+        )
+        == starter_salt_concentration / 2
+    )
+    assert (
+        pytest.approx(main_solution_archive.data.solutes[0].mass, 1e-3)
+        == starter_salt_mass / 5
+    )
 
     # finally, quantities in the starter solution should stay the same
     # after all normalizations
     assert (
-        round(
+        pytest.approx(
             starter_solution_archive.data.solvents[
                 0
             ].molar_concentration.calculated_concentration,
-            3,
+            1e-3,
         )
         == starter_water_concentration
     )
     assert (
-        round(
+        pytest.approx(
             starter_solution_archive.data.solutes[
                 0
             ].molar_concentration.calculated_concentration,
-            3,
+            1e-3,
         )
         == starter_salt_concentration
     )
-    assert round(starter_solution_archive.data.solutes[0].mass, 3) == starter_salt_mass
+    assert (
+        pytest.approx(starter_solution_archive.data.solutes[0].mass, 1e-3)
+        == starter_salt_mass
+    )
 
 
 if __name__ == '__main__':
