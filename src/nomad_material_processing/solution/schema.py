@@ -914,18 +914,18 @@ class SolutionPreparation(Process, EntryData):
             return
 
         # prepare the solution
+        components = [
+            step.solution_component.m_copy(deep=True)
+            for step in self.steps
+            if isinstance(step, AddSolutionComponent)
+        ]
+        if not components:
+            return
         solution = Solution(
             name=self.solution_name,
+            components=components,
         )
-        solution.components = []
-        for step in self.steps:
-            if isinstance(step, AddSolutionComponent):
-                if step.solution_component:
-                    solution.components.append(
-                        step.solution_component.m_copy(deep=True)
-                    )
         solution.normalize(archive, logger)
-
         if not self.solution:
             self.solution = SolutionReference()
         self.solution.reference = self.create_solution_entry(solution, archive, logger)
