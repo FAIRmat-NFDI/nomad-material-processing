@@ -1,2 +1,2 @@
 data:
-  m_def: nomad_material_processing.physical_vapor_deposition.PulsedLaserDeposition
+  m_def: nomad_material_processing.vapor_deposition.pvd.pld.PulsedLaserDeposition
