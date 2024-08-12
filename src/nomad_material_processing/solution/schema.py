@@ -870,9 +870,15 @@ class SolutionPreparation(Process, EntryData):
         """
         from nomad.datamodel import EntryArchive
 
-        solution_file_name = (
-            f'{self.solution_name.lower().replace(" ", "_")}.archive.json'
-        )
+        if self.solution_name:
+            solution_file_name = (
+                f'{self.solution_name.lower().replace(" ", "_")}.archive.json'
+            )
+        else:
+            solution_file_name = create_unique_filename(
+                archive=archive, prefix='unnamed_solution'
+            )
+            self.solution_name = solution_file_name.split('.')[0].replace('_', ' ')
         solution_entry = EntryArchive(data=solution, m_context=archive.m_context)
         solution_reference = create_archive(
             entry_dict=solution_entry.m_to_dict(with_root_def=True),
@@ -896,10 +902,6 @@ class SolutionPreparation(Process, EntryData):
             logger (BoundLogger): A structlog logger.
         """
         super().normalize(archive, logger)
-        if not self.solution_name:
-            self.solution_name = create_unique_filename(
-                archive=archive, prefix='unnamed_solution'
-            )
 
         if not any(isinstance(s, AddSolutionComponent) for s in self.steps):
             return
