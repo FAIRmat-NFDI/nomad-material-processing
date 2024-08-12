@@ -381,7 +381,7 @@ class Solution(CompositeSystem, EntryData):
     @staticmethod
     def combine_components(component_list, logger: 'BoundLogger' = None) -> None:
         """
-        Combine multiple `SolutionComponent` instances with the same CAS number.
+        Combine multiple `SolutionComponent` instances with the same PubChem CID number.
         Following properties are accumulated for combined components: mass, volume.
         If the mass or volume is not provided for a component, it is not combined.
 
@@ -392,10 +392,10 @@ class Solution(CompositeSystem, EntryData):
         combined_components = {}
         unprocessed_components = []
         for component in component_list:
-            if not component.pure_substance or not component.pure_substance.cas_number:
+            if not component.pure_substance.pub_chem_cid:
                 unprocessed_components.append(component.m_copy(deep=True))
                 continue
-            comparison_key = component.pure_substance.cas_number
+            comparison_key = component.pure_substance.pub_chem_cid
             if comparison_key in combined_components:
                 for prop in ['mass', 'volume']:
                     val1 = getattr(combined_components[comparison_key], prop, None)
@@ -423,9 +423,14 @@ class Solution(CompositeSystem, EntryData):
         """
         self.calculated_volume = ureg.Quantity(0, 'milliliter')
         for component in self.components:
-            if isinstance(component, (SolutionComponent, SolutionComponentReference)):
-                if component.volume:
-                    self.calculated_volume += component.volume
+            if not component.volume:
+                if component.component_role == 'Solvent' and logger:
+                    logger.warning(
+                        f'The volume of the solvent component "{component.name}" is '
+                        'missing.'
+                    )
+                continue
+            self.calculated_volume += component.volume
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
