@@ -125,6 +125,17 @@ class BaseSolutionComponent(Component):
     Base class for a component added to the solution.
     """
 
+    volume = Quantity(
+        type=np.float64,
+        description='The volume of the liquid component.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='milliliter',
+            minValue=0,
+        ),
+        unit='liter',
+    )
+
 
 class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
     """
@@ -179,16 +190,6 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
             minValue=0,
         ),
         unit='kilogram',
-    )
-    volume = Quantity(
-        type=np.float64,
-        description='The volume of the liquid component.',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity',
-            defaultDisplayUnit='milliliter',
-            minValue=0,
-        ),
-        unit='liter',
     )
     density = Quantity(
         type=np.float64,
@@ -560,16 +561,6 @@ class SolutionComponentReference(SystemComponent, BaseSolutionComponent):
         type=Solution,  # Reference(System.m_def)
         description='A reference to the solution.',
         a_eln=dict(component='ReferenceEditQuantity'),
-    )
-    volume = Quantity(
-        type=np.float64,
-        description='The volume of the solution used.',
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity',
-            defaultDisplayUnit='milliliter',
-            minValue=0,
-        ),
-        unit='liter',
     )
     mass = Quantity(
         type=np.float64,
