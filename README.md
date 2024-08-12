@@ -22,5 +22,5 @@ cd nomad-material-processing
 
 And install the package in editable mode:
 ```sh
-pip install -e .[dev] https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
+pip install -e .[dev] --index-url https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple
 ```
