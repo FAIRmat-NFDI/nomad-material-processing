@@ -231,10 +231,8 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
                     'missing.'
                 )
             return
-        moles = self.mass / (
-            self.pure_substance.molecular_mass.to('Da').magnitude * ureg('g/mol')
-        )
-        return moles
+        moles = self.mass / (self.pure_substance.molecular_mass * ureg.N_A)
+        return moles.to_base_units()
 
     def calculate_molar_concentration(
         self, volume: Quantity, logger: 'BoundLogger' = None
