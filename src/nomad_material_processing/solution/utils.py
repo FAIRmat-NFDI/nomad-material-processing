@@ -112,7 +112,7 @@ def create_archive(
 
 def create_unique_filename(
     archive: 'EntryArchive',
-    prefix: str = 'Unnamed',
+    prefix: str = 'unnamed',
     suffix: str = 'archive.json',
 ):
     """

@@ -907,7 +907,7 @@ class SolutionPreparation(Process, EntryData):
         super().normalize(archive, logger)
         if not self.solution_name:
             self.solution_name = create_unique_filename(
-                archive=archive, prefix='Unnamed_Solution'
+                archive=archive, prefix='unnamed_solution'
             )
 
         if not any(isinstance(s, AddSolutionComponent) for s in self.steps):
