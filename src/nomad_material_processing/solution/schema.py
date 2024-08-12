@@ -430,10 +430,11 @@ class Solution(CompositeSystem, EntryData):
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
         Normalize method for the `Solution` section. Calculate the total volume of the
-        solution. Populates the solvents and solutes based on the `component_role`. In
-        case of components that are solutions, the quantity of their solvents and solutes
-        is scaled based on their volume used. Finally, combines the components with the
-        same CAS number.
+        solution. Populates the solvents and solutes with the components based on the
+        `component_role`. If a component doesn't have pure_substance section, it is
+        skipped. In case of components that are solutions, the quantity of their solvents
+        and solutes is scaled based on their quantity used. Finally, combines the
+        components with the same PubChem CID.
 
         Args:
             archive (EntryArchive): A NOMAD archive.
@@ -448,6 +449,13 @@ class Solution(CompositeSystem, EntryData):
 
         for component in self.components:
             if isinstance(component, SolutionComponent):
+                if not component.pure_substance or not component.mass:
+                    logger.warning(
+                        f'Either the pure_substance sub_section or mass for the component '
+                        f'"{component.name}" is missing. Not adding it to the '
+                        f'"{component.component_role.lower()}' + 's' + '" list.'
+                    )
+                    continue
                 component.mass_fraction = None
                 component.calculate_molar_concentration(volume, logger)
                 if component.component_role == 'Solvent':
