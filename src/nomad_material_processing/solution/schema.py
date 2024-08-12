@@ -268,9 +268,12 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
             archive (EntryArchive): A NOMAD archive.
             logger (BoundLogger): A structlog logger.
         """
-        PureSubstanceComponent.normalize(self, archive, logger)
+        if self.substance_name and self.pure_substance is None:
+            self.pure_substance = PubChemPureSubstanceSection(name=self.substance_name)
+            self.pure_substance.normalize(archive, logger)
         if self.volume and self.density:
             self.mass = self.volume * self.density
+        super().normalize(archive, logger)
 
 
 class Solution(CompositeSystem, EntryData):
