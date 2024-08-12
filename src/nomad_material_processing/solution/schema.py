@@ -438,8 +438,9 @@ class Solution(CompositeSystem, EntryData):
         solution. Populates the solvents and solutes with the components based on the
         `component_role`. If a component doesn't have pure_substance section, it is
         skipped. In case of components that are solutions, the quantity of their solvents
-        and solutes is scaled based on their quantity used. Finally, combines the
-        components with the same PubChem CID.
+        and solutes is scaled based on their quantity used. Combines the
+        components with the same PubChem CID. Set the mass, density, and elemental
+        composition of the solution.
 
         Args:
             archive (EntryArchive): A NOMAD archive.
@@ -504,11 +505,14 @@ class Solution(CompositeSystem, EntryData):
             component.calculate_molar_concentration(volume, logger)
 
         mass = 0
+        self.mass = None
+        self.density = None
         for component in self.solvents + self.solutes:
             mass += component.mass
         if mass:
             self.mass = mass
-            self.density = self.mass / volume
+            if volume:
+                self.density = self.mass / volume
 
         # TODO check if the elemental_composition is adjusted based on the volume used
         # of the starter solutions
