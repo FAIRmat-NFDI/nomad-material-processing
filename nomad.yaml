@@ -3,7 +3,8 @@ normalize:
     include:
     - MetainfoNormalizer
 plugins:
-  include: schemas/example
+  include:
+    - schemas/example
   options:
     schemas/example:
       python_package: nomad_material_processing
