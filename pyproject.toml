@@ -39,6 +39,9 @@ file = "LICENSE"
 "Homepage" = "https://github.com/FAIRmat-NFDI/nomad-material-processing"
 "Bug Tracker" = "https://github.com/FAIRmat-NFDI/nomad-material-processing/issues"
 
+[tool.uv]
+index-url = "https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple"
+
 [tool.ruff]
 include = ["src/*.py", "tests/*.py"]
 
