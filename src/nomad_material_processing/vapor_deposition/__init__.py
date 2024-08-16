@@ -70,6 +70,7 @@ class InsertReduction(Entity):
     """
     The reduction that sometimes is used to lodge the substrate in the substrate holder position..
     """
+
     name = Quantity(
         type=str,
         description="""
@@ -96,10 +97,12 @@ class InsertReduction(Entity):
         section_def=Geometry,
     )
 
+
 class SubstrateHolderPosition(ArchiveSection):
     """
     One casing position of the substrate holder.
     """
+
     name = Quantity(
         type=str,
         description="""
@@ -144,6 +147,7 @@ class SubstrateHolder(Entity):
     """
     The holder for the substrate.
     """
+
     name = Quantity(
         type=str,
         description="""
@@ -172,7 +176,7 @@ class SubstrateHolder(Entity):
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
             defaultDisplayUnit='micrometer',
-            ),
+        ),
     )
     outer_diameter = Quantity(
         type=float,
@@ -212,16 +216,20 @@ class FilledSubstrateHolderPosition(SubstrateHolderPosition):
     """
     One casing position of the filled substrate holder.
     """
+
     substrate = SubSection(
         section_def=CompositeSystemReference,
         description="""
         The substrate that is placed in this position.
         """,
     )
+
+
 class FilledSubstrateHolder(SubstrateHolder):
     """
     A substrate holder that is filled with substrate(s).
     """
+
     substrate_holder = SubSection(
         section_def=SubstrateHolder,
     )
