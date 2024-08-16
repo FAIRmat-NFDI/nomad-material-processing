@@ -33,9 +33,12 @@ from nomad.datamodel.metainfo.annotations import (
     ELNComponentEnum,
 )
 from nomad.datamodel.metainfo.basesections import (
+    Entity,
     ActivityStep,
     PureSubstanceSection,
     Component,
+    CompositeSystemReference,
+    PubChemPureSubstanceSection,
 )
 from nomad.datamodel.metainfo.plot import (
     PlotSection,
@@ -49,6 +52,7 @@ from nomad_material_processing import (
     ThinFilmStackReference,
     ThinFilmReference,
     TimeSeries,
+    Geometry,
 )
 
 if TYPE_CHECKING:
@@ -60,6 +64,179 @@ if TYPE_CHECKING:
     )
 
 m_package = Package(name='Vapor Deposition')
+
+
+class InsertReduction(Entity):
+    """
+    The reduction that sometimes is used to lodge the substrate in the substrate holder position..
+    """
+
+    name = Quantity(
+        type=str,
+        description="""
+        A short and descriptive name for this insert reduction.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+        ),
+    )
+    insert_id = Quantity(
+        type=str,
+        description="""
+        The ID of the insert that is placed in this position to accomodate the substrate.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+        ),
+    )
+    material = SubSection(section_def=PubChemPureSubstanceSection, repeats=True)
+    inner_geometry = SubSection(
+        section_def=Geometry,
+    )
+    outer_geometry = SubSection(
+        section_def=Geometry,
+    )
+
+
+class SubstrateHolderPosition(ArchiveSection):
+    """
+    One casing position of the substrate holder.
+    """
+
+    name = Quantity(
+        type=str,
+        description="""
+        A short name for this position. This name is used as label of the position.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+        ),
+    )
+    x_position = Quantity(
+        type=float,
+        unit='meter',
+        description="""
+        The x coordinate of the substrate holder position relative to the center of the holder.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='millimeter',
+        ),
+    )
+    y_position = Quantity(
+        type=float,
+        unit='meter',
+        description="""
+        The y coordinate of the substrate holder position relative to the center of the holder.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='millimeter',
+        ),
+    )
+    slot_geometry = SubSection(
+        section_def=Geometry,
+    )
+    insert_reduction = SubSection(
+        section_def=InsertReduction,
+        description='Optional description of insert if used.',
+    )
+
+
+class SubstrateHolder(Entity):
+    """
+    The holder for the substrate.
+    """
+
+    name = Quantity(
+        type=str,
+        description="""
+        A short and descriptive name for this position.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+        ),
+    )
+    lab_id = Quantity(
+        type=str,
+        description="""
+        The lab ID of the substrate holder.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+        ),
+    )
+    material = SubSection(section_def=PubChemPureSubstanceSection, repeats=True)
+    thickness = Quantity(
+        type=float,
+        unit='meter',
+        description="""
+        The thickness of the holder to the back of the substrate.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='micrometer',
+        ),
+    )
+    outer_diameter = Quantity(
+        type=float,
+        unit='meter',
+        description="""
+        The outer diameter of the substrate holder.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='millimeter',
+        ),
+    )
+    number_of_positions = Quantity(
+        type=int,
+        description="""
+        The number of positions on the holder.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
+    )
+    image = Quantity(
+        type=str,
+        description="""An image of the substrate holder.""",
+        a_browser={'adaptor': 'RawFileAdaptor'},
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.FileEditQuantity,
+        ),
+    )
+    positions = SubSection(
+        section_def=SubstrateHolderPosition,
+        repeats=True,
+    )
+
+
+class FilledSubstrateHolderPosition(SubstrateHolderPosition):
+    """
+    One casing position of the filled substrate holder.
+    """
+
+    substrate = SubSection(
+        section_def=CompositeSystemReference,
+        description="""
+        The substrate that is placed in this position.
+        """,
+    )
+
+
+class FilledSubstrateHolder(SubstrateHolder):
+    """
+    A substrate holder that is filled with substrate(s).
+    """
+
+    substrate_holder = SubSection(
+        section_def=SubstrateHolder,
+    )
+    positions = SubSection(
+        section_def=FilledSubstrateHolderPosition,
+        repeats=True,
+    )
 
 
 class MolarFlowRate(TimeSeries):
