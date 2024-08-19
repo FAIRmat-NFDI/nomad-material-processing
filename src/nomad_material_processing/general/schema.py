@@ -117,6 +117,41 @@ class EtchingRecipe(Etching, Recipe, EntryData):
     )
 
 
+class AnnealingStep(ActivityStep):
+    """
+    A step of annealing process.
+    """
+
+    m_def = Section()
+    duration = Quantity(
+        type=np.float64,
+        description='The elapsed time since the annealing process started.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit='minute'
+        ),
+        unit='second',
+    )
+    temperature = Quantity(
+        type=np.float64,
+        description='The temperature of the etching process.',
+        a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'celsius'},
+        unit='celsius',
+    )
+    agitation = Quantity(
+        type=MEnum(
+            'Magnetic Stirring',
+            'Sonication',
+        ),
+        description='The agitation method used during the etching process.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.EnumEditQuantity,
+        ),
+    )
+    annealing_reagents = SubSection(
+        section_def=CompositeSystemReference,
+    )
+
+
 class Annealing(Process, EntryData):
     """
     Heat treatment process used to alter the material's properties,
@@ -149,8 +184,12 @@ class Annealing(Process, EntryData):
         ),
         unit='second',
     )
-    annealing_reagents = SubSection(
-        section_def=CompositeSystemReference,
+    steps = SubSection(
+        description="""
+        The steps of the annealing process.
+        """,
+        section_def=AnnealingStep,
+        repeats=True,
     )
 
 
