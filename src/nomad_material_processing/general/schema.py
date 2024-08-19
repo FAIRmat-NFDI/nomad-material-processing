@@ -31,6 +31,11 @@ from nomad.datamodel.metainfo.annotations import (
     ELNComponentEnum,
 )
 
+from nomad.metainfo import (
+    SectionProxy,
+    Reference,
+)
+
 
 class Recipe(ArchiveSection):
     """
@@ -90,7 +95,7 @@ class Etching(Process, EntryData):
         a_eln=None,
     )
     recipe = Quantity(
-        type=Recipe,
+        type=Reference(SectionProxy('EtchingRecipe')),
         description=""" The recipe used for the process. If a recipe is found,
            all the data is copied from the Recipe within the Process.
            """,
@@ -158,23 +163,15 @@ class Annealing(Process, EntryData):
     such as reducing defects, improving crystallinity, or relieving internal stresses.
     """
 
-    m_def = Section(
-        a_eln={'hide': ['steps']},
-    )
+    m_def = Section()
     recipe = Quantity(
-        type=Recipe,
+        type=Reference(SectionProxy('AnnealingRecipe')),
         description=""" The recipe used for the process. If a recipe is found,
            all the data is copied from the Recipe within the Process.
            """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.ReferenceEditQuantity,
         ),
-    )
-    temperature = Quantity(
-        type=np.float64,
-        description='The temperature of the annealing process.',
-        a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'celsius'},
-        unit='celsius',
     )
     duration = Quantity(
         type=np.float64,
@@ -203,6 +200,41 @@ class AnnealingRecipe(Annealing, Recipe, EntryData):
     )
 
 
+class CleaningStep(ActivityStep):
+    """
+    A step of cleaning process.
+    """
+
+    m_def = Section()
+    duration = Quantity(
+        type=np.float64,
+        description='The elapsed time since the cleaning process started.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit='minute'
+        ),
+        unit='second',
+    )
+    temperature = Quantity(
+        type=np.float64,
+        description='The temperature of the cleaning process.',
+        a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'celsius'},
+        unit='celsius',
+    )
+    agitation = Quantity(
+        type=MEnum(
+            'Magnetic Stirring',
+            'Sonication',
+        ),
+        description='The agitation method used during the cleaning process.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.EnumEditQuantity,
+        ),
+    )
+    cleaning_reagents = SubSection(
+        section_def=CompositeSystemReference,
+    )
+
+
 class Cleaning(Process, EntryData):
     """
     Surface cleaning in thin film material science involves removing contaminants
@@ -214,19 +246,13 @@ class Cleaning(Process, EntryData):
         a_eln={'hide': ['steps']},
     )
     recipe = Quantity(
-        type=Recipe,
+        type=Reference(SectionProxy('CleaningRecipe')),
         description=""" The recipe used for the process. If a recipe is found,
            all the data is copied from the Recipe within the Process.
            """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.ReferenceEditQuantity,
         ),
-    )
-    temperature = Quantity(
-        type=np.float64,
-        description='The temperature of the annealing process.',
-        a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'celsius'},
-        unit='celsius',
     )
     duration = Quantity(
         type=np.float64,
@@ -236,8 +262,12 @@ class Cleaning(Process, EntryData):
         ),
         unit='second',
     )
-    cleaning_reagents = SubSection(
-        section_def=CompositeSystemReference,
+    steps = SubSection(
+        description="""
+        The steps of the cleaning process.
+        """,
+        section_def=CleaningStep,
+        repeats=True,
     )
 
 
