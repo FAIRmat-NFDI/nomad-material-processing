@@ -143,19 +143,6 @@ class AnnealingStep(ProcessStep):
         a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'celsius'},
         unit='celsius',
     )
-    agitation = Quantity(
-        type=MEnum(
-            'Magnetic Stirring',
-            'Sonication',
-        ),
-        description='The agitation method used during the etching process.',
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.EnumEditQuantity,
-        ),
-    )
-    annealing_reagents = SubSection(
-        section_def=CompositeSystemReference,
-    )
 
 
 class Annealing(Process, EntryData):
@@ -203,7 +190,7 @@ class AnnealingRecipe(Annealing, Recipe, EntryData):
     )
 
 
-class CleaningStep(ActivityStep):
+class CleaningStep(ProcessStep):
     """
     A step of cleaning process.
     """
