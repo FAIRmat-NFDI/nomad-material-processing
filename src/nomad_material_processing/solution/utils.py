@@ -116,8 +116,8 @@ def create_unique_filename(
     suffix: str = 'archive.json',
 ):
     """
-    Create a unique filename of the form '{prefix}_{iterator}'. If the filename already
-    exists, the iterator is incremented until a unique filename is found.
+    Create a unique filename of the form '{prefix}_{iterator}.{suffix}'. If the filename
+    already exists, the iterator is incremented until a unique filename is found.
 
     Args:
         archive: The archive object.
@@ -125,10 +125,10 @@ def create_unique_filename(
         suffix: Usually the file extension. Default is 'archive.json'.
     """
     i = 0
-    template = lambda i: f'{prefix}_{i}'
-    if not archive.m_context.raw_path_exists(template(i) + f'.{suffix}'):
+    template = lambda i: f'{prefix}_{i}.{suffix}'
+    if not archive.m_context.raw_path_exists(template(i)):
         return template(i)
     while True:
         i += 1
-        if not archive.m_context.raw_path_exists(template(i) + f'.{suffix}'):
+        if not archive.m_context.raw_path_exists(template(i)):
             return template(i)
