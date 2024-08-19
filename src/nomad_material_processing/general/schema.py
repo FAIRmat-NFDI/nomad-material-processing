@@ -22,7 +22,7 @@ from nomad.metainfo import (
 
 from nomad.datamodel.metainfo.basesections import (
     CompositeSystem,
-    ActivityStep,
+    ProcessStep,
     Process,
     CompositeSystemReference,
 )
@@ -52,7 +52,7 @@ class Recipe(ArchiveSection):
     pass
 
 
-class EtchingStep(ActivityStep):
+class EtchingStep(ProcessStep):
     """
     A step of etching process.
     """
@@ -123,7 +123,7 @@ class EtchingRecipe(Etching, Recipe, EntryData):
     )
 
 
-class AnnealingStep(ActivityStep):
+class AnnealingStep(ProcessStep):
     """
     A step of annealing process.
     """
