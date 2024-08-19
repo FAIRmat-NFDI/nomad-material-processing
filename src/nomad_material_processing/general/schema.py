@@ -8,51 +8,27 @@ if TYPE_CHECKING:
         BoundLogger,
     )
 
-from nomad.config import config
-from nomad.datamodel.data import Schema
 from nomad.datamodel.metainfo.annotations import ELNAnnotation, ELNComponentEnum
-from nomad.metainfo import Quantity, SchemaPackage
 
 import numpy as np
-import yaml
-import json
-import math
-
-from nomad.datamodel.data import EntryData, EntryDataCategory, ArchiveSection
+from nomad.datamodel.data import EntryData, ArchiveSection
 
 from nomad.metainfo import (
-    SchemaPackage,
-    Package,
     Quantity,
     SubSection,
-    Datetime,
     Section,
-    Category,
     MEnum,
-    Reference,
 )
 
 from nomad.datamodel.metainfo.basesections import (
     CompositeSystem,
-    Component,
-    System,
-    Activity,
     ActivityStep,
-    ProcessStep,
     Process,
     CompositeSystemReference,
-    PureSubstanceSection,
-    PureSubstanceComponent,
 )
-from nomad.config import config
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
     ELNComponentEnum,
-)
-
-from nomad_material_processing import (
-    SubstrateReference,
-    Geometry,
 )
 
 
