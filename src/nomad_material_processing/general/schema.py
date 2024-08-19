@@ -93,6 +93,7 @@ class Etching(Process, EntryData):
 
     m_def = Section(
         a_eln=None,
+        links=['http://purl.obolibrary.org/obo/CHMO_0001558'],
     )
     recipe = Quantity(
         type=Reference(SectionProxy('EtchingRecipe')),
@@ -163,7 +164,9 @@ class Annealing(Process, EntryData):
     such as reducing defects, improving crystallinity, or relieving internal stresses.
     """
 
-    m_def = Section()
+    m_def = Section(
+        links=['http://purl.obolibrary.org/obo/CHMO_0001465'],
+    )
     recipe = Quantity(
         type=Reference(SectionProxy('AnnealingRecipe')),
         description=""" The recipe used for the process. If a recipe is found,
