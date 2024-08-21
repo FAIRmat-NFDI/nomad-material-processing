@@ -34,7 +34,12 @@ from nomad.metainfo import (
     SubSection,
 )
 
-m_package = SchemaPackage(name='Material Processing')
+m_package = SchemaPackage(
+    name='Material Processing',
+    aliases=[
+        'nomad_material_processing',
+    ],
+)
 
 configuration = config.get_plugin_entry_point('nomad_material_processing:schema')
 

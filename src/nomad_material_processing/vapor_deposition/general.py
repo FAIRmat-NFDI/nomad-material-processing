@@ -67,7 +67,12 @@ if TYPE_CHECKING:
 
 from nomad.config import config
 
-m_package = SchemaPackage(name='Vapor Deposition')
+m_package = SchemaPackage(
+    name='Vapor Deposition',
+    aliases=[
+        'nomad_material_processing.vapor_deposition',
+    ],
+)
 
 configuration = config.get_plugin_entry_point(
     'nomad_material_processing.vapor_deposition:schema',
