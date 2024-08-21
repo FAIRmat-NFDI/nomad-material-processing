@@ -22,7 +22,7 @@ from nomad.metainfo import (
     Package,
     Section,
 )
-from nomad_material_processing import (
+from nomad_material_processing.general import (
     SampleDeposition,
 )
 
@@ -38,30 +38,30 @@ m_package = Package(name='Epitaxy')
 
 
 class Epitaxy(SampleDeposition):
-    '''
+    """
     A synthesis method which consists of depositing a monocrystalline film (from
     liquid or gaseous precursors) on a monocrystalline substrate.
     [database_cross_reference: https://orcid.org/0000-0002-0640-0422]
-    '''
+    """
+
     m_def = Section(
-        links=[
-            "http://purl.obolibrary.org/obo/CHMO_0001336"
-        ],)
+        links=['http://purl.obolibrary.org/obo/CHMO_0001336'],
+    )
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
-        '''
+        """
         The normalizer for the `Epitaxy` class.
 
         Args:
             archive (EntryArchive): The archive containing the section that is being
             normalized.
             logger (BoundLogger): A structlog logger.
-        '''
+        """
         super(Epitaxy, self).normalize(archive, logger)
 
 
 class MolecularBeamEpitaxy(Epitaxy):
-    '''
+    """
     A synthesis method which consists of depositing a monocrystalline film (from a
     molecular beam) on a monocrystalline substrate under high vacuum (<10^{-8} Pa).
     Molecular beam epitaxy is very slow, with a deposition rate of <1000 nm per hour.
@@ -70,26 +70,26 @@ class MolecularBeamEpitaxy(Epitaxy):
     Synonyms:
      - MBE
      - molecular-beam epitaxy
-    '''
+    """
+
     m_def = Section(
-        links=[
-            "http://purl.obolibrary.org/obo/CHMO_0001341"
-        ],)
+        links=['http://purl.obolibrary.org/obo/CHMO_0001341'],
+    )
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
-        '''
+        """
         The normalizer for the `MolecularBeamEpitaxy` class.
 
         Args:
             archive (EntryArchive): The archive containing the section that is being
             normalized.
             logger (BoundLogger): A structlog logger.
-        '''
+        """
         super(MolecularBeamEpitaxy, self).normalize(archive, logger)
 
 
 class VaporPhaseEpitaxy(Epitaxy):
-    '''
+    """
     A synthesis method which consists of depositing a monocrystalline film (from
     vapour-phase precursors) on a monocrystalline substrate.
     [database_cross_reference: https://orcid.org/0000-0002-0640-0422]
@@ -100,26 +100,26 @@ class VaporPhaseEpitaxy(Epitaxy):
      - vapor phase epitaxy
      - VPE
      - vapour phase epitaxy
-    '''
+    """
+
     m_def = Section(
-        links=[
-            "http://purl.obolibrary.org/obo/CHMO_0001346"
-        ],)
+        links=['http://purl.obolibrary.org/obo/CHMO_0001346'],
+    )
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
-        '''
+        """
         The normalizer for the `VaporPhaseEpitaxy` class.
 
         Args:
             archive (EntryArchive): The archive containing the section that is being
             normalized.
             logger (BoundLogger): A structlog logger.
-        '''
+        """
         super(VaporPhaseEpitaxy, self).normalize(archive, logger)
 
 
 class MetalOrganicVaporPhaseEpitaxy(VaporPhaseEpitaxy):
-    '''
+    """
     A synthesis method which consists of depositing a monocrystalline film, from
     organometallic vapour-phase precursors, on a monocrystalline substrate.
     [database_cross_reference: https://orcid.org/0000-0002-0640-0422]
@@ -135,21 +135,21 @@ class MetalOrganicVaporPhaseEpitaxy(VaporPhaseEpitaxy):
      - metal organic vapor phase epitaxy
      - metal-organic vapour-phase epitaxy
      - organometallic vapour phase epitaxy
-    '''
+    """
+
     m_def = Section(
-        links=[
-            "http://purl.obolibrary.org/obo/CHMO_0001348"
-        ],)
+        links=['http://purl.obolibrary.org/obo/CHMO_0001348'],
+    )
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
-        '''
+        """
         The normalizer for the `MetalOrganicVaporPhaseEpitaxy` class.
 
         Args:
             archive (EntryArchive): The archive containing the section that is being
             normalized.
             logger (BoundLogger): A structlog logger.
-        '''
+        """
         super(MetalOrganicVaporPhaseEpitaxy, self).normalize(archive, logger)
 
 

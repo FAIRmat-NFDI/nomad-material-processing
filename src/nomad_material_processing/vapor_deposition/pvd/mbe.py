@@ -17,12 +17,20 @@
 #
 
 from nomad.metainfo import (
-    Package,
+    SchemaPackage,
     Quantity,
     Section,
 )
-from nomad_material_processing.vapor_deposition.pvd import (
+from nomad_material_processing.vapor_deposition.pvd.general import (
     PhysicalVaporDeposition,
+)
+
+from nomad.config import config
+
+m_package = SchemaPackage(name='Molecular Beam Epitaxy')
+
+configuration = config.get_plugin_entry_point(
+    'nomad_material_processing.vapor_deposition.pvd:mbe_schema',
 )
 
 

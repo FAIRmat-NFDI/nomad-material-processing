@@ -1,1 +1,14 @@
-from nomad_material_processing.solution.schema import *
+from nomad.config.models.plugins import SchemaPackageEntryPoint
+
+
+class SolutionSchemaPackageEntryPoint(SchemaPackageEntryPoint):
+    def load(self):
+        from nomad_material_processing.solution.schema import m_package
+
+        return m_package
+
+
+schema = SolutionSchemaPackageEntryPoint(
+    name='Solution Schema',
+    description='Schema package containing classes for solution preparation.',
+)

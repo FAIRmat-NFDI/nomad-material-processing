@@ -19,16 +19,16 @@ from typing import (
     TYPE_CHECKING,
 )
 from nomad.metainfo import (
-    Package,
+    SchemaPackage,
     Section,
     SubSection,
     Quantity,
 )
 
-from nomad_material_processing import (
+from nomad_material_processing.general import (
     TimeSeries,
 )
-from nomad_material_processing.vapor_deposition.pvd import (
+from nomad_material_processing.vapor_deposition.pvd.general import (
     PVDEvaporationSource,
     PVDSource,
     PVDStep,
@@ -48,7 +48,13 @@ if TYPE_CHECKING:
         BoundLogger,
     )
 
-m_package = Package(name='Thermal Evaporation')
+from nomad.config import config
+
+m_package = SchemaPackage(name='Thermal Evaporation')
+
+configuration = config.get_plugin_entry_point(
+    'nomad_material_processing.vapor_deposition.pvd:thermal_schema',
+)
 
 
 class ThermalEvaporationHeaterTemperature(TimeSeries):

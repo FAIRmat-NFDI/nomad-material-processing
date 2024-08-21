@@ -19,7 +19,7 @@ from typing import (
     TYPE_CHECKING,
 )
 from nomad.metainfo import (
-    Package,
+    SchemaPackage,
     Section,
     SubSection,
     Quantity,
@@ -34,7 +34,7 @@ from nomad.datamodel.metainfo.basesections import (
     ReadableIdentifiers,
 )
 
-from nomad_material_processing.vapor_deposition.pvd import (
+from nomad_material_processing.vapor_deposition.pvd.general import (
     PVDEvaporationSource,
     PVDSource,
     PVDStep,
@@ -49,7 +49,13 @@ if TYPE_CHECKING:
         BoundLogger,
     )
 
-m_package = Package(name='Pulsed Laser Deposition')
+from nomad.config import config
+
+m_package = SchemaPackage(name='Pulsed Laser Deposition')
+
+configuration = config.get_plugin_entry_point(
+    'nomad_material_processing.vapor_deposition.pvd:pld_schema',
+)
 
 
 class PLDTarget(CompositeSystem):

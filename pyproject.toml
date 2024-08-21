@@ -92,4 +92,16 @@ where = [
     "src",
 ]
 
+[project.entry-points.'nomad.plugin']
+
+general_schema = "nomad_material_processing:schema"
+solution_schema = "nomad_material_processing.solution:schema"
+vd_schema = "nomad_material_processing.vapor_deposition:schema"
+cvd_schema = "nomad_material_processing.vapor_deposition.cvd:schema"
+pvd_schema = "nomad_material_processing.vapor_deposition.pvd:schema"
+mbe_schema = "nomad_material_processing.vapor_deposition.pvd:mbe_schema"
+pld_schema = "nomad_material_processing.vapor_deposition.pvd:pld_schema"
+sputtering_schema = "nomad_material_processing.vapor_deposition.pvd:sputtering_schema"
+thermal_schema = "nomad_material_processing.vapor_deposition.pvd:thermal_schema"
+
 [tool.setuptools_scm]

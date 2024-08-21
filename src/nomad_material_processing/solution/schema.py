@@ -22,6 +22,7 @@ from nomad.datamodel.metainfo.basesections import (
     PubChemPureSubstanceSection,
 )
 from nomad.metainfo import (
+    SchemaPackage,
     Datetime,
     MEnum,
     Quantity,
@@ -36,6 +37,14 @@ from nomad_material_processing.solution.utils import (
 if TYPE_CHECKING:
     from structlog.stdlib import BoundLogger
     from nomad.datamodel import EntryArchive
+
+from nomad.config import config
+
+m_package = SchemaPackage()
+
+configuration = config.get_plugin_entry_point(
+    'nomad_material_processing.solution:schema'
+)
 
 
 class MolarConcentration(ArchiveSection):

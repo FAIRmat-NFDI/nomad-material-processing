@@ -19,12 +19,12 @@ from typing import (
     TYPE_CHECKING,
 )
 from nomad.metainfo import (
-    Package,
+    SchemaPackage,
     Section,
     Quantity,
 )
 
-from nomad_material_processing.vapor_deposition.pvd import (
+from nomad_material_processing.vapor_deposition.pvd.general import (
     PhysicalVaporDeposition,
 )
 
@@ -36,7 +36,13 @@ if TYPE_CHECKING:
         BoundLogger,
     )
 
-m_package = Package(name="Sputter Deposition")
+from nomad.config import config
+
+m_package = SchemaPackage(name='Sputter Deposition')
+
+configuration = config.get_plugin_entry_point(
+    'nomad_material_processing.vapor_deposition.pvd:sputtering_schema',
+)
 
 
 class SputterDeposition(PhysicalVaporDeposition):
@@ -52,14 +58,14 @@ class SputterDeposition(PhysicalVaporDeposition):
     """
 
     m_def = Section(
-        links=["http://purl.obolibrary.org/obo/CHMO_0001364"],
+        links=['http://purl.obolibrary.org/obo/CHMO_0001364'],
     )
     method = Quantity(
         type=str,
-        default="Sputter Deposition",
+        default='Sputter Deposition',
     )
 
-    def normalize(self, archive: "EntryArchive", logger: "BoundLogger") -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
         The normalizer for the `SputterDeposition` class.
 
