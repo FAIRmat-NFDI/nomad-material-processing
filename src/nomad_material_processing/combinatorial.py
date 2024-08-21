@@ -44,6 +44,7 @@ from nomad.datamodel.metainfo.basesections import (
     CompositeSystem,
     CompositeSystemReference,
 )
+
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import (
         EntryArchive,
@@ -56,9 +57,10 @@ m_package = Package(name='Combinatorial Synthesis')
 
 
 class CombinatorialLibrary(CompositeSystem, EntryData, PlotSection):
-    '''
+    """
     A base section for any continuous combinatorial library.
-    '''
+    """
+
     m_def = Section()
 
     def plot(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
@@ -66,13 +68,12 @@ class CombinatorialLibrary(CompositeSystem, EntryData, PlotSection):
             search,
             MetadataPagination,
         )
+
         query = {
-            "section_defs.definition_qualified_name:all": [
-            "nomad_material_processing.combinatorial.CombinatorialSample"
+            'section_defs.definition_qualified_name:all': [
+                'nomad_material_processing.combinatorial.CombinatorialSample'
             ],
-            "entry_references.target_entry_id:all": [
-            archive.metadata.entry_id
-            ]
+            'entry_references.target_entry_id:all': [archive.metadata.entry_id],
         }
         search_result = search(
             owner='all',
@@ -85,7 +86,6 @@ class CombinatorialLibrary(CompositeSystem, EntryData, PlotSection):
         y_values = []
         z_values = []
         if search_result.pagination.total > 0:
-            # print(json.dumps(search_result.data, indent=2))
             for res in search_result.data:
                 entry_id = res['entry_id']
                 upload_id = res['upload_id']
@@ -103,14 +103,16 @@ class CombinatorialLibrary(CompositeSystem, EntryData, PlotSection):
                 y_values.append(y)
                 z_values.append(z)
             print(f'Found {search_result.pagination.total} activities.')
-        fig = go.Figure(data=go.Scatter(
-            x=x_values,
-            y=y_values,
-            mode='markers',
-            customdata=references,
-            marker=dict(color='#2A4CDF'),
-            hovertemplate='<a href="%{customdata}">Link</a><extra></extra>'
-        ))
+        fig = go.Figure(
+            data=go.Scatter(
+                x=x_values,
+                y=y_values,
+                mode='markers',
+                customdata=references,
+                marker=dict(color='#2A4CDF'),
+                hovertemplate='<a href="%{customdata}">Link</a><extra></extra>',
+            )
+        )
 
         # Set plot title and axis labels
         fig.update_layout(
@@ -118,47 +120,9 @@ class CombinatorialLibrary(CompositeSystem, EntryData, PlotSection):
             hovermode='closest',
             dragmode='zoom',
             title='Scatter Plot of x and y Coordinates',
-            xaxis_title='x',
-            yaxis_title='y'
+            xaxis_title='x / m',
+            yaxis_title='y / m',
         )
-        # fig = go.Figure()
-        # for step in self.steps:
-        #     fig.add_trace(
-        #         go.Scatter(
-        #             x=x,
-        #             y=y,
-        #             name=step.name,
-        #             line=dict(color='#2A4CDF', width=2),
-        #             yaxis='y',
-        #         ),
-        #     )
-        # fig.update_layout(
-        #     template='plotly_white',
-        #     hovermode='closest',
-        #     dragmode='zoom',
-        #     xaxis=dict(
-        #         fixedrange=False,
-        #         autorange=True,
-        #         rangeslider=dict(
-        #             autorange=True,
-        #             borderwidth=1,
-        #         ),
-        #         title='Process time / s',
-        #         mirror='all',
-        #         showline=True,
-        #         gridcolor='#EAEDFC',
-        #     ),
-        #     yaxis=dict(
-        #         fixedrange=False,
-        #         type='log',
-        #         anchor='x',
-        #         title='Chamber pressure / mbar',
-        #         domain=[0, 0.48],
-        #         titlefont=dict(color='#2A4CDF'),
-        #         tickfont=dict(color='#2A4CDF'),
-        #         gridcolor='#EAEDFC',
-        #     ),
-        # )
         plot_json = fig.to_plotly_json()
         plot_json['config'] = dict(
             scrollZoom=False,
@@ -170,28 +134,28 @@ class CombinatorialLibrary(CompositeSystem, EntryData, PlotSection):
             )
         )
 
-
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
-        '''
+        """
         The normalizer for the `ContinuousCombiLibrary` section.
 
         Args:
             archive (EntryArchive): The archive containing the section that is being
             normalized.
             logger (BoundLogger): A structlog logger.
-        '''
+        """
         super(CombinatorialLibrary, self).normalize(archive, logger)
         self.figures = []
         self.plot(archive, logger)
 
 
 class CombinatorialSamplePosition(ArchiveSection):
-    '''
+    """
     A section for representing the position of a sample within a continuous
     combinatorial library.
     If nothing else is specified it is the position relative to the center of mass of
     the library.
-    '''
+    """
+
     m_def = Section()
     x = Quantity(
         type=float,
@@ -219,114 +183,133 @@ class CombinatorialSamplePosition(ArchiveSection):
     )
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
-        '''
+        """
         The normalizer for the `CombinatorialSamplePosition` section.
 
         Args:
             archive (EntryArchive): The archive containing the section that is being
             normalized.
             logger (BoundLogger): A structlog logger.
-        '''
+        """
         super(CombinatorialSamplePosition, self).normalize(archive, logger)
 
 
-class CombinatorialSample(CompositeSystem, EntryData):
-    '''
-    A base section for any sample of a continuous combinatorial library.
-    '''
-    m_def = Section()
-    library = Quantity(
+class CombinatorialLibraryReference(CompositeSystemReference):
+    """
+    A section containing a reference to a continuous combinatorial library entry.
+    """
+
+    m_def = Section(
+        label_quantity='lab_id',
+    )
+    reference = Quantity(
         type=CombinatorialLibrary,
-        description='''
+        description="""
         The reference to the combinatorial library entry.
-        ''',
+        """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.ReferenceEditQuantity,
             label='Library Reference',
         ),
     )
+
+
+class CombinatorialSample(CompositeSystem, EntryData):
+    """
+    A base section for any sample of a continuous combinatorial library.
+    """
+
+    m_def = Section()
     sample_number = Quantity(
         type=int,
-        description='''
+        description="""
         A unique number for this sample of the combinatorial library.
-        ''',
+        """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
         ),
     )
     lab_id = Quantity(
         type=str,
-        description='''
+        description="""
         A unique human readable ID for the sample within the combinatorial library.
         Suggested to be the ID of the library followed by a dash ("-") and the sample
         number.
-        ''',
+        """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
             label='Sample ID',
         ),
     )
+    library = SubSection(
+        section_def=CombinatorialLibraryReference,
+        description="""
+        The reference to the combinatorial library entry.
+        """,
+    )
     position = SubSection(
         section_def=CombinatorialSamplePosition,
-        description='''
+        description="""
         The position of a sample within the continuous combinatorial library. If nothing
         else is specified it is the position relative to the center of mass of the
         library.
-        ''',
+        """,
     )
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
-        '''
+        """
         The normalizer for the `CombinatorialSample` section.
 
         Args:
             archive (EntryArchive): The archive containing the section that is being
             normalized.
             logger (BoundLogger): A structlog logger.
-        '''
+        """
         super(CombinatorialSample, self).normalize(archive, logger)
 
 
+# Discrete combinatorial library classes:
 class DiscreteCombinatorialSample(CompositeSystem):
-    '''
-    A base section for any sample of a combinatorial library.
-    '''
+    """
+    A base section for any sample of a discrete combinatorial library.
+    """
+
     m_def = Section()
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
-        '''
+        """
         The normalizer for the `CombinatorialSample` section.
 
         Args:
             archive (EntryArchive): The archive containing the section that is being
             normalized.
             logger (BoundLogger): A structlog logger.
-        '''
+        """
         super(DiscreteCombinatorialSample, self).normalize(archive, logger)
 
 
-# Discrete combinatorial library classes:
 class DiscreteCombinatorialSampleReference(CompositeSystemReference):
-    '''
-    A section containing a reference to a combinatorial sample entry.
-    '''
+    """
+    A section containing a reference to a discrete combinatorial sample entry.
+    """
+
     m_def = Section(
         label_quantity='sample_number',
     )
     sample_number = Quantity(
         type=int,
-        description='''
+        description="""
         A unique number for this sample of the combinatorial library.
-        ''',
+        """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
         ),
     )
     reference = Quantity(
         type=DiscreteCombinatorialSample,
-        description='''
+        description="""
         The reference to the combinatorial sample entry.
-        ''',
+        """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.ReferenceEditQuantity,
             label='Sample Reference',
@@ -334,52 +317,50 @@ class DiscreteCombinatorialSampleReference(CompositeSystemReference):
     )
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
-        '''
+        """
         The normalizer for the `CombinatorialSampleReference` section.
 
         Args:
             archive (EntryArchive): The archive containing the section that is being
             normalized.
             logger (BoundLogger): A structlog logger.
-        '''
+        """
         super(DiscreteCombinatorialSampleReference, self).normalize(archive, logger)
 
 
 class DiscreteCombinatorialLibrary(Collection):
-    '''
-    A base section for any combinatorial library.
-    '''
+    """
+    A base section for a discrete combinatorial library.
+    """
+
     m_def = Section()
     lab_id = Quantity(
         type=str,
-        description='''
+        description="""
         A unique human readable ID for the combinatorial library.
-        ''',
+        """,
         a_eln=ELNAnnotation(
-            component=ELNComponentEnum.StringEditQuantity,
-            label='Library ID'
+            component=ELNComponentEnum.StringEditQuantity, label='Library ID'
         ),
     )
     entities = SubSection(
         section_def=DiscreteCombinatorialSampleReference,
-        description='''
+        description="""
         All the investigated samples of the combinatorial library.
-        ''',
+        """,
         repeats=True,
-        a_eln=ELNAnnotation(
-            label='Samples'
-        ),
+        a_eln=ELNAnnotation(label='Samples'),
     )
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
-        '''
+        """
         The normalizer for the `DiscreteCombinatorialLibrary` section.
 
         Args:
             archive (EntryArchive): The archive containing the section that is being
             normalized.
             logger (BoundLogger): A structlog logger.
-        '''
+        """
         super(DiscreteCombinatorialLibrary, self).normalize(archive, logger)
 
 
