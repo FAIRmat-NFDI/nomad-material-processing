@@ -18,48 +18,37 @@
 from typing import (
     TYPE_CHECKING,
 )
-from nomad.metainfo import (
-    SchemaPackage,
-    Section,
-    SubSection,
-    Quantity,
-    MEnum,
-)
 
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
     ELNComponentEnum,
 )
-
-from nomad.datamodel.data import (
-    ArchiveSection,
-)
-from nomad.datamodel.metainfo.plot import PlotSection, PlotlyFigure
-
 from nomad.datamodel.metainfo.basesections import (
     PubChemPureSubstanceSection,
     PureSubstanceComponent,
 )
+from nomad.metainfo import (
+    Quantity,
+    SchemaPackage,
+    Section,
+    SubSection,
+)
+
 from nomad_material_processing.general import (
     TimeSeries,
 )
 from nomad_material_processing.vapor_deposition.general import (
     EvaporationSource,
-    VaporDepositionSource,
+    GasFlow,
     MolarFlowRate,
-    VolumetricFlowRate,
     Pressure,
     Temperature,
-    GasFlow,
+    VaporDepositionSource,
+    VolumetricFlowRate,
 )
 
 if TYPE_CHECKING:
-    from nomad.datamodel.datamodel import (
-        EntryArchive,
-    )
-    from structlog.stdlib import (
-        BoundLogger,
-    )
+    pass
 
 from nomad.config import config
 

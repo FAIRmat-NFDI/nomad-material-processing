@@ -28,6 +28,7 @@ def get_entry_id_from_file_name(file_name, archive):
 
 def create_archive(entity, archive, file_name) -> str:
     import json
+
     from nomad.datamodel.context import ClientContext
     if isinstance(archive.m_context, ClientContext):
         return None

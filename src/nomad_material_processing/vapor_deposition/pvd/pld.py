@@ -18,27 +18,28 @@
 from typing import (
     TYPE_CHECKING,
 )
-from nomad.metainfo import (
-    SchemaPackage,
-    Section,
-    SubSection,
-    Quantity,
-)
+
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
     ELNComponentEnum,
 )
 from nomad.datamodel.metainfo.basesections import (
     CompositeSystem,
-    SystemComponent,
     ReadableIdentifiers,
+    SystemComponent,
+)
+from nomad.metainfo import (
+    Quantity,
+    SchemaPackage,
+    Section,
+    SubSection,
 )
 
 from nomad_material_processing.vapor_deposition.pvd.general import (
+    PhysicalVaporDeposition,
     PVDEvaporationSource,
     PVDSource,
     PVDStep,
-    PhysicalVaporDeposition,
 )
 
 if TYPE_CHECKING:

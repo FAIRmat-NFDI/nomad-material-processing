@@ -3,7 +3,7 @@ from nomad.config.models.plugins import SchemaPackageEntryPoint
 
 class SolutionSchemaPackageEntryPoint(SchemaPackageEntryPoint):
     def load(self):
-        from nomad_material_processing.solution.schema import m_package
+        from nomad_material_processing.solution.general import m_package
 
         return m_package
 

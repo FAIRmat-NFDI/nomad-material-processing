@@ -18,10 +18,12 @@
 from typing import (
     TYPE_CHECKING,
 )
+
 from nomad.metainfo import (
     Package,
     Section,
 )
+
 from nomad_material_processing.general import (
     SampleDeposition,
 )

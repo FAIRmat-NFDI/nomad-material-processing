@@ -1,7 +1,7 @@
-import os.path
 import glob
+import os.path
 
-from nomad.client import parse, normalize_all
+from nomad.client import normalize_all, parse
 
 
 def test_schema():

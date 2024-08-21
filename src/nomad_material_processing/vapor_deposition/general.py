@@ -18,13 +18,7 @@
 from typing import (
     TYPE_CHECKING,
 )
-from nomad.metainfo import (
-    SchemaPackage,
-    Section,
-    SubSection,
-    Quantity,
-    MEnum,
-)
+
 from nomad.datamodel.data import (
     ArchiveSection,
 )
@@ -33,12 +27,12 @@ from nomad.datamodel.metainfo.annotations import (
     ELNComponentEnum,
 )
 from nomad.datamodel.metainfo.basesections import (
-    Entity,
     ActivityStep,
-    PureSubstanceSection,
     Component,
     CompositeSystemReference,
+    Entity,
     PubChemPureSubstanceSection,
+    PureSubstanceSection,
 )
 from nomad.datamodel.metainfo.plot import (
     PlotSection,
@@ -47,12 +41,20 @@ from nomad.datamodel.metainfo.workflow import (
     Link,
     Task,
 )
+from nomad.metainfo import (
+    MEnum,
+    Quantity,
+    SchemaPackage,
+    Section,
+    SubSection,
+)
+
 from nomad_material_processing.general import (
-    SampleDeposition,
-    ThinFilmStackReference,
-    ThinFilmReference,
-    TimeSeries,
     Geometry,
+    SampleDeposition,
+    ThinFilmReference,
+    ThinFilmStackReference,
+    TimeSeries,
 )
 
 if TYPE_CHECKING:

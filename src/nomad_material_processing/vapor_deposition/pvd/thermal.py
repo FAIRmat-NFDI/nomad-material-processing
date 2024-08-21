@@ -18,26 +18,26 @@
 from typing import (
     TYPE_CHECKING,
 )
+
+from nomad.datamodel.metainfo.annotations import (
+    ELNAnnotation,
+    ELNComponentEnum,
+)
 from nomad.metainfo import (
+    Quantity,
     SchemaPackage,
     Section,
     SubSection,
-    Quantity,
 )
 
 from nomad_material_processing.general import (
     TimeSeries,
 )
 from nomad_material_processing.vapor_deposition.pvd.general import (
+    PhysicalVaporDeposition,
     PVDEvaporationSource,
     PVDSource,
     PVDStep,
-    PhysicalVaporDeposition,
-)
-
-from nomad.datamodel.metainfo.annotations import (
-    ELNAnnotation,
-    ELNComponentEnum,
 )
 
 if TYPE_CHECKING:

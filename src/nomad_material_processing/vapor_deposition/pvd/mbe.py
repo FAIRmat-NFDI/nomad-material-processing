@@ -16,16 +16,15 @@
 # limitations under the License.
 #
 
+from nomad.config import config
 from nomad.metainfo import (
     SchemaPackage,
-    Quantity,
     Section,
 )
+
 from nomad_material_processing.vapor_deposition.pvd.general import (
     PhysicalVaporDeposition,
 )
-
-from nomad.config import config
 
 m_package = SchemaPackage(name='Molecular Beam Epitaxy')
 

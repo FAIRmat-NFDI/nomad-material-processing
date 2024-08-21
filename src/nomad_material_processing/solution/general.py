@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING, Union
-from nomad.units import ureg
+
 import numpy as np
 from nomad.datamodel.data import (
     ArchiveSection,
@@ -7,36 +7,38 @@ from nomad.datamodel.data import (
 )
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
-    SectionProperties,
     Filter,
+    SectionProperties,
 )
 from nomad.datamodel.metainfo.basesections import (
     Component,
     CompositeSystem,
     CompositeSystemReference,
-    SystemComponent,
     InstrumentReference,
     Process,
     ProcessStep,
-    PureSubstanceComponent,
     PubChemPureSubstanceSection,
+    PureSubstanceComponent,
+    SystemComponent,
 )
 from nomad.metainfo import (
-    SchemaPackage,
     Datetime,
     MEnum,
     Quantity,
+    SchemaPackage,
     Section,
     SubSection,
 )
+from nomad.units import ureg
+
 from nomad_material_processing.solution.utils import (
     create_archive,
     create_unique_filename,
 )
 
 if TYPE_CHECKING:
-    from structlog.stdlib import BoundLogger
     from nomad.datamodel import EntryArchive
+    from structlog.stdlib import BoundLogger
 
 from nomad.config import config
 
@@ -599,14 +601,13 @@ class SolutionComponentReference(SystemComponent, BaseSolutionComponent):
             if not self.volume:
                 # assume entire volume of the solution is used
                 self.volume = available_volume
-            else:
-                if self.volume > available_volume:
-                    logger.warning(
-                        f'The volume used for the "{self.name}" is greater than the '
-                        'available volume of the solution. Setting it to the available '
-                        'volume.'
-                    )
-                    self.volume = available_volume
+            elif self.volume > available_volume:
+                logger.warning(
+                    f'The volume used for the "{self.name}" is greater than the '
+                    'available volume of the solution. Setting it to the available '
+                    'volume.'
+                )
+                self.volume = available_volume
             if self.system.density:
                 self.mass = self.system.density * self.volume
         super().normalize(archive, logger)

@@ -18,10 +18,11 @@
 from typing import (
     TYPE_CHECKING,
 )
+
 from nomad.metainfo import (
+    Quantity,
     SchemaPackage,
     Section,
-    Quantity,
 )
 
 from nomad_material_processing.vapor_deposition.pvd.general import (
