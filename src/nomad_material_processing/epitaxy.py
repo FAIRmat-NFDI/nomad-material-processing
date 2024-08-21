@@ -59,7 +59,7 @@ class Epitaxy(SampleDeposition):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(Epitaxy, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 class MolecularBeamEpitaxy(Epitaxy):
@@ -87,7 +87,7 @@ class MolecularBeamEpitaxy(Epitaxy):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(MolecularBeamEpitaxy, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 class VaporPhaseEpitaxy(Epitaxy):
@@ -117,7 +117,7 @@ class VaporPhaseEpitaxy(Epitaxy):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(VaporPhaseEpitaxy, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 class MetalOrganicVaporPhaseEpitaxy(VaporPhaseEpitaxy):
@@ -152,7 +152,7 @@ class MetalOrganicVaporPhaseEpitaxy(VaporPhaseEpitaxy):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(MetalOrganicVaporPhaseEpitaxy, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 m_package.__init_metainfo__()

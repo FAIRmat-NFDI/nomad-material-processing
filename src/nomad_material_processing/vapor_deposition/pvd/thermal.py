@@ -234,7 +234,7 @@ class ThermalEvaporation(PhysicalVaporDeposition):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(ThermalEvaporation, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 m_package.__init_metainfo__()

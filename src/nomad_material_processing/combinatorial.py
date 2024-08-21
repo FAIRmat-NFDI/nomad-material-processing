@@ -1,4 +1,3 @@
-
 #
 # Copyright The NOMAD Authors.
 #
@@ -143,7 +142,7 @@ class CombinatorialLibrary(CompositeSystem, EntryData, PlotSection):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(CombinatorialLibrary, self).normalize(archive, logger)
+        super().normalize(archive, logger)
         self.figures = []
         self.plot(archive, logger)
 
@@ -191,7 +190,7 @@ class CombinatorialSamplePosition(ArchiveSection):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(CombinatorialSamplePosition, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 class CombinatorialLibraryReference(CompositeSystemReference):
@@ -265,7 +264,7 @@ class CombinatorialSample(CompositeSystem, EntryData):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(CombinatorialSample, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 # Discrete combinatorial library classes:
@@ -285,7 +284,7 @@ class DiscreteCombinatorialSample(CompositeSystem):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(DiscreteCombinatorialSample, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 class DiscreteCombinatorialSampleReference(CompositeSystemReference):
@@ -325,7 +324,7 @@ class DiscreteCombinatorialSampleReference(CompositeSystemReference):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(DiscreteCombinatorialSampleReference, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 class DiscreteCombinatorialLibrary(Collection):
@@ -361,7 +360,7 @@ class DiscreteCombinatorialLibrary(Collection):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(DiscreteCombinatorialLibrary, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 m_package.__init_metainfo__()

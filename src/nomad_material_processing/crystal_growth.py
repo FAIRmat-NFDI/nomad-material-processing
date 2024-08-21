@@ -58,7 +58,7 @@ class CrystalGrowth(SampleDeposition):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(CrystalGrowth, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 class CzochralskiProcess(CrystalGrowth):
@@ -82,7 +82,7 @@ class CzochralskiProcess(CrystalGrowth):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(CzochralskiProcess, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 m_package.__init_metainfo__()

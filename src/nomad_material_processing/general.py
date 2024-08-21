@@ -444,9 +444,10 @@ class Dopant(ElementalComposition):
 
 class CrystalProperties(ArchiveSection):
     """
-    Characteristics arising from the ordered arrangement of atoms in a crystalline structure.
-    These properties are defined by factors such as crystal symmetry, lattice parameters,
-    and the specific arrangement of atoms within the crystal lattice.
+    Characteristics arising from the ordered arrangement
+    of atoms in a crystalline structure.
+    These properties are defined by factors such as crystal symmetry, lattice
+    parameters, and the specific arrangement of atoms within the crystal lattice.
     """
 
 
@@ -510,7 +511,8 @@ class ElectronicProperties(ArchiveSection):
             'P-type',
             'N-type',
         ),
-        description='The type of semiconductor, N-type being electrons the majority carriers and P-type being holes the majority carriers.',
+        description="""The type of semiconductor, N-type being electrons
+        the majority carriers and P-type being holes the majority carriers.""",
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.EnumEditQuantity,
         ),
@@ -521,12 +523,14 @@ class ElectronicProperties(ArchiveSection):
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
         ),
-        description='Concentration of free charge carriers, electrons in the conduction band and holes in the valence band.',
+        description="""Concentration of free charge carriers, electrons in the
+        conduction band and holes in the valence band.""",
     )
     electrical_resistivity = Quantity(
         type=float,
         links=['http://fairmat-nfdi.eu/taxonomy/ElectricalResistivity'],
-        description='Resistance of the charges to move in the presence of an electric current.',
+        description="""Resistance of the charges to move
+        in the presence of an electric current.""",
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
             defaultDisplayUnit='ohm cm',
@@ -800,8 +804,8 @@ class TimeSeries(ArchiveSection):
     """
     A time series of data during a process step.
     This is an abstract class and should not be used directly.
-    Instead, it should be derived and the the units of the `value` and `set_value` should
-    be specified.
+    Instead, it should be derived and the the units of the `value` and `set_value`
+    should be specified.
 
     For example, a derived class could be `Temperature` with `value` in Kelvin:
     ```python

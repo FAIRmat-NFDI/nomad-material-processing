@@ -76,7 +76,8 @@ configuration = config.get_plugin_entry_point(
 
 class InsertReduction(Entity):
     """
-    The reduction that sometimes is used to lodge the substrate in the substrate holder position..
+    The reduction that sometimes is used to lodge the substrate
+    in the substrate holder position.
     """
 
     name = Quantity(
@@ -91,7 +92,8 @@ class InsertReduction(Entity):
     insert_id = Quantity(
         type=str,
         description="""
-        The ID of the insert that is placed in this position to accomodate the substrate.
+        The ID of the insert that is placed in this position
+        to accomodate the substrate.
         """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
@@ -124,7 +126,8 @@ class SubstrateHolderPosition(ArchiveSection):
         type=float,
         unit='meter',
         description="""
-        The x coordinate of the substrate holder position relative to the center of the holder.
+        The x coordinate of the substrate holder position
+        relative to the center of the holder.
         """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
@@ -135,7 +138,8 @@ class SubstrateHolderPosition(ArchiveSection):
         type=float,
         unit='meter',
         description="""
-        The y coordinate of the substrate holder position relative to the center of the holder.
+        The y coordinate of the substrate holder position
+        relative to the center of the holder.
         """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
@@ -679,7 +683,7 @@ class VaporDepositionStep(ActivityStep):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(VaporDepositionStep, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 class VaporDeposition(SampleDeposition):
@@ -689,7 +693,8 @@ class VaporDeposition(SampleDeposition):
     It involves the deposition of material from a vapor phase to a solid thin film or
     coating onto a substrate.
      - material sources:
-       Both PVD and CVD involve a source material that is transformed into a vapor phase.
+       Both PVD and CVD involve a source material
+       that is transformed into a vapor phase.
        In PVD, the source material is physically evaporated or sputtered from a solid
        target.
        In CVD, gaseous precursors undergo chemical reactions to produce a solid material
@@ -731,7 +736,7 @@ class VaporDeposition(SampleDeposition):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(VaporDeposition, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 m_package.__init_metainfo__()

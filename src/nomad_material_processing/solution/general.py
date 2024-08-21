@@ -71,7 +71,8 @@ class MolarConcentration(ArchiveSection):
     measured_concentration = Quantity(
         type=np.float64,
         description=(
-            'The concentration observed or measured with some characterization technique.'
+            """The concentration observed or measured
+            with some characterization technique."""
         ),
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -187,7 +188,7 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         | ------------- | ----------- |
         | Solvent       | The term applied to the whole initial liquid phase containing the extractant. |
         | Solute        | The minor component of a solution which is regarded as having been dissolved by the solvent. |
-        """,
+        """,  # noqa: E501
         a_eln=ELNAnnotation(
             component='EnumEditQuantity',
         ),
@@ -250,7 +251,8 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         self, volume: Quantity, logger: 'BoundLogger' = None
     ) -> None:
         """
-        Calculate the molar concentration of the component in a given volume of solution.
+        Calculate the molar concentration of the component
+        in a given volume of solution.
 
         Args:
             volume (Quantity): The volume of the solution.
@@ -271,8 +273,8 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
-        Normalize method for the `SolutionComponent` section. Sets the mass if volume and
-        density are provided.
+        Normalize method for the `SolutionComponent` section. Sets the mass if volume
+        and density are provided.
 
         Args:
             archive (EntryArchive): A NOMAD archive.
@@ -291,7 +293,7 @@ class Solution(CompositeSystem, EntryData):
     Section for decribing liquid solutions.
     """
 
-    # TODO make the solvents, solutes, and elemental_composition sub-section non-editable.
+    # TODO make the solvents, solutes, and elemental_composition subsection noneditable.
     m_def = Section(
         description='A homogeneous liquid mixture composed of two or more substances.',
         a_eln=ELNAnnotation(
@@ -442,13 +444,13 @@ class Solution(CompositeSystem, EntryData):
                 continue
             self.calculated_volume += component.volume
 
-    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:  # noqa: PLR0912, PLR0915
         """
         Normalize method for the `Solution` section. Calculate the total volume of the
         solution. Populates the solvents and solutes with the components based on the
         `component_role`. If a component doesn't have pure_substance section, it is
-        skipped. In case of components that are solutions, the quantity of their solvents
-        and solutes is scaled based on their quantity used. Combines the
+        skipped. In case of components that are solutions, the quantity of their
+        solvents and solutes is scaled based on their quantity used. Combines the
         components with the same PubChem CID. Set the mass, density, and elemental
         composition of the solution.
 
@@ -467,9 +469,9 @@ class Solution(CompositeSystem, EntryData):
             if isinstance(component, SolutionComponent):
                 if not component.pure_substance or not component.mass:
                     logger.warning(
-                        f'Either the pure_substance sub_section or mass for the component '
-                        f'"{component.name}" is missing. Not adding it to the '
-                        f'"{component.component_role.lower()}' + 's' + '" list.'
+                        f'Either the pure_substance sub_section or mass for the '
+                        f'component "{component.name}" is missing. Not adding it to '
+                        f'the "{component.component_role.lower()}' + 's' + '" list.'
                     )
                     continue
                 component.mass_fraction = None

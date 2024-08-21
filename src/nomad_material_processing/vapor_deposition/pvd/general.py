@@ -200,8 +200,8 @@ class PVDSampleParameters(SampleParameters):
         unit='meter',
         description="""
         The distance between the substrate and all the sources.
-        In the case of multiple sources, the distances are listed in the same order as the
-        sources are listed in the parent `VaporDepositionStep` section.
+        In the case of multiple sources, the distances are listed in the same order
+        as the sources are listed in the parent `VaporDepositionStep` section.
         """,
         shape=['*'],
         a_eln=ELNAnnotation(
@@ -233,7 +233,7 @@ class PVDStep(VaporDepositionStep):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(PVDStep, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 class PhysicalVaporDeposition(VaporDeposition):
@@ -277,7 +277,7 @@ class PhysicalVaporDeposition(VaporDeposition):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(PhysicalVaporDeposition, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 m_package.__init_metainfo__()

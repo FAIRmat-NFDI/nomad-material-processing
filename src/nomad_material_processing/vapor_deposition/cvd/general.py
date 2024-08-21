@@ -80,7 +80,8 @@ class ComponentConcentration(PureSubstanceComponent):
     )
     effective_concentration = Quantity(
         type=float,
-        description='The concentration calculated from the component moles and total volume.',
+        description="""The concentration calculated from
+        the component moles and total volume.""",
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             defaultDisplayUnit='mol / liter',
@@ -147,9 +148,9 @@ class Rotation(TimeSeries):
 
 class PartialVaporPressure(Pressure):
     """
-    The Partial Vapor Pressure (or Equilibrium Vapor Pressure), p, is the pressure exerted
-    by a vapor in thermodynamic equilibrium with its condensed phases (solid or liquid)
-    at a given temperature in a closed system.
+    The Partial Vapor Pressure (or Equilibrium Vapor Pressure), p, is the pressure
+    exerted by a vapor in thermodynamic equilibrium with its condensed phases
+    (solid or liquid) at a given temperature in a closed system.
 
     It can be approximately calculated by the semiempirical Antoine equation.
     It is a relation between the vapor pressure and temperature of pure substances.
@@ -183,7 +184,8 @@ class BubblerMolarFlowRate(MolarFlowRate):
     """
     Molar flow rate is the amount of a substance which passes per unit of time.
 
-    The article cited below explains the equation used in MOVPE to calculate the molar flow rate.
+    The article cited below explains the equation used in MOVPE
+    to calculate the molar flow rate.
 
     F_r = F_c*P_r / (P_0 - P_r)
 
@@ -227,18 +229,21 @@ class CVDEvaporationSource(EvaporationSource):
 class BubblerEvaporator(CVDEvaporationSource):
     """
     Delivers precursor materials to the reaction chamber.
-    It serves as a mechanism for introducing volatile liquid or solid precursors into the gas phase,
-    where they can react and deposit onto a substrate surface to form thin films or coatings.
+    It serves as a mechanism for introducing volatile liquid or solid precursors into
+    the gas phase where they can react and deposit onto a substrate surface
+    to form thin films or coatings.
 
     Key components:
         - Bubbler Vessel: This vessel holds the precursor material.
         - Heating Element: To facilitate vaporization.
         - Gas Inlet and Outlet: Gas delivery system via gas inlet and outlet ports.
-        - Temperature Control: Maintain the vapor pressure of the precursor at the desired level.
+        - Temperature Control: Maintain the vapor pressure of the precursor
+          at the desired level.
 
     Operation:
         - Loading Precursor: The precursor material is loaded into the bubbler vessel
-        - Heating: The heating element is activated to form a vapor phase above the liquid or solid.
+        - Heating: The heating element is activated to form a vapor phase
+          above the liquid or solid.
         - Gas Flow: Carrier gas is bubbled through the precursor material.
         - Transport: The precursor vapor is delivered to the reaction chamber.
           The precursor undergoes decomposition or reaction on the substrate surface,
@@ -291,7 +296,9 @@ class BubblerEvaporator(CVDEvaporationSource):
 
 class FlashEvaporator(CVDEvaporationSource):
     """
-    Flash Evaporator Unit: It typically comprises a reservoir where the metalorganic precursor, often in liquid form, is stored.
+    Flash Evaporator Unit:
+    it typically comprises a reservoir where
+    the metalorganic precursor, often in liquid form, is stored.
 
     Components:
 
@@ -338,11 +345,12 @@ class GasLineEvaporator(CVDEvaporationSource):
     In chemical vapor deposition (CVD), the gas supply plays a critical role
     in providing the necessary precursor molecules for the deposition process.
 
-    Gas lines are used to transport the precursor gases from their source to the reaction chamber.
+    Gas lines are used to transport the precursor gases
+    from their source to the reaction chamber.
     These lines are often made of materials that are compatible with the precursor gases
     and can withstand the process conditions.
-    They may also be heated or insulated to maintain the gases at the desired temperature
-    and prevent condensation or undesired reactions within the lines.
+    They may also be heated or insulated to maintain the gases at the desired
+    temperature and prevent condensation or undesired reactions within the lines.
     """
 
     pass
