@@ -159,9 +159,13 @@ class SubstrateHolderPosition(ArchiveSection):
     slot_geometry = SubSection(
         section_def=Geometry,
     )
-    insert_reduction = SubSection(
-        section_def=InsertReduction,
+    insert_reduction = Quantity(
+        type=InsertReduction,
         description='Optional description of insert if used.',
+        a_eln=ELNAnnotation(
+            component='ReferenceEditQuantity',
+            label='ThinFilmStackMbe Reference',
+        ),
     )
 
 
