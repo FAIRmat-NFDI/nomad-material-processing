@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING, Union
 
-import numpy as np
 from nomad.datamodel.data import (
     ArchiveSection,
     EntryData,
