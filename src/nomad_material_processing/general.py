@@ -515,6 +515,7 @@ class ElectronicProperties(ArchiveSection):
         type=MEnum(
             'P-type',
             'N-type',
+            'Semi-insulating',
         ),
         description="""The type of semiconductor, N-type being electrons
         the majority carriers and P-type being holes the majority carriers.""",
