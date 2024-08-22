@@ -94,14 +94,19 @@ class InsertReduction(Entity):
             component=ELNComponentEnum.StringEditQuantity,
         ),
     )
-    insert_id = Quantity(
+    lab_id = Quantity(
         type=str,
-        description="""
-        The ID of the insert that is placed in this position
-        to accomodate the substrate.
-        """,
+        description="""An ID string for the insert to be put in the substrate holder.
+        It is unique at least for the lab that produced this data.""",
+        a_eln=dict(component='StringEditQuantity', label='Insert ID'),
+    )
+    image = Quantity(
+        type=str,
+        description="""A photograph or image of the insert
+        to be lodged in the substrate holder.""",
+        a_browser={'adaptor': 'RawFileAdaptor'},
         a_eln=ELNAnnotation(
-            component=ELNComponentEnum.StringEditQuantity,
+            component=ELNComponentEnum.FileEditQuantity,
         ),
     )
     material = SubSection(section_def=PubChemPureSubstanceSection, repeats=True)
