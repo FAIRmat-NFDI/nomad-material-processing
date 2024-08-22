@@ -247,8 +247,13 @@ class FilledSubstrateHolder(SubstrateHolder):
     A substrate holder that is filled with substrate(s).
     """
 
-    substrate_holder = SubSection(
-        section_def=SubstrateHolder,
+    substrate_holder = Quantity(
+        type=SubstrateHolder,
+        description='A reference to an empty substrate holder.',
+        a_eln=ELNAnnotation(
+            component='ReferenceEditQuantity',
+            label='ThinFilmStackMbe Reference',
+        ),
     )
     positions = SubSection(
         section_def=FilledSubstrateHolderPosition,
