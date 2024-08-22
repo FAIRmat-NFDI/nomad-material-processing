@@ -145,7 +145,10 @@ class SquareCuboid(Parallelepiped):
     A cuboid with all sides equal in length.
     """
 
-    m_def = Section()
+    m_def = Section(
+        a_eln={'hide': ['length']},
+        label='Square Cuboid',
+    )
     height = Quantity(
         type=float,
         description='The z dimension of the parallelepiped.',
@@ -156,15 +159,45 @@ class SquareCuboid(Parallelepiped):
         ),
         unit='meter',
     )
-    side = Quantity(
+    width = Quantity(
         type=float,
-        description='The x and y dimensions of the parallelepiped.',
+        description='The x dimension of the parallelepiped.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
             defaultDisplayUnit='millimeter',
-            label='Side (x = y)',
+            label='Side (x=y)',
         ),
         unit='meter',
+    )
+    alpha = Quantity(
+        type=float,
+        description='The angle between y and z sides.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label='Alpha (∡ y-x-z)',
+        ),
+        unit='degree',
+        default=90.0,
+    )
+    beta = Quantity(
+        type=float,
+        description='The angle between x and z sides.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label='Beta (∡ x-y-z)',
+        ),
+        unit='degree',
+        default=90.0,
+    )
+    gamma = Quantity(
+        type=float,
+        description='The angle between x and y sides.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label='Gamma (∡ x-z-y)',
+        ),
+        unit='degree',
+        default=90.0,
     )
     surface_area = Quantity(
         type=float,
@@ -218,6 +251,36 @@ class RectangleCuboid(Parallelepiped):
             label='Length (y)',
         ),
         unit='meter',
+    )
+    alpha = Quantity(
+        type=float,
+        description='The angle between y and z sides.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label='Alpha (∡ y-x-z)',
+        ),
+        unit='degree',
+        default=90.0,
+    )
+    beta = Quantity(
+        type=float,
+        description='The angle between x and z sides.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label='Beta (∡ x-y-z)',
+        ),
+        unit='degree',
+        default=90.0,
+    )
+    gamma = Quantity(
+        type=float,
+        description='The angle between x and y sides.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            label='Gamma (∡ x-z-y)',
+        ),
+        unit='degree',
+        default=90.0,
     )
     surface_area = Quantity(
         type=float,
