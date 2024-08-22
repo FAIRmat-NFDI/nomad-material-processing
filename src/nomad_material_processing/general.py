@@ -904,7 +904,7 @@ class EtchingStep(ProcessStep):
 
     m_def = Section()
     duration = Quantity(
-        type=np.float64,
+        type=float,
         description='The elapsed time since the annealing process started.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit='minute'
@@ -912,7 +912,7 @@ class EtchingStep(ProcessStep):
         unit='second',
     )
     temperature = Quantity(
-        type=np.float64,
+        type=float,
         description='The temperature of the etching process.',
         a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'celsius'},
         unit='celsius',
@@ -975,7 +975,7 @@ class AnnealingStep(ProcessStep):
 
     m_def = Section()
     duration = Quantity(
-        type=np.float64,
+        type=float,
         description='The elapsed time since the annealing process started.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit='minute'
@@ -983,7 +983,7 @@ class AnnealingStep(ProcessStep):
         unit='second',
     )
     temperature = Quantity(
-        type=np.float64,
+        type=float,
         description='The temperature of the etching process.',
         a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'celsius'},
         unit='celsius',
@@ -1009,7 +1009,7 @@ class Annealing(Process, EntryData):
         ),
     )
     duration = Quantity(
-        type=np.float64,
+        type=float,
         description='The elapsed time since the annealing process started.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit='minute'
@@ -1042,7 +1042,7 @@ class CleaningStep(ProcessStep):
 
     m_def = Section()
     duration = Quantity(
-        type=np.float64,
+        type=float,
         description='The elapsed time since the cleaning process started.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit='minute'
@@ -1050,7 +1050,7 @@ class CleaningStep(ProcessStep):
         unit='second',
     )
     temperature = Quantity(
-        type=np.float64,
+        type=float,
         description='The temperature of the cleaning process.',
         a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'celsius'},
         unit='celsius',
@@ -1090,7 +1090,7 @@ class Cleaning(Process, EntryData):
         ),
     )
     duration = Quantity(
-        type=np.float64,
+        type=float,
         description='The elapsed time since the annealing process started.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit='minute'

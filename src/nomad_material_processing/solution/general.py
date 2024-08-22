@@ -58,7 +58,7 @@ class MolarConcentration(ArchiveSection):
         description='The molar concentration of a component in a solution.',
     )
     calculated_concentration = Quantity(
-        type=np.float64,
+        type=float,
         description=(
             'The expected concentration calculated from the component moles and '
             'total volume.'
@@ -69,7 +69,7 @@ class MolarConcentration(ArchiveSection):
         unit='mol / liter',
     )
     measured_concentration = Quantity(
-        type=np.float64,
+        type=float,
         description=(
             """The concentration observed or measured
             with some characterization technique."""
@@ -106,7 +106,7 @@ class SolutionStorage(ArchiveSection):
         ),
     )
     temperature = Quantity(
-        type=np.float64,
+        type=float,
         description='The temperature of the storage.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -138,7 +138,7 @@ class BaseSolutionComponent(Component):
     """
 
     volume = Quantity(
-        type=np.float64,
+        type=float,
         description='The volume of the liquid component.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -194,7 +194,7 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         ),
     )
     mass = Quantity(
-        type=np.float64,
+        type=float,
         description='The mass of the component without the container.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -204,7 +204,7 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         unit='kilogram',
     )
     density = Quantity(
-        type=np.float64,
+        type=float,
         description='The density of the liquid component.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -318,7 +318,7 @@ class Solution(CompositeSystem, EntryData):
     )
     ph_value = Quantity(
         description='The pH value of the solution.',
-        type=np.float64,
+        type=float,
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             minValue=0,
@@ -327,7 +327,7 @@ class Solution(CompositeSystem, EntryData):
     )
     density = Quantity(
         description='The density of the solution.',
-        type=np.float64,
+        type=float,
         a_eln=ELNAnnotation(
             defaultDisplayUnit='gram / milliliter',
         ),
@@ -335,7 +335,7 @@ class Solution(CompositeSystem, EntryData):
     )
     mass = Quantity(
         description='The mass of the solution.',
-        type=np.float64,
+        type=float,
         a_eln=ELNAnnotation(
             defaultDisplayUnit='gram',
         ),
@@ -345,7 +345,7 @@ class Solution(CompositeSystem, EntryData):
         description="""The final expected volume of the solution, which is the sum of
         volume of its liquid components.
         """,
-        type=np.float64,
+        type=float,
         a_eln=ELNAnnotation(
             defaultDisplayUnit='milliliter',
         ),
@@ -353,7 +353,7 @@ class Solution(CompositeSystem, EntryData):
     )
     measured_volume = Quantity(
         description='The volume of the solution as observed or measured.',
-        type=np.float64,
+        type=float,
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             defaultDisplayUnit='milliliter',
@@ -576,7 +576,7 @@ class SolutionComponentReference(SystemComponent, BaseSolutionComponent):
         a_eln=dict(component='ReferenceEditQuantity'),
     )
     mass = Quantity(
-        type=np.float64,
+        type=float,
         description='The mass of the solution used.',
         a_eln=ELNAnnotation(
             defaultDisplayUnit='gram',
@@ -637,7 +637,7 @@ class Pipetting(MeasurementMethodology):
 
     # TODO populate `pipette_volume` from the instrument
     pipette_volume = Quantity(
-        type=np.float64,
+        type=float,
         description='The volume of the pipette used.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -655,7 +655,7 @@ class Scaling(MeasurementMethodology):
 
     # TODO populate `precision` from the instrument
     precision = Quantity(
-        type=np.float64,
+        type=float,
         description='The precision of the weighing instrument.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -665,7 +665,7 @@ class Scaling(MeasurementMethodology):
         unit='kilogram',
     )
     container_mass = Quantity(
-        type=np.float64,
+        type=float,
         description='The mass of the container.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -675,7 +675,7 @@ class Scaling(MeasurementMethodology):
         unit='kilogram',
     )
     gross_mass = Quantity(
-        type=np.float64,
+        type=float,
         description='The mass of the material including the container.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -749,7 +749,7 @@ class Agitation(SolutionPreparationStep):
         description='Generic agitation or mixing step for solution preparation.',
     )
     temperature = Quantity(
-        type=np.float64,
+        type=float,
         description='The temperature of the mixing process.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -787,7 +787,7 @@ class Sonication(Agitation):
         description='Sonication step for solution preparation.',
     )
     frequency = Quantity(
-        type=np.float64,
+        type=float,
         description='The frequency of the sonication instrument.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -806,7 +806,7 @@ class MechanicalStirring(Agitation):
         description='Mechanical stirring step for solution preparation.',
     )
     rotation_speed = Quantity(
-        type=np.float64,
+        type=float,
         description='The rotation speed of the stirrer.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
