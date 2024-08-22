@@ -28,7 +28,7 @@ authors = [
 ]
 license = { file = "LICENSE" }
 dependencies = [
-    "nomad-lab>=1.3.3.dev86",
+    "nomad-lab>=1.3.4dev",
 ]
 
 [project.urls]
