@@ -524,13 +524,24 @@ class ElectronicProperties(ArchiveSection):
         ),
     )
     carrier_density = Quantity(
-        type=np.dtype(float),
+        type=float,
         unit='1 / cm**3',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
         ),
         description="""Concentration of free charge carriers, electrons in the
         conduction band and holes in the valence band.""",
+    )
+    carrier_density_deviation = Quantity(
+        type=float,
+        unit='1 / m**3',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='1 / cm**3',
+            label='± Carrier Density Deviation',
+        ),
+        description="""Deviation in the concentration of free charge carriers,
+        electrons in the conduction band and holes in the valence band.""",
     )
     electrical_resistivity = Quantity(
         type=float,
