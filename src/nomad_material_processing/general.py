@@ -1028,7 +1028,14 @@ class EtchingRecipe(Etching, Recipe, EntryData):
 
     m_def = Section(
         a_eln={
-            'hide': ['datetime', 'samples', 'starting_time', 'ending_time', 'location']
+            'hide': [
+                'datetime',
+                'samples',
+                'starting_time',
+                'ending_time',
+                'location',
+                'recipe',
+            ]
         },
     )
     lab_id = Quantity(
@@ -1107,7 +1114,14 @@ class AnnealingRecipe(Annealing, Recipe, EntryData):
 
     m_def = Section(
         a_eln={
-            'hide': ['datetime', 'samples', 'starting_time', 'ending_time', 'location']
+            'hide': [
+                'datetime',
+                'samples',
+                'starting_time',
+                'ending_time',
+                'location',
+                'recipe',
+            ]
         },
     )
     lab_id = Quantity(
@@ -1200,7 +1214,14 @@ class CleaningRecipe(Cleaning, Recipe, EntryData):
 
     m_def = Section(
         a_eln={
-            'hide': ['datetime', 'samples', 'starting_time', 'ending_time', 'location']
+            'hide': [
+                'datetime',
+                'samples',
+                'starting_time',
+                'ending_time',
+                'location',
+                'recipe',
+            ]
         },
     )
     lab_id = Quantity(
