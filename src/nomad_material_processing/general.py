@@ -35,13 +35,13 @@ from nomad.metainfo import (
 )
 
 m_package = SchemaPackage(
-    name="Material Processing",
+    name='Material Processing',
     aliases=[
-        "nomad_material_processing",
+        'nomad_material_processing',
     ],
 )
 
-configuration = config.get_plugin_entry_point("nomad_material_processing:schema")
+configuration = config.get_plugin_entry_point('nomad_material_processing:schema')
 
 
 class Geometry(ArchiveSection):
@@ -53,11 +53,11 @@ class Geometry(ArchiveSection):
     m_def = Section()
     volume = Quantity(
         type=float,
-        description="The measure of the amount of space occupied in 3D space.",
+        description='The measure of the amount of space occupied in 3D space.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
         ),
-        unit="meter ** 3",
+        unit='meter ** 3',
     )
 
 
@@ -70,60 +70,60 @@ class Parallelepiped(Geometry):
     m_def = Section()
     height = Quantity(
         type=float,
-        description="The z dimension of the parallelepiped.",
+        description='The z dimension of the parallelepiped.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="millimeter",
-            label="Height (z)",
+            defaultDisplayUnit='millimeter',
+            label='Height (z)',
         ),
-        unit="meter",
+        unit='meter',
     )
     width = Quantity(
         type=float,
-        description="The x dimension of the parallelepiped.",
+        description='The x dimension of the parallelepiped.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="millimeter",
-            label="Width (x)",
+            defaultDisplayUnit='millimeter',
+            label='Width (x)',
         ),
-        unit="meter",
+        unit='meter',
     )
     length = Quantity(
         type=float,
-        description="The y dimension of the parallelepiped.",
+        description='The y dimension of the parallelepiped.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="millimeter",
-            label="Length (y)",
+            defaultDisplayUnit='millimeter',
+            label='Length (y)',
         ),
-        unit="meter",
+        unit='meter',
     )
     alpha = Quantity(
         type=float,
-        description="The angle between y and z sides.",
+        description='The angle between y and z sides.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            label="Alpha (∡ y-x-z)",
+            label='Alpha (∡ y-x-z)',
         ),
-        unit="degree",
+        unit='degree',
     )
     beta = Quantity(
         type=float,
-        description="The angle between x and z sides.",
+        description='The angle between x and z sides.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            label="Beta (∡ x-y-z)",
+            label='Beta (∡ x-y-z)',
         ),
-        unit="degree",
+        unit='degree',
     )
     gamma = Quantity(
         type=float,
-        description="The angle between x and y sides.",
+        description='The angle between x and y sides.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            label="Gamma (∡ x-z-y)",
+            label='Gamma (∡ x-z-y)',
         ),
-        unit="degree",
+        unit='degree',
     )
     surface_area = Quantity(
         type=float,
@@ -133,10 +133,10 @@ class Parallelepiped(Geometry):
         """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="millimeter ** 2",
-            label="Surface Area (x*y)",
+            defaultDisplayUnit='millimeter ** 2',
+            label='Surface Area (x*y)',
         ),
-        unit="meter ** 2",
+        unit='meter ** 2',
     )
 
 
@@ -146,57 +146,57 @@ class SquareCuboid(Parallelepiped):
     """
 
     m_def = Section(
-        a_eln={"hide": ["length"]},
-        label="Square Cuboid",
+        a_eln={'hide': ['length']},
+        label='Square Cuboid',
     )
     height = Quantity(
         type=float,
-        description="The z dimension of the parallelepiped.",
+        description='The z dimension of the parallelepiped.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="millimeter",
-            label="Height (z)",
+            defaultDisplayUnit='millimeter',
+            label='Height (z)',
         ),
-        unit="meter",
+        unit='meter',
     )
     width = Quantity(
         type=float,
-        description="The x dimension of the parallelepiped.",
+        description='The x dimension of the parallelepiped.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="millimeter",
-            label="Side (x=y)",
+            defaultDisplayUnit='millimeter',
+            label='Side (x=y)',
         ),
-        unit="meter",
+        unit='meter',
     )
     alpha = Quantity(
         type=float,
-        description="The angle between y and z sides.",
+        description='The angle between y and z sides.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            label="Alpha (∡ y-x-z)",
+            label='Alpha (∡ y-x-z)',
         ),
-        unit="degree",
+        unit='degree',
         default=90.0,
     )
     beta = Quantity(
         type=float,
-        description="The angle between x and z sides.",
+        description='The angle between x and z sides.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            label="Beta (∡ x-y-z)",
+            label='Beta (∡ x-y-z)',
         ),
-        unit="degree",
+        unit='degree',
         default=90.0,
     )
     gamma = Quantity(
         type=float,
-        description="The angle between x and y sides.",
+        description='The angle between x and y sides.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            label="Gamma (∡ x-z-y)",
+            label='Gamma (∡ x-z-y)',
         ),
-        unit="degree",
+        unit='degree',
         default=90.0,
     )
     surface_area = Quantity(
@@ -207,10 +207,10 @@ class SquareCuboid(Parallelepiped):
         """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="millimeter ** 2",
-            label="Surface Area (x*y)",
+            defaultDisplayUnit='millimeter ** 2',
+            label='Surface Area (x*y)',
         ),
-        unit="meter ** 2",
+        unit='meter ** 2',
     )
 
 
@@ -224,62 +224,62 @@ class RectangleCuboid(Parallelepiped):
     m_def = Section()
     height = Quantity(
         type=float,
-        description="The z dimension of the parallelepiped.",
+        description='The z dimension of the parallelepiped.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="millimeter",
-            label="Height (z)",
+            defaultDisplayUnit='millimeter',
+            label='Height (z)',
         ),
-        unit="meter",
+        unit='meter',
     )
     width = Quantity(
         type=float,
-        description="The x dimension of the parallelepiped.",
+        description='The x dimension of the parallelepiped.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="millimeter",
-            label="Width (x)",
+            defaultDisplayUnit='millimeter',
+            label='Width (x)',
         ),
-        unit="meter",
+        unit='meter',
     )
     length = Quantity(
         type=float,
-        description="The y dimension of the parallelepiped.",
+        description='The y dimension of the parallelepiped.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="millimeter",
-            label="Length (y)",
+            defaultDisplayUnit='millimeter',
+            label='Length (y)',
         ),
-        unit="meter",
+        unit='meter',
     )
     alpha = Quantity(
         type=float,
-        description="The angle between y and z sides.",
+        description='The angle between y and z sides.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            label="Alpha (∡ y-x-z)",
+            label='Alpha (∡ y-x-z)',
         ),
-        unit="degree",
+        unit='degree',
         default=90.0,
     )
     beta = Quantity(
         type=float,
-        description="The angle between x and z sides.",
+        description='The angle between x and z sides.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            label="Beta (∡ x-y-z)",
+            label='Beta (∡ x-y-z)',
         ),
-        unit="degree",
+        unit='degree',
         default=90.0,
     )
     gamma = Quantity(
         type=float,
-        description="The angle between x and y sides.",
+        description='The angle between x and y sides.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            label="Gamma (∡ x-z-y)",
+            label='Gamma (∡ x-z-y)',
         ),
-        unit="degree",
+        unit='degree',
         default=90.0,
     )
     surface_area = Quantity(
@@ -290,10 +290,10 @@ class RectangleCuboid(Parallelepiped):
         """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="millimeter ** 2",
-            label="Surface Area (x*y)",
+            defaultDisplayUnit='millimeter ** 2',
+            label='Surface Area (x*y)',
         ),
-        unit="meter ** 2",
+        unit='meter ** 2',
     )
 
 
@@ -305,58 +305,58 @@ class TruncatedCone(Geometry):
     m_def = Section()
     height = Quantity(
         type=float,
-        description="The z dimension of the parallelepiped.",
+        description='The z dimension of the parallelepiped.',
         a_eln=ELNAnnotation(
-            component="NumberEditQuantity",
-            defaultDisplayUnit="nanometer",
+            component='NumberEditQuantity',
+            defaultDisplayUnit='nanometer',
         ),
-        label="Height (z)",
-        unit="meter",
+        label='Height (z)',
+        unit='meter',
     )
     lower_cap_radius = Quantity(
         type=float,
-        description="Radius of the lower cap.",
+        description='Radius of the lower cap.',
         a_eln=ELNAnnotation(
-            component="NumberEditQuantity",
-            defaultDisplayUnit="millimeter",
+            component='NumberEditQuantity',
+            defaultDisplayUnit='millimeter',
         ),
-        unit="meter",
+        unit='meter',
     )
     upper_cap_radius = Quantity(
         type=float,
-        description="Radius of the upper cap.",
+        description='Radius of the upper cap.',
         a_eln=ELNAnnotation(
-            component="NumberEditQuantity",
-            defaultDisplayUnit="millimeter",
+            component='NumberEditQuantity',
+            defaultDisplayUnit='millimeter',
         ),
-        unit="meter",
+        unit='meter',
     )
     lower_cap_surface_area = Quantity(
         type=float,
-        description="Area of the lower cap.",
+        description='Area of the lower cap.',
         a_eln=ELNAnnotation(
-            component="NumberEditQuantity",
-            defaultDisplayUnit="millimeter ** 2",
+            component='NumberEditQuantity',
+            defaultDisplayUnit='millimeter ** 2',
         ),
-        unit="meter ** 2",
+        unit='meter ** 2',
     )
     upper_cap_surface_area = Quantity(
         type=float,
-        description="Area of the upper cap.",
+        description='Area of the upper cap.',
         a_eln=ELNAnnotation(
-            component="NumberEditQuantity",
-            defaultDisplayUnit="millimeter ** 2",
+            component='NumberEditQuantity',
+            defaultDisplayUnit='millimeter ** 2',
         ),
-        unit="meter ** 2",
+        unit='meter ** 2',
     )
     lateral_surface_area = Quantity(
         type=float,
-        description="Area of the lateral surface.",
+        description='Area of the lateral surface.',
         a_eln=ELNAnnotation(
-            component="NumberEditQuantity",
-            defaultDisplayUnit="millimeter ** 2",
+            component='NumberEditQuantity',
+            defaultDisplayUnit='millimeter ** 2',
         ),
-        unit="meter ** 2",
+        unit='meter ** 2',
     )
 
 
@@ -368,49 +368,49 @@ class Cylinder(Geometry):
     m_def = Section()
     height = Quantity(
         type=float,
-        description="The z dimension of the parallelepiped.",
+        description='The z dimension of the parallelepiped.',
         a_eln=ELNAnnotation(
-            component="NumberEditQuantity",
-            defaultDisplayUnit="nanometer",
+            component='NumberEditQuantity',
+            defaultDisplayUnit='nanometer',
         ),
-        label="Height (z)",
-        unit="meter",
+        label='Height (z)',
+        unit='meter',
     )
     radius = Quantity(
         type=float,
-        description="Radius of the cylinder.",
+        description='Radius of the cylinder.',
         a_eln=ELNAnnotation(
-            component="NumberEditQuantity",
-            defaultDisplayUnit="millimeter",
+            component='NumberEditQuantity',
+            defaultDisplayUnit='millimeter',
         ),
-        unit="meter",
+        unit='meter',
     )
     lower_cap_surface_area = Quantity(
         type=float,
-        description="Area of the lower cap.",
+        description='Area of the lower cap.',
         a_eln=ELNAnnotation(
-            component="NumberEditQuantity",
-            defaultDisplayUnit="millimeter ** 2",
+            component='NumberEditQuantity',
+            defaultDisplayUnit='millimeter ** 2',
         ),
-        unit="meter ** 2",
+        unit='meter ** 2',
     )
     cap_surface_area = Quantity(
         type=float,
-        description="Area of the cap.",
+        description='Area of the cap.',
         a_eln=ELNAnnotation(
-            component="NumberEditQuantity",
-            defaultDisplayUnit="millimeter ** 2",
+            component='NumberEditQuantity',
+            defaultDisplayUnit='millimeter ** 2',
         ),
-        unit="meter ** 2",
+        unit='meter ** 2',
     )
     lateral_surface_area = Quantity(
         type=float,
-        description="Area of the lateral surface.",
+        description='Area of the lateral surface.',
         a_eln=ELNAnnotation(
-            component="NumberEditQuantity",
-            defaultDisplayUnit="millimeter ** 2",
+            component='NumberEditQuantity',
+            defaultDisplayUnit='millimeter ** 2',
         ),
-        unit="meter ** 2",
+        unit='meter ** 2',
     )
 
 
@@ -423,7 +423,7 @@ class CylinderSector(Cylinder):
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
         ),
-        unit="degree",
+        unit='degree',
     )
 
 
@@ -435,13 +435,13 @@ class IrregularParallelSurfaces(Geometry):
     m_def = Section()
     height = Quantity(
         type=float,
-        description="The z dimension of the irregular shape.",
+        description='The z dimension of the irregular shape.',
         a_eln=ELNAnnotation(
-            component="NumberEditQuantity",
-            defaultDisplayUnit="nanometer",
+            component='NumberEditQuantity',
+            defaultDisplayUnit='nanometer',
         ),
-        label="Height (z)",
-        unit="meter",
+        label='Height (z)',
+        unit='meter',
     )
 
 
@@ -459,27 +459,27 @@ class Miscut(ArchiveSection):
         """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="deg",
-            label="Miscut Angle",
+            defaultDisplayUnit='deg',
+            label='Miscut Angle',
         ),
-        unit="deg",
+        unit='deg',
     )
     angle_deviation = Quantity(
         type=float,
-        description="The ± deviation in the angular displacement.",
+        description='The ± deviation in the angular displacement.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="deg",
-            label="± Miscut Angle Deviation",
+            defaultDisplayUnit='deg',
+            label='± Miscut Angle Deviation',
         ),
-        unit="deg",
+        unit='deg',
     )
     orientation = Quantity(
         type=str,
-        description="The direction of the miscut in Miller index, [hkl].",
+        description='The direction of the miscut in Miller index, [hkl].',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
-            label="Miscut Orientation [hkl]",
+            label='Miscut Orientation [hkl]',
         ),
     )
 
@@ -492,21 +492,21 @@ class Dopant(ElementalComposition):
 
     doping_level = Quantity(
         type=float,
-        description="The chemical doping level.",
+        description='The chemical doping level.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="1 / cm ** 3",
+            defaultDisplayUnit='1 / cm ** 3',
         ),
-        unit="1 / m ** 3",
+        unit='1 / m ** 3',
     )
     doping_deviation = Quantity(
         type=float,
-        description="The ± deviation in the doping level.",
+        description='The ± deviation in the doping level.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="1 / cm ** 3",
+            defaultDisplayUnit='1 / cm ** 3',
         ),
-        unit="1 / m ** 3",
+        unit='1 / m ** 3',
     )
 
 
@@ -526,22 +526,22 @@ class SubstrateCrystalProperties(CrystalProperties):
 
     bravais_lattices = Quantity(
         type=MEnum(
-            "Triclinic",
-            "Monoclinic Simple",
-            "Monoclinic Base Centered",
-            "Orthorhombic Simple",
-            "Orthorhombic Base Centered",
-            "Orthorhombic Body Centered",
-            "Orthorhombic Face Centered",
-            "Tetragonal Simple",
-            "Tetragonal Body Centered",
-            "Cubic Simple",
-            "Cubic Body Centered",
-            "Cubic Face Centered",
-            "Trigonal",
-            "Hexagonal",
+            'Triclinic',
+            'Monoclinic Simple',
+            'Monoclinic Base Centered',
+            'Orthorhombic Simple',
+            'Orthorhombic Base Centered',
+            'Orthorhombic Body Centered',
+            'Orthorhombic Face Centered',
+            'Tetragonal Simple',
+            'Tetragonal Body Centered',
+            'Cubic Simple',
+            'Cubic Body Centered',
+            'Cubic Face Centered',
+            'Trigonal',
+            'Hexagonal',
         ),
-        description="The crystal system of the substrate.",
+        description='The crystal system of the substrate.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.EnumEditQuantity,
         ),
@@ -554,7 +554,7 @@ class SubstrateCrystalProperties(CrystalProperties):
         """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
-            label="Substrate Orientation (hkl)",
+            label='Substrate Orientation (hkl)',
         ),
     )
     miscut = SubSection(
@@ -576,9 +576,9 @@ class ElectronicProperties(ArchiveSection):
 
     conductivity_type = Quantity(
         type=MEnum(
-            "P-type",
-            "N-type",
-            "Semi-insulating",
+            'P-type',
+            'N-type',
+            'Semi-insulating',
         ),
         description="""The type of semiconductor, N-type being electrons
         the majority carriers and P-type being holes the majority carriers.""",
@@ -588,7 +588,7 @@ class ElectronicProperties(ArchiveSection):
     )
     carrier_density = Quantity(
         type=float,
-        unit="1 / cm**3",
+        unit='1 / cm**3',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
         ),
@@ -597,25 +597,25 @@ class ElectronicProperties(ArchiveSection):
     )
     carrier_density_deviation = Quantity(
         type=float,
-        unit="1 / m**3",
+        unit='1 / m**3',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="1 / cm**3",
-            label="± Carrier Density Deviation",
+            defaultDisplayUnit='1 / cm**3',
+            label='± Carrier Density Deviation',
         ),
         description="""Deviation in the concentration of free charge carriers,
         electrons in the conduction band and holes in the valence band.""",
     )
     electrical_resistivity = Quantity(
         type=float,
-        links=["http://fairmat-nfdi.eu/taxonomy/ElectricalResistivity"],
+        links=['http://fairmat-nfdi.eu/taxonomy/ElectricalResistivity'],
         description="""Resistance of the charges to move
         in the presence of an electric current.""",
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="ohm cm",
+            defaultDisplayUnit='ohm cm',
         ),
-        unit="ohm m",
+        unit='ohm m',
     )
 
 
@@ -629,40 +629,40 @@ class Substrate(CompositeSystem):
 
     supplier = Quantity(
         type=str,
-        description="The supplier of the current substrate specimen.",
+        description='The supplier of the current substrate specimen.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
         ),
     )
     supplier_id = Quantity(
         type=str,
-        description="An ID string that is unique from the supplier.",
+        description='An ID string that is unique from the supplier.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
-            label="Supplier ID",
+            label='Supplier ID',
         ),
     )
     lab_id = Quantity(
         type=str,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
-            label="Substrate ID",
+            label='Substrate ID',
         ),
     )
     image = Quantity(
         type=str,
-        description="A photograph or image of the substrate.",
-        a_browser={"adaptor": "RawFileAdaptor"},
+        description='A photograph or image of the substrate.',
+        a_browser={'adaptor': 'RawFileAdaptor'},
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.FileEditQuantity,
         ),
     )
     information_sheet = Quantity(
         type=str,
-        description="Pdf files containing certificate and other documentation.",
-        a_browser={"adaptor": "RawFileAdaptor"},
+        description='Pdf files containing certificate and other documentation.',
+        a_browser={'adaptor': 'RawFileAdaptor'},
         a_eln=ELNAnnotation(
-            component="FileEditQuantity",
+            component='FileEditQuantity',
         ),
     )
 
@@ -677,15 +677,15 @@ class CrystallineSubstrate(Substrate):
 
     geometry = SubSection(
         section_def=Geometry,
-        description="Section containing the geometry of the substrate.",
+        description='Section containing the geometry of the substrate.',
     )
     crystal_properties = SubSection(
         section_def=SubstrateCrystalProperties,
-        description="Section containing the crystal properties of the substrate.",
+        description='Section containing the crystal properties of the substrate.',
     )
     electronic_properties = SubSection(
         section_def=ElectronicProperties,
-        description="Section containing the electronic properties of the substrate.",
+        description='Section containing the electronic properties of the substrate.',
     )
     dopants = SubSection(
         section_def=Dopant,
@@ -705,7 +705,7 @@ class ThinFilm(CompositeSystem):
 
     geometry = SubSection(
         section_def=Geometry,
-        description="Section containing the geometry of the thin film.",
+        description='Section containing the geometry of the thin film.',
     )
 
 
@@ -718,14 +718,14 @@ class ThinFilmReference(CompositeSystemReference):
         type=str,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
-            label="Thin Film ID",
+            label='Thin Film ID',
         ),
     )
     reference = Quantity(
         type=ThinFilm,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.ReferenceEditQuantity,
-            label="Thin Film",
+            label='Thin Film',
         ),
     )
 
@@ -739,14 +739,14 @@ class SubstrateReference(CompositeSystemReference):
         type=str,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
-            label="Substrate ID",
+            label='Substrate ID',
         ),
     )
     reference = Quantity(
         type=Substrate,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.ReferenceEditQuantity,
-            label="Substrate",
+            label='Substrate',
         ),
     )
 
@@ -759,7 +759,7 @@ class ThinFilmStack(CompositeSystem):
     m_def = Section(
         a_eln=ELNAnnotation(
             hide=[
-                "components",
+                'components',
             ],
         ),
     )
@@ -779,7 +779,7 @@ class ThinFilmStack(CompositeSystem):
         section_def=SubstrateReference,
     )
 
-    def normalize(self, archive: "EntryArchive", logger: "BoundLogger") -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
         The normalizer for the `ThinFilmStack` class.
 
@@ -831,7 +831,7 @@ class SampleDeposition(SynthesisMethod):
     """
 
     m_def = Section(
-        links=["http://purl.obolibrary.org/obo/CHMO_0001310"],
+        links=['http://purl.obolibrary.org/obo/CHMO_0001310'],
     )
 
     def is_serial(self) -> bool:
@@ -848,7 +848,7 @@ class SampleDeposition(SynthesisMethod):
             if step.start_time is None or step.duration is None:
                 return False
             start_times.append(step.start_time.timestamp())
-            durations.append(step.duration.to("s").magnitude)
+            durations.append(step.duration.to('s').magnitude)
         start_times = np.array(start_times)
         durations = np.array(durations)
         end_times = start_times + durations
@@ -857,7 +857,7 @@ class SampleDeposition(SynthesisMethod):
             return False
         return True
 
-    def normalize(self, archive: "EntryArchive", logger: "BoundLogger") -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
         The normalizer for the `SampleDeposition` class.
 
@@ -902,22 +902,22 @@ class TimeSeries(ArchiveSection):
         a_plot=dict(
             # x=['time', 'set_time'],
             # y=['value', 'set_value'],
-            x="time",
-            y="value",
+            x='time',
+            y='value',
         ),
     )
     set_value = Quantity(
         type=float,
-        description="The set value(s) (i.e. the intended values) set.",
-        shape=["*"],
+        description='The set value(s) (i.e. the intended values) set.',
+        shape=['*'],
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            label="Set value",
+            label='Set value',
         ),
     )
     set_time = Quantity(
         type=float,
-        unit="s",
+        unit='s',
         description="""
         The process time when each of the set values were set.
         If this is empty and only one set value is present, it is assumed that the value
@@ -925,23 +925,23 @@ class TimeSeries(ArchiveSection):
         If two set values are present, it is assumed that a linear ramp between the two
         values was set.
         """,
-        shape=["*"],
+        shape=['*'],
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit="s",
-            label="Set time",
+            defaultDisplayUnit='s',
+            label='Set time',
         ),
     )
     value = Quantity(
         type=float,
-        description="The observed value as a function of time.",
-        shape=["*"],
+        description='The observed value as a function of time.',
+        shape=['*'],
     )
     time = Quantity(
         type=float,
-        unit="s",
-        description="The process time when each of the values were recorded.",
-        shape=["*"],
+        unit='s',
+        description='The process time when each of the values were recorded.',
+        shape=['*'],
     )
 
 
@@ -968,24 +968,24 @@ class EtchingStep(ProcessStep):
     m_def = Section()
     duration = Quantity(
         type=float,
-        description="The elapsed time since the annealing process started.",
+        description='The elapsed time since the annealing process started.',
         a_eln=ELNAnnotation(
-            component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit="minute"
+            component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit='minute'
         ),
-        unit="second",
+        unit='second',
     )
     temperature = Quantity(
         type=float,
-        description="The temperature of the etching process.",
-        a_eln={"component": "NumberEditQuantity", "defaultDisplayUnit": "celsius"},
-        unit="celsius",
+        description='The temperature of the etching process.',
+        a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'celsius'},
+        unit='celsius',
     )
     agitation = Quantity(
         type=MEnum(
-            "Magnetic Stirring",
-            "Sonication",
+            'Magnetic Stirring',
+            'Sonication',
         ),
-        description="The agitation method used during the etching process.",
+        description='The agitation method used during the etching process.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.EnumEditQuantity,
         ),
@@ -1001,18 +1001,18 @@ class Etching(Process, EntryData):
 
     m_def = Section(
         a_eln=None,
-        links=["http://purl.obolibrary.org/obo/CHMO_0001558"],
+        links=['http://purl.obolibrary.org/obo/CHMO_0001558'],
     )
     tags = Quantity(
         type=str,
-        shape=["*"],
-        description="Searchable tags for this entry. Use Explore tab for searching.",
+        shape=['*'],
+        description='Searchable tags for this entry. Use Explore tab for searching.',
         a_eln=ELNAnnotation(
-            component="StringEditQuantity",
+            component='StringEditQuantity',
         ),
     )
     recipe = Quantity(
-        type=Reference(SectionProxy("EtchingRecipe")),
+        type=Reference(SectionProxy('EtchingRecipe')),
         description=""" The recipe used for the process. If a recipe is found,
            all the data is copied from the Recipe within the Process.
            """,
@@ -1036,13 +1036,13 @@ class EtchingRecipe(Etching, Recipe, EntryData):
 
     m_def = Section(
         a_eln={
-            "hide": [
-                "datetime",
-                "samples",
-                "starting_time",
-                "ending_time",
-                "location",
-                "recipe",
+            'hide': [
+                'datetime',
+                'samples',
+                'starting_time',
+                'ending_time',
+                'location',
+                'recipe',
             ]
         },
     )
@@ -1053,7 +1053,7 @@ class EtchingRecipe(Etching, Recipe, EntryData):
         """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
-            label="Recipe ID",
+            label='Recipe ID',
         ),
     )
 
@@ -1066,23 +1066,23 @@ class AnnealingStep(ProcessStep):
     m_def = Section()
     duration = Quantity(
         type=float,
-        description="The elapsed time since the annealing process started.",
+        description='The elapsed time since the annealing process started.',
         a_eln=ELNAnnotation(
-            component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit="minute"
+            component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit='minute'
         ),
-        unit="second",
+        unit='second',
     )
     starting_temperature = Quantity(
         type=float,
-        description="The starting T in the annealing ramp.",
-        a_eln={"component": "NumberEditQuantity", "defaultDisplayUnit": "celsius"},
-        unit="celsius",
+        description='The starting T in the annealing ramp.',
+        a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'celsius'},
+        unit='celsius',
     )
     ending_temperature = Quantity(
         type=float,
-        description="The starting T in the annealing ramp.",
-        a_eln={"component": "NumberEditQuantity", "defaultDisplayUnit": "celsius"},
-        unit="celsius",
+        description='The starting T in the annealing ramp.',
+        a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'celsius'},
+        unit='celsius',
     )
 
 
@@ -1093,18 +1093,18 @@ class Annealing(Process, EntryData):
     """
 
     m_def = Section(
-        links=["http://purl.obolibrary.org/obo/CHMO_0001465"],
+        links=['http://purl.obolibrary.org/obo/CHMO_0001465'],
     )
     tags = Quantity(
         type=str,
-        shape=["*"],
-        description="Searchable tags for this entry. Use Explore tab for searching.",
+        shape=['*'],
+        description='Searchable tags for this entry. Use Explore tab for searching.',
         a_eln=ELNAnnotation(
-            component="StringEditQuantity",
+            component='StringEditQuantity',
         ),
     )
     recipe = Quantity(
-        type=Reference(SectionProxy("AnnealingRecipe")),
+        type=Reference(SectionProxy('AnnealingRecipe')),
         description=""" The recipe used for the process. If a recipe is found,
            all the data is copied from the Recipe within the Process.
            """,
@@ -1114,11 +1114,11 @@ class Annealing(Process, EntryData):
     )
     duration = Quantity(
         type=float,
-        description="The elapsed time since the annealing process started.",
+        description='The elapsed time since the annealing process started.',
         a_eln=ELNAnnotation(
-            component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit="minute"
+            component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit='minute'
         ),
-        unit="second",
+        unit='second',
     )
     steps = SubSection(
         description="""
@@ -1136,13 +1136,13 @@ class AnnealingRecipe(Annealing, Recipe, EntryData):
 
     m_def = Section(
         a_eln={
-            "hide": [
-                "datetime",
-                "samples",
-                "starting_time",
-                "ending_time",
-                "location",
-                "recipe",
+            'hide': [
+                'datetime',
+                'samples',
+                'starting_time',
+                'ending_time',
+                'location',
+                'recipe',
             ]
         },
     )
@@ -1153,7 +1153,7 @@ class AnnealingRecipe(Annealing, Recipe, EntryData):
         """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
-            label="Recipe ID",
+            label='Recipe ID',
         ),
     )
 
@@ -1166,24 +1166,24 @@ class CleaningStep(ProcessStep):
     m_def = Section()
     duration = Quantity(
         type=float,
-        description="The elapsed time since the cleaning process started.",
+        description='The elapsed time since the cleaning process started.',
         a_eln=ELNAnnotation(
-            component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit="minute"
+            component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit='minute'
         ),
-        unit="second",
+        unit='second',
     )
     temperature = Quantity(
         type=float,
-        description="The temperature of the cleaning process.",
-        a_eln={"component": "NumberEditQuantity", "defaultDisplayUnit": "celsius"},
-        unit="celsius",
+        description='The temperature of the cleaning process.',
+        a_eln={'component': 'NumberEditQuantity', 'defaultDisplayUnit': 'celsius'},
+        unit='celsius',
     )
     agitation = Quantity(
         type=MEnum(
-            "Magnetic Stirring",
-            "Sonication",
+            'Magnetic Stirring',
+            'Sonication',
         ),
-        description="The agitation method used during the cleaning process.",
+        description='The agitation method used during the cleaning process.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.EnumEditQuantity,
         ),
@@ -1201,18 +1201,18 @@ class Cleaning(Process, EntryData):
     """
 
     m_def = Section(
-        a_eln={"hide": ["steps"]},
+        a_eln={'hide': ['steps']},
     )
     tags = Quantity(
         type=str,
-        shape=["*"],
-        description="Searchable tags for this entry. Use Explore tab for searching.",
+        shape=['*'],
+        description='Searchable tags for this entry. Use Explore tab for searching.',
         a_eln=ELNAnnotation(
-            component="StringEditQuantity",
+            component='StringEditQuantity',
         ),
     )
     recipe = Quantity(
-        type=Reference(SectionProxy("CleaningRecipe")),
+        type=Reference(SectionProxy('CleaningRecipe')),
         description=""" The recipe used for the process. If a recipe is found,
            all the data is copied from the Recipe within the Process.
            """,
@@ -1222,11 +1222,11 @@ class Cleaning(Process, EntryData):
     )
     duration = Quantity(
         type=float,
-        description="The elapsed time since the annealing process started.",
+        description='The elapsed time since the annealing process started.',
         a_eln=ELNAnnotation(
-            component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit="minute"
+            component=ELNComponentEnum.NumberEditQuantity, defaultDisplayUnit='minute'
         ),
-        unit="second",
+        unit='second',
     )
     steps = SubSection(
         description="""
@@ -1244,13 +1244,13 @@ class CleaningRecipe(Cleaning, Recipe, EntryData):
 
     m_def = Section(
         a_eln={
-            "hide": [
-                "datetime",
-                "samples",
-                "starting_time",
-                "ending_time",
-                "location",
-                "recipe",
+            'hide': [
+                'datetime',
+                'samples',
+                'starting_time',
+                'ending_time',
+                'location',
+                'recipe',
             ]
         },
     )
@@ -1261,7 +1261,7 @@ class CleaningRecipe(Cleaning, Recipe, EntryData):
         """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
-            label="Recipe ID",
+            label='Recipe ID',
         ),
     )
 
