@@ -10,5 +10,5 @@ class SolutionSchemaPackageEntryPoint(SchemaPackageEntryPoint):
 
 schema = SolutionSchemaPackageEntryPoint(
     name='Solution Schema',
-    description='Schema package containing classes for solution preparation.',
+    description='Schema package containing classes for liquid solutions.',
 )
