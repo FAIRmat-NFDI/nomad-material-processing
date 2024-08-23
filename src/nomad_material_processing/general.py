@@ -1027,7 +1027,19 @@ class EtchingRecipe(Etching, Recipe, EntryData):
     """
 
     m_def = Section(
-        a_eln={'hide': ['datetime', 'samples']},
+        a_eln={
+            'hide': ['datetime', 'samples', 'starting_time', 'ending_time', 'location']
+        },
+    )
+    lab_id = Quantity(
+        type=str,
+        description="""
+        A unique human readable ID for the recipe.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+            label='Recipe ID',
+        ),
     )
 
 
@@ -1094,7 +1106,19 @@ class AnnealingRecipe(Annealing, Recipe, EntryData):
     """
 
     m_def = Section(
-        a_eln={'hide': ['datetime', 'samples']},
+        a_eln={
+            'hide': ['datetime', 'samples', 'starting_time', 'ending_time', 'location']
+        },
+    )
+    lab_id = Quantity(
+        type=str,
+        description="""
+        A unique human readable ID for the recipe.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+            label='Recipe ID',
+        ),
     )
 
 
@@ -1175,7 +1199,19 @@ class CleaningRecipe(Cleaning, Recipe, EntryData):
     """
 
     m_def = Section(
-        a_eln={'hide': ['datetime', 'samples']},
+        a_eln={
+            'hide': ['datetime', 'samples', 'starting_time', 'ending_time', 'location']
+        },
+    )
+    lab_id = Quantity(
+        type=str,
+        description="""
+        A unique human readable ID for the recipe.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+            label='Recipe ID',
+        ),
     )
 
 
