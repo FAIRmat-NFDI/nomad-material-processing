@@ -1,2 +1,2 @@
 data:
-  m_def: nomad_material_processing.general.ThinFilmStack
+  m_def: nomad_material_processing.ThinFilmStack

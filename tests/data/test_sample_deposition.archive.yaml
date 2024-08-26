@@ -1,2 +1,2 @@
 data:
-  m_def: nomad_material_processing.general.SampleDeposition
+  m_def: nomad_material_processing.SampleDeposition

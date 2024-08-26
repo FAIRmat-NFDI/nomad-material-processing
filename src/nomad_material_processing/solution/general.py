@@ -41,7 +41,11 @@ if TYPE_CHECKING:
 
 from nomad.config import config
 
-m_package = SchemaPackage()
+m_package = SchemaPackage(
+    aliases=[
+        'nomad_material_processing.solution',
+    ],
+)
 
 configuration = config.get_plugin_entry_point(
     'nomad_material_processing.solution:schema'
