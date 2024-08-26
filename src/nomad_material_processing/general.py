@@ -35,7 +35,6 @@ from nomad.metainfo import (
 )
 
 m_package = SchemaPackage(
-    name='Material Processing',
     aliases=[
         'nomad_material_processing',
     ],
