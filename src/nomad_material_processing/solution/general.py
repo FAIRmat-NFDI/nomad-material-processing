@@ -937,3 +937,6 @@ class SolutionPreparation(Process, EntryData):
         if not self.solution:
             self.solution = SolutionReference()
         self.solution.reference = self.create_solution_entry(solution, archive, logger)
+
+
+m_package.__init_metainfo__()
