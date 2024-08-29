@@ -1,6 +1,5 @@
 import glob
 import os.path
-import sys
 
 import pytest
 from nomad.client import normalize_all, parse
