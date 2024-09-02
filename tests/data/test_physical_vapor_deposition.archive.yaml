@@ -1,2 +1,2 @@
 data:
-  m_def: nomad_material_processing.vapor_deposition.pvd.PhysicalVaporDeposition
+  m_def: nomad_material_processing.vapor_deposition.pvd.general.PhysicalVaporDeposition

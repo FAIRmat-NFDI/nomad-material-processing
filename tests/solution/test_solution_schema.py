@@ -1,10 +1,9 @@
 import pytest
-
-from nomad.client import parse, normalize_all
-from nomad.units import ureg
+from nomad.client import normalize_all, parse
 from nomad.datamodel.metainfo.basesections import PubChemPureSubstanceSection
+from nomad.units import ureg
 
-from nomad_material_processing.solution import (
+from nomad_material_processing.solution.general import (
     Solution,
     SolutionComponent,
     SolutionComponentReference,
