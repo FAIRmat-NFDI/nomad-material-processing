@@ -449,12 +449,16 @@ class Miscut(ArchiveSection):
     The miscut in a crystalline substrate refers to
     the intentional deviation from a specific crystallographic orientation,
     commonly expressed as the angular displacement of a crystal plane.
+
+    It can be either directed along one of the crystallographic axes or in a specific
+    direction in the crystal defined by a main direction and the perpendicular one.
     """
 
     angle = Quantity(
         type=float,
         description="""
-        The angular displacement from the crystallographic orientation of the substrate.
+        The angular displacement offset toward the crystallographic
+        orientation of the substrate.
         """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
@@ -465,7 +469,7 @@ class Miscut(ArchiveSection):
     )
     angle_deviation = Quantity(
         type=float,
-        description='The ± deviation in the angular displacement.',
+        description='The ± deviation of the angular displacement offset.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
             defaultDisplayUnit='deg',
@@ -473,12 +477,77 @@ class Miscut(ArchiveSection):
         ),
         unit='deg',
     )
-    orientation = Quantity(
+    hkl_absolut_orientation = Quantity(
         type=str,
-        description='The direction of the miscut in Miller index, [hkl].',
+        description="""Direction where the miscut goes toward.
+        Here the absolut Miller indices, (hkl), denote a normal to the planes
+        in the basis of the primitive reciprocal lattice vectors. """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
-            label='Miscut Orientation [hkl]',
+            label='Miscut Absolut Orientation (hkl)',
+        ),
+    )
+    hkl_relative_orientation = Quantity(
+        type=str,
+        description="""Direction where the miscut goes toward. It uses the direct
+        lattice basis instead of the reciprocal lattice. Note that [hkl] is not
+        generally normal to the (hkl) planes, except in a cubic lattice. """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+            label='Miscut Relative Orientation [hkl]',
+        ),
+    )
+
+    angle_perpendicular = Quantity(
+        type=float,
+        description="""
+        Optional: the angular displacement offset toward the crystallographic
+        orientation perpendicular to the first given.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='deg',
+            label='⟂ Miscut Angle',
+        ),
+        unit='deg',
+    )
+    angle_deviation_perpendicular = Quantity(
+        type=float,
+        description="""Optional: the ± deviation of the angular displacement offset
+        in the direction perpendicular to the first given.""",
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='deg',
+            label='± ⟂ Miscut Angle Deviation',
+        ),
+        unit='deg',
+    )
+    hkl_absolut_orientation_perpendicular = Quantity(
+        type=str,
+        description="""Optional: direction where the miscut goes toward.
+        Here the absolut Miller indices, (hkl), denote a normal to the planes
+        in the basis of the primitive reciprocal lattice vectors. """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+            label='⟂ Miscut Absolut Orientation (hkl)',
+        ),
+    )
+    hkl_relative_orientation_perpendicular = Quantity(
+        type=str,
+        description="""Optional: direction where the miscut goes toward. It uses the direct
+        lattice basis instead of the reciprocal lattice. Note that [hkl] is not
+        generally normal to the (hkl) planes, except in a cubic lattice. """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.StringEditQuantity,
+            label='⟂ Miscut Relative Orientation [hkl]',
+        ),
+    )
+    directions_image = Quantity(
+        type=str,
+        description='A schematic representation of the miscut directions.',
+        a_browser={'adaptor': 'RawFileAdaptor'},
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.FileEditQuantity,
         ),
     )
 
@@ -559,10 +628,9 @@ class SubstrateCrystalProperties(CrystalProperties):
     miscut = SubSection(
         section_def=Miscut,
         description="""
-        Section describing any miscut of the substrate with respect to the substrate
-        orientation.
+        Miscut of the substrate. Two directions are given to fully describe the miscut.
+        The second one is perdepndicular to the first one and only optional.
         """,
-        repeats=True,
     )
 
 
