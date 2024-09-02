@@ -27,6 +27,7 @@ from nomad.datamodel.metainfo.basesections import (
     PubChemPureSubstanceSection,
     PureSubstanceComponent,
 )
+
 from nomad.metainfo import (
     Quantity,
     SchemaPackage,
@@ -45,10 +46,20 @@ from nomad_material_processing.vapor_deposition.general import (
     Temperature,
     VaporDepositionSource,
     VolumetricFlowRate,
+    VaporDeposition,
+    VaporDepositionStep,
+    EvaporationSource,
+    SampleParameters,
 )
 
+
 if TYPE_CHECKING:
-    pass
+    from nomad.datamodel.datamodel import (
+        EntryArchive,
+    )
+    from structlog.stdlib import (
+        BoundLogger,
+    )
 
 from nomad.config import config
 
@@ -59,7 +70,7 @@ m_package = SchemaPackage(
 )
 
 configuration = config.get_plugin_entry_point(
-    'nomad_material_processing.vapor_deposition.cvd:schema',
+    'nomad_material_processing.vapor_deposition.cvd:movpe_schema',
 )
 
 
@@ -463,6 +474,76 @@ class MistSource(CVDSource):
         section_def=MistEvaporator,
     )
     material = SubSection(section_def=ComponentConcentration, repeats=True)
+
+
+class CVDStep(VaporDepositionStep):
+    """
+    A step of any physical vapor deposition process.
+    """
+
+    sources = SubSection(
+        section_def=CVDSource,
+        repeats=True,
+    )
+    sample_parameters = SubSection(
+        section_def=SampleParameters,
+        repeats=True,
+    )
+
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+        """
+        The normalizer for the `PVDStep` class.
+
+        Args:
+            archive (EntryArchive): The archive containing the section that is being
+            normalized.
+            logger (BoundLogger): A structlog logger.
+        """
+        super().normalize(archive, logger)
+
+
+class PhysicalVaporDeposition(VaporDeposition):
+    """
+    A synthesis technique where vaporized molecules or atoms condense on a surface,
+    forming a thin layer. The process is purely physical; no chemical reaction occurs
+    at the surface. [database_cross_reference: https://orcid.org/0000-0002-0640-0422]
+
+    Synonyms:
+     - PVD
+     - physical vapor deposition
+    """
+
+    m_def = Section(
+        links=['http://purl.obolibrary.org/obo/CHMO_0001356'],
+        a_plot=[
+            dict(
+                x='steps/:/environment/pressure/time',
+                y='steps/:/environment/pressure/value',
+            ),
+            dict(
+                x='steps/:/source/:/vapor_source/power/time',
+                y='steps/:/source/:/vapor_source/power/value',
+            ),
+        ],
+    )
+    steps = SubSection(
+        description="""
+        The steps of the deposition process.
+        """,
+        section_def=PVDStep,
+        repeats=True,
+    )
+
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+        """
+        The normalizer for the `PhysicalVaporDeposition` class.
+
+        Args:
+            archive (EntryArchive): The archive containing the section that is being
+            normalized.
+            logger (BoundLogger): A structlog logger.
+        """
+        super().normalize(archive, logger)
 
 
 m_package.__init_metainfo__()
