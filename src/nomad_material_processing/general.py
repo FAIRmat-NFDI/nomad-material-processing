@@ -452,6 +452,12 @@ class Miscut(ArchiveSection):
 
     It can be either directed along one of the crystallographic axes or in a specific
     direction in the crystal defined by a main direction and the perpendicular one.
+
+    Refs.
+    https://dictionary.iucr.org/Miller_indices
+    https://dictionary.iucr.org/Direction_indices
+
+
     """
 
     angle = Quantity(
@@ -479,9 +485,10 @@ class Miscut(ArchiveSection):
     hkl_reciprocal = Quantity(
         type=str,
         description="""Orientation of the miscut (or offcut).
-        Reciprocal (or Absolute) Miller indices, (hkl), denote a family of planes
-        specified an orthogonal vector in the basis of
-        the primitive reciprocal lattice vectors. """,
+        The reciprocal lattice vector associated with the family of lattice planes is
+        OH = h a* + k b* + l c*, where a*, b*, c* are the reciprocal lattice basis
+        vectors. OH is perpendicular to the family of lattice planes and OH = 1/d where
+        d is the lattice spacing of the family.""",
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
             label='Miscut Reciprocal Indices (hkl)',
@@ -490,11 +497,12 @@ class Miscut(ArchiveSection):
     hkl_direct = Quantity(
         type=str,
         description="""Orientation of the miscut (or offcut).
-        Direct (or Relative) Miller indices, [hkl], denote a family of planes
-        specified an orthogonal vector in the basis of
-        the real space vectors.
-        Note that [hkl] is not generally normal to the (hkl) planes,
-        except in a cubic lattice. """,
+        In three-dimensional space, the direction passing through the origin and the
+        lattice nodes nh,nk,nl, where n is an integer, has direction indices [hkl].
+        This corresponds to taking the coordinates of the first lattice node on that
+        direction after the origin as direction indices.
+        When a primitive unit cell is used, the direction indices are all integer;
+        they may instead be rational when a centred unit cell is adopted.""",
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
             label='Miscut Direct Orientation [hkl]',
@@ -574,9 +582,10 @@ class SubstrateCrystalProperties(CrystalProperties):
     )
     hkl_reciprocal = Quantity(
         type=str,
-        description="""Reciprocal (or Absolute) Miller indices, (hkl),
-        denote a family of planes specified an orthogonal vector in the basis of
-        the primitive reciprocal lattice vectors. """,
+        description="""The reciprocal lattice vector associated with the family of
+        lattice planes is OH = h a* + k b* + l c*, where a*, b*, c* are the reciprocal
+        lattice basis vectors. OH is perpendicular to the family of lattice planes and
+        OH = 1/d where d is the lattice spacing of the family.""",
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
             label='Reciprocal Indices (hkl)',
@@ -584,11 +593,12 @@ class SubstrateCrystalProperties(CrystalProperties):
     )
     hkl_direct = Quantity(
         type=str,
-        description="""Direct (or Relative) Miller indices, [hkl],
-        denote a family of planes specified an orthogonal vector in the basis of
-        the real space vectors.
-        Note that [hkl] is not generally normal to the (hkl) planes,
-        except in a cubic lattice. """,
+        description="""In three-dimensional space, the direction passing through the
+        origin and the lattice nodes nh,nk,nl, where n is an integer, has direction
+        indices [hkl]. This corresponds to taking the coordinates of the first lattice
+        node on that direction after the origin as direction indices.
+        When a primitive unit cell is used, the direction indices are all integer;
+        they may instead be rational when a centred unit cell is adopted.""",
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
             label='Direct Orientation [hkl]',
@@ -603,7 +613,7 @@ class SubstrateCrystalProperties(CrystalProperties):
     miscut_perpendicular = SubSection(
         section_def=Miscut,
         description="""
-        Miscut of the substrate along a direction perperndicular to the reference.
+        Miscut of the substrate along a direction perpendicular to the reference.
         """,
     )
 
