@@ -1,0 +1,4 @@
+data:
+  m_def: nomad_synthesis_plugin.schema_packages.crystallization.ReactorProgram
+  name: Julia
+  data_file: 'Experiment_Labmax.xlsx'

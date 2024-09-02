@@ -24,6 +24,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.graph_objs as go
 from nomad.datamodel.data import ArchiveSection, EntryData
+from nomad.datamodel.metainfo.annotations import ELNAnnotation
 from nomad.datamodel.metainfo.basesections import (
     Activity,
     CompositeSystem,
@@ -280,12 +281,14 @@ class ReactorDataLog(ArchiveSection):
         unit='second',
         shape=['*'],
         description='elapsed time since start of the experiment',
+        a_display={'unit': 'second'},
     )
     total_volume = Quantity(
         type=np.float64,
         shape=['*'],
         description='total volume of Ca(NO3)2 Ce(NO3)3 in the reactor',
         unit='milliliter',
+        a_eln=ELNAnnotation(defaultDisplayUnit='milliliter'),
     )
     conductivity = Quantity(
         type=np.float64,
@@ -303,6 +306,7 @@ class ReactorDataLog(ArchiveSection):
         shape=['*'],
         description='temperature of the solution in the reactor',
         unit='\u00b0C',
+        a_eln=ELNAnnotation(defaultDisplayUnit='celsius'),
     )
     # next quantities are from Mettler Toledo Optimax 1001, add more if needed
     dosing1_mass_a = Quantity(
@@ -310,18 +314,21 @@ class ReactorDataLog(ArchiveSection):
         shape=['*'],
         description='mass of dosing 1 component A',
         unit='gram',
+        a_display={'unit': 'gram'},
     )
     dosing2_mass_b = Quantity(
         type=np.float64,
         shape=['*'],
         description='mass of dosing 2 component B',
         unit='gram',
+        a_eln=ELNAnnotation(defaultDisplayUnit='gram'),
     )
     temperature_j = Quantity(
         type=np.float64,
         shape=['*'],
-        description='temperature of the j?',
+        description='temperature of the heatcarrier surrounding the reactor (jacket)',
         unit='\u00b0C',
+        a_eln=ELNAnnotation(defaultDisplayUnit='celsius'),
     )
 
 
@@ -463,7 +470,7 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
             #'conductivity',
         ]
         column_mapping = dict(zip(optimax_cols, new_column_names))
-        df = pd.read_excel(file_path, usecols=optimax_cols, skiprows=[1])
+        df = pd.read_excel(file_path, skiprows=[1])  # usecols=optimax_cols,
         df.fillna(method='ffill', inplace=True)
         df = df.rename(
             columns={
@@ -472,8 +479,77 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
         )
         return df
 
+    def read_steps_excel_optimax1001(self, file_path):
+        """Read the steps from the excel file"""
+        optimax_recipe_cols = [
+            '#',
+            'Type',
+            'Action / Note / Sample',
+            'Duration',
+            'Start Time',
+            'End Time',
+            'Tr',
+            'Tj',
+            'R',
+            'Mr',
+            'Vr',
+        ]
+        new_column_names = [
+            'number',
+            'type',
+            'step name',
+            'duration',
+            'elapsed_time',
+            'end_time_elapsed',
+            'temperature',
+            'temperature_j',
+            'stirring_rotation_speed',
+            'added_mass',
+            'total_volume',
+        ]
+        column_mapping = dict(zip(optimax_recipe_cols, new_column_names))
+        df = pd.read_excel(file_path, sheet_name='Recipe')
+        df = df.rename(
+            columns={
+                col: column_mapping[col] for col in df.columns if col in column_mapping
+            }
+        )
+        return df
+
+    def add_steps_from_excel(self, df):
+        """Add the steps from the excel file to the ReactorProgram"""
+        import datetime
+        import time
+
+        steps = []
+        for index, row in df.iterrows():
+            step = ReactorProgramStep()
+            step.name = row['step name']
+            if pd.isnull(row['duration']) is False:
+                print(row['duration'])
+                x = time.strptime(row['duration'], '%H:%M:%S')
+                step.duration = datetime.timedelta(
+                    hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec
+                ).total_seconds()
+            step.comment = row['type'] + ':\n ' + row['step name']
+            y = time.strptime(row['elapsed_time'], '%H:%M:%S')
+            step.elapsed_time = datetime.timedelta(
+                hours=y.tm_hour, minutes=y.tm_min, seconds=y.tm_sec
+            ).total_seconds()
+            step.stirring_ration_speed = float(
+                row['stirring_rotation_speed'].split(' ')[0]
+            )  # unit is 1/min
+            step.temperature_setpoint = float(
+                row['temperature'].split(' ')[0]
+            )  # unit is celcius
+            steps.append(step)
+        self.steps = steps
+
     def check_strings_in_first_row(self, archive, file_path):
-        """Checks if specified strings are in the first row of each CSV file in the directory."""
+        """
+        Checks if specified strings are in the first row of each CSV file in the
+        directory.
+        """
 
         # Strings to check in the CSV header
         strings_to_check = [
@@ -517,6 +593,8 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
         elif file_path.endswith('.xlsx'):
             with archive.m_context.raw_file(file_path) as f:
                 df = self.read_excel_optimax1001(f.name)
+                df2 = self.read_steps_excel_optimax1001(f.name)
+                self.add_steps_from_excel(df2)
                 return df
 
     def plot_multiple_y_axes_colored(self, df, df_steps):
@@ -538,11 +616,13 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
                     )
                 )
                 fig.update_layout(
-                    xaxis_title='Elapsed Time',
+                    xaxis_title='Elapsed Time / s',
+                    xaxis=dict(domain=[0.1, 0.8]),
                     yaxis=dict(
-                        title='Total Volume / mL',
+                        title='Volume / mL',
                         titlefont=dict(color=colors[0]),
                         tickfont=dict(color=colors[0]),
+                        shift=50,
                     ),
                 )
 
@@ -561,8 +641,11 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
                         title='Conductivity / mS/cm',
                         titlefont=dict(color=colors[1]),
                         tickfont=dict(color=colors[1]),
+                        tickmode='sync',
                         overlaying='y',
+                        anchor='x',
                         side='right',
+                        position=1,
                     )
                 )
 
@@ -581,10 +664,14 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
                         title='pH',
                         titlefont=dict(color=colors[2]),
                         tickfont=dict(color=colors[2]),
+                        tickmode='sync',
                         overlaying='y',
-                        side='left',
+                        side='right',
                         anchor='free',
-                        position=0.1,
+                        autoshift=True,
+                        position=0.8,
+                        shift=150,
+                        title_standoff=0,
                     )
                 )
 
@@ -604,9 +691,11 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
                         titlefont=dict(color=colors[3]),
                         tickfont=dict(color=colors[3]),
                         overlaying='y',
+                        tickmode='sync',
                         side='right',
                         anchor='free',
                         position=0.9,
+                        title_standoff=0,
                     )
                 )
             if 'dosing1_mass_a' in df.columns:
@@ -621,13 +710,14 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
                 )
                 fig.update_layout(
                     yaxis5=dict(
-                        title='Dosing 1 Mass A / g',
+                        title='Mass Dosing Solutions / g',
                         titlefont=dict(color=colors[4]),
                         tickfont=dict(color=colors[4]),
+                        tickmode='sync',
                         overlaying='y',
-                        side='left',
                         anchor='free',
-                        position=0.2,
+                        autoshift=True,
+                        shift=-150,
                     )
                 )
             if 'dosing2_mass_b' in df.columns:
@@ -637,45 +727,45 @@ class ReactorProgram(Process, CaPActivity, PlotSection, EntryData, ArchiveSectio
                         y=df['dosing2_mass_b'],
                         name='Dosing 2 Mass B',
                         marker_color=colors[5],
-                        yaxis='y6',
+                        yaxis='y5',
                     )
                 )
-                fig.update_layout(
-                    yaxis6=dict(
-                        title='Dosing 2 Mass B / g',
-                        titlefont=dict(color=colors[5]),
-                        tickfont=dict(color=colors[5]),
-                        overlaying='y',
-                        side='right',
-                        anchor='free',
-                        position=0.8,
-                    )
-                )
+                # fig.update_layout(
+                #     yaxis6=dict(
+                #         title='Dosing 2 Mass B / g',
+                #         titlefont=dict(color=colors[5]),
+                #         tickfont=dict(color=colors[5]),
+                #         overlaying='y',
+                #         side='right',
+                #         anchor='free',
+                #         position=0.8,
+                #     )
+                # )
             if 'temperature_j' in df.columns:
                 fig.add_trace(
                     go.Scatter(
                         x=df['elapsed_time'],
                         y=df['temperature_j'],
-                        name='Temperature J',
+                        name='Temperature Jacket',
                         marker_color=colors[6],
-                        yaxis='y7',
+                        yaxis='y4',
                     )
                 )
-                fig.update_layout(
-                    yaxis7=dict(
-                        title='Temperature J / °C',
-                        titlefont=dict(color=colors[6]),
-                        tickfont=dict(color=colors[6]),
-                        overlaying='y',
-                        side='right',
-                        anchor='free',
-                        position=0.7,
-                    )
-                )
+                # fig.update_layout(
+                #     yaxis7=dict(
+                #         title='Temperature J / °C',
+                #         titlefont=dict(color=colors[6]),
+                #         tickfont=dict(color=colors[6]),
+                #         overlaying='y',
+                #         side='right',
+                #         anchor='free',
+                #         position=0.7,
+                #     )
+                # )
 
         # Update layout to adjust the right margin to accommodate the extra y-axes
-        fig.update_layout(margin=dict(r=200))
-        if df_steps != None:
+        fig.update_layout(showlegend=True)  # , margin=dict(pad=20))  # r=200))
+        if df_steps.empty is False:
             if not df_steps['elapsed_time'].empty:
                 for index, row in df_steps.iterrows():
                     fig.add_vline(
