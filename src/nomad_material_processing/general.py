@@ -457,13 +457,12 @@ class Miscut(ArchiveSection):
     angle = Quantity(
         type=float,
         description="""
-        The angular displacement offset toward the crystallographic
-        orientation of the substrate.
+        The miscut angle (or offcut angle, or angular displacement offset) toward
+        the crystallographic orientation of the substrate.
         """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
             defaultDisplayUnit='deg',
-            label='Miscut Angle',
         ),
         unit='deg',
     )
@@ -473,73 +472,32 @@ class Miscut(ArchiveSection):
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
             defaultDisplayUnit='deg',
-            label='± Miscut Angle Deviation',
+            label='± Angle Deviation',
         ),
         unit='deg',
     )
-    hkl_absolut_orientation = Quantity(
+    hkl_reciprocal = Quantity(
         type=str,
-        description="""Direction where the miscut goes toward.
-        Here the absolut Miller indices, (hkl), denote a normal to the planes
-        in the basis of the primitive reciprocal lattice vectors. """,
+        description="""Orientation of the miscut (or offcut).
+        Reciprocal (or Absolute) Miller indices, (hkl), denote a family of planes
+        specified an orthogonal vector in the basis of
+        the primitive reciprocal lattice vectors. """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
-            label='Miscut Absolut Orientation (hkl)',
+            label='Miscut Reciprocal Indices (hkl)',
         ),
     )
-    hkl_relative_orientation = Quantity(
+    hkl_direct = Quantity(
         type=str,
-        description="""Direction where the miscut goes toward. It uses the direct
-        lattice basis instead of the reciprocal lattice. Note that [hkl] is not
-        generally normal to the (hkl) planes, except in a cubic lattice. """,
+        description="""Orientation of the miscut (or offcut).
+        Direct (or Relative) Miller indices, [hkl], denote a family of planes
+        specified an orthogonal vector in the basis of
+        the real space vectors.
+        Note that [hkl] is not generally normal to the (hkl) planes,
+        except in a cubic lattice. """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
-            label='Miscut Relative Orientation [hkl]',
-        ),
-    )
-
-    angle_perpendicular = Quantity(
-        type=float,
-        description="""
-        Optional: the angular displacement offset toward the crystallographic
-        orientation perpendicular to the first given.
-        """,
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit='deg',
-            label='⟂ Miscut Angle',
-        ),
-        unit='deg',
-    )
-    angle_deviation_perpendicular = Quantity(
-        type=float,
-        description="""Optional: the ± deviation of the angular displacement offset
-        in the direction perpendicular to the first given.""",
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit='deg',
-            label='± ⟂ Miscut Angle Deviation',
-        ),
-        unit='deg',
-    )
-    hkl_absolut_orientation_perpendicular = Quantity(
-        type=str,
-        description="""Optional: direction where the miscut goes toward.
-        Here the absolut Miller indices, (hkl), denote a normal to the planes
-        in the basis of the primitive reciprocal lattice vectors. """,
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.StringEditQuantity,
-            label='⟂ Miscut Absolut Orientation (hkl)',
-        ),
-    )
-    hkl_relative_orientation_perpendicular = Quantity(
-        type=str,
-        description="""Optional: direction where the miscut goes toward. It uses the direct
-        lattice basis instead of the reciprocal lattice. Note that [hkl] is not
-        generally normal to the (hkl) planes, except in a cubic lattice. """,
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.StringEditQuantity,
-            label='⟂ Miscut Relative Orientation [hkl]',
+            label='Miscut Direct Orientation [hkl]',
         ),
     )
     directions_image = Quantity(
@@ -614,30 +572,38 @@ class SubstrateCrystalProperties(CrystalProperties):
             component=ELNComponentEnum.EnumEditQuantity,
         ),
     )
-    hkl_absolut_orientation = Quantity(
+    hkl_reciprocal = Quantity(
         type=str,
-        description="""Absolut Miller indices, (hkl), denote a normal to the planes
-        in the basis of the primitive reciprocal lattice vectors. """,
+        description="""Reciprocal (or Absolute) Miller indices, (hkl),
+        denote a family of planes specified an orthogonal vector in the basis of
+        the primitive reciprocal lattice vectors. """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
-            label='Absolut Orientation (hkl)',
+            label='Reciprocal Indices (hkl)',
         ),
     )
-    hkl_relative_orientation = Quantity(
+    hkl_direct = Quantity(
         type=str,
-        description="""Relative Miller indices, [hkl], using the direct
-        lattice basis instead of the reciprocal lattice. Note that [hkl] is not
-        generally normal to the (hkl) planes, except in a cubic lattice. """,
+        description="""Direct (or Relative) Miller indices, [hkl],
+        denote a family of planes specified an orthogonal vector in the basis of
+        the real space vectors.
+        Note that [hkl] is not generally normal to the (hkl) planes,
+        except in a cubic lattice. """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
-            label='Relative Orientation [hkl]',
+            label='Direct Orientation [hkl]',
         ),
     )
     miscut = SubSection(
         section_def=Miscut,
         description="""
-        Miscut of the substrate. Two directions are given to fully describe the miscut.
-        The second one is perdepndicular to the first one and only optional.
+        Miscut of the substrate along the reference orientation.
+        """,
+    )
+    miscut_perpendicular = SubSection(
+        section_def=Miscut,
+        description="""
+        Miscut of the substrate along a direction perperndicular to the reference.
         """,
     )
 
