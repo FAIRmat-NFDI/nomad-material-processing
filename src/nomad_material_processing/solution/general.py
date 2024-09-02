@@ -1,41 +1,55 @@
 from typing import TYPE_CHECKING, Union
-from nomad.units import ureg
-import numpy as np
+
 from nomad.datamodel.data import (
     ArchiveSection,
     EntryData,
 )
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
-    SectionProperties,
     Filter,
+    SectionProperties,
 )
 from nomad.datamodel.metainfo.basesections import (
     Component,
     CompositeSystem,
     CompositeSystemReference,
-    SystemComponent,
     InstrumentReference,
     Process,
     ProcessStep,
-    PureSubstanceComponent,
     PubChemPureSubstanceSection,
+    PureSubstanceComponent,
+    SystemComponent,
 )
 from nomad.metainfo import (
     Datetime,
     MEnum,
     Quantity,
+    SchemaPackage,
     Section,
     SubSection,
 )
+from nomad.units import ureg
+
 from nomad_material_processing.solution.utils import (
     create_archive,
     create_unique_filename,
 )
 
 if TYPE_CHECKING:
-    from structlog.stdlib import BoundLogger
     from nomad.datamodel import EntryArchive
+    from structlog.stdlib import BoundLogger
+
+from nomad.config import config
+
+m_package = SchemaPackage(
+    aliases=[
+        'nomad_material_processing.solution',
+    ],
+)
+
+configuration = config.get_plugin_entry_point(
+    'nomad_material_processing.solution:schema'
+)
 
 
 class MolarConcentration(ArchiveSection):
@@ -47,7 +61,7 @@ class MolarConcentration(ArchiveSection):
         description='The molar concentration of a component in a solution.',
     )
     calculated_concentration = Quantity(
-        type=np.float64,
+        type=float,
         description=(
             'The expected concentration calculated from the component moles and '
             'total volume.'
@@ -58,9 +72,10 @@ class MolarConcentration(ArchiveSection):
         unit='mol / liter',
     )
     measured_concentration = Quantity(
-        type=np.float64,
+        type=float,
         description=(
-            'The concentration observed or measured with some characterization technique.'
+            """The concentration observed or measured
+            with some characterization technique."""
         ),
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -94,7 +109,7 @@ class SolutionStorage(ArchiveSection):
         ),
     )
     temperature = Quantity(
-        type=np.float64,
+        type=float,
         description='The temperature of the storage.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -126,7 +141,7 @@ class BaseSolutionComponent(Component):
     """
 
     volume = Quantity(
-        type=np.float64,
+        type=float,
         description='The volume of the liquid component.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -176,13 +191,13 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         | ------------- | ----------- |
         | Solvent       | The term applied to the whole initial liquid phase containing the extractant. |
         | Solute        | The minor component of a solution which is regarded as having been dissolved by the solvent. |
-        """,
+        """,  # noqa: E501
         a_eln=ELNAnnotation(
             component='EnumEditQuantity',
         ),
     )
     mass = Quantity(
-        type=np.float64,
+        type=float,
         description='The mass of the component without the container.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -192,7 +207,7 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         unit='kilogram',
     )
     density = Quantity(
-        type=np.float64,
+        type=float,
         description='The density of the liquid component.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -239,7 +254,8 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         self, volume: Quantity, logger: 'BoundLogger' = None
     ) -> None:
         """
-        Calculate the molar concentration of the component in a given volume of solution.
+        Calculate the molar concentration of the component
+        in a given volume of solution.
 
         Args:
             volume (Quantity): The volume of the solution.
@@ -260,8 +276,8 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
-        Normalize method for the `SolutionComponent` section. Sets the mass if volume and
-        density are provided.
+        Normalize method for the `SolutionComponent` section. Sets the mass if volume
+        and density are provided.
 
         Args:
             archive (EntryArchive): A NOMAD archive.
@@ -280,7 +296,7 @@ class Solution(CompositeSystem, EntryData):
     Section for decribing liquid solutions.
     """
 
-    # TODO make the solvents, solutes, and elemental_composition sub-section non-editable.
+    # TODO make the solvents, solutes, and elemental_composition subsection noneditable.
     m_def = Section(
         description='A homogeneous liquid mixture composed of two or more substances.',
         a_eln=ELNAnnotation(
@@ -305,7 +321,7 @@ class Solution(CompositeSystem, EntryData):
     )
     ph_value = Quantity(
         description='The pH value of the solution.',
-        type=np.float64,
+        type=float,
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             minValue=0,
@@ -314,7 +330,7 @@ class Solution(CompositeSystem, EntryData):
     )
     density = Quantity(
         description='The density of the solution.',
-        type=np.float64,
+        type=float,
         a_eln=ELNAnnotation(
             defaultDisplayUnit='gram / milliliter',
         ),
@@ -322,7 +338,7 @@ class Solution(CompositeSystem, EntryData):
     )
     mass = Quantity(
         description='The mass of the solution.',
-        type=np.float64,
+        type=float,
         a_eln=ELNAnnotation(
             defaultDisplayUnit='gram',
         ),
@@ -332,7 +348,7 @@ class Solution(CompositeSystem, EntryData):
         description="""The final expected volume of the solution, which is the sum of
         volume of its liquid components.
         """,
-        type=np.float64,
+        type=float,
         a_eln=ELNAnnotation(
             defaultDisplayUnit='milliliter',
         ),
@@ -340,7 +356,7 @@ class Solution(CompositeSystem, EntryData):
     )
     measured_volume = Quantity(
         description='The volume of the solution as observed or measured.',
-        type=np.float64,
+        type=float,
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             defaultDisplayUnit='milliliter',
@@ -431,13 +447,13 @@ class Solution(CompositeSystem, EntryData):
                 continue
             self.calculated_volume += component.volume
 
-    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:  # noqa: PLR0912, PLR0915
         """
         Normalize method for the `Solution` section. Calculate the total volume of the
         solution. Populates the solvents and solutes with the components based on the
         `component_role`. If a component doesn't have pure_substance section, it is
-        skipped. In case of components that are solutions, the quantity of their solvents
-        and solutes is scaled based on their quantity used. Combines the
+        skipped. In case of components that are solutions, the quantity of their
+        solvents and solutes is scaled based on their quantity used. Combines the
         components with the same PubChem CID. Set the mass, density, and elemental
         composition of the solution.
 
@@ -456,9 +472,9 @@ class Solution(CompositeSystem, EntryData):
             if isinstance(component, SolutionComponent):
                 if not component.pure_substance or not component.mass:
                     logger.warning(
-                        f'Either the pure_substance sub_section or mass for the component '
-                        f'"{component.name}" is missing. Not adding it to the '
-                        f'"{component.component_role.lower()}' + 's' + '" list.'
+                        f'Either the pure_substance sub_section or mass for the '
+                        f'component "{component.name}" is missing. Not adding it to '
+                        f'the "{component.component_role.lower()}' + 's' + '" list.'
                     )
                     continue
                 component.mass_fraction = None
@@ -563,7 +579,7 @@ class SolutionComponentReference(SystemComponent, BaseSolutionComponent):
         a_eln=dict(component='ReferenceEditQuantity'),
     )
     mass = Quantity(
-        type=np.float64,
+        type=float,
         description='The mass of the solution used.',
         a_eln=ELNAnnotation(
             defaultDisplayUnit='gram',
@@ -590,14 +606,13 @@ class SolutionComponentReference(SystemComponent, BaseSolutionComponent):
             if not self.volume:
                 # assume entire volume of the solution is used
                 self.volume = available_volume
-            else:
-                if self.volume > available_volume:
-                    logger.warning(
-                        f'The volume used for the "{self.name}" is greater than the '
-                        'available volume of the solution. Setting it to the available '
-                        'volume.'
-                    )
-                    self.volume = available_volume
+            elif self.volume > available_volume:
+                logger.warning(
+                    f'The volume used for the "{self.name}" is greater than the '
+                    'available volume of the solution. Setting it to the available '
+                    'volume.'
+                )
+                self.volume = available_volume
             if self.system.density:
                 self.mass = self.system.density * self.volume
         super().normalize(archive, logger)
@@ -625,7 +640,7 @@ class Pipetting(MeasurementMethodology):
 
     # TODO populate `pipette_volume` from the instrument
     pipette_volume = Quantity(
-        type=np.float64,
+        type=float,
         description='The volume of the pipette used.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -643,7 +658,7 @@ class Scaling(MeasurementMethodology):
 
     # TODO populate `precision` from the instrument
     precision = Quantity(
-        type=np.float64,
+        type=float,
         description='The precision of the weighing instrument.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -653,7 +668,7 @@ class Scaling(MeasurementMethodology):
         unit='kilogram',
     )
     container_mass = Quantity(
-        type=np.float64,
+        type=float,
         description='The mass of the container.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -663,7 +678,7 @@ class Scaling(MeasurementMethodology):
         unit='kilogram',
     )
     gross_mass = Quantity(
-        type=np.float64,
+        type=float,
         description='The mass of the material including the container.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -737,7 +752,7 @@ class Agitation(SolutionPreparationStep):
         description='Generic agitation or mixing step for solution preparation.',
     )
     temperature = Quantity(
-        type=np.float64,
+        type=float,
         description='The temperature of the mixing process.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -775,7 +790,7 @@ class Sonication(Agitation):
         description='Sonication step for solution preparation.',
     )
     frequency = Quantity(
-        type=np.float64,
+        type=float,
         description='The frequency of the sonication instrument.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -794,7 +809,7 @@ class MechanicalStirring(Agitation):
         description='Mechanical stirring step for solution preparation.',
     )
     rotation_speed = Quantity(
-        type=np.float64,
+        type=float,
         description='The rotation speed of the stirrer.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -922,3 +937,6 @@ class SolutionPreparation(Process, EntryData):
         if not self.solution:
             self.solution = SolutionReference()
         self.solution.reference = self.create_solution_entry(solution, archive, logger)
+
+
+m_package.__init_metainfo__()

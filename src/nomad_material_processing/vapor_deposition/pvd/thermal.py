@@ -18,26 +18,26 @@
 from typing import (
     TYPE_CHECKING,
 )
-from nomad.metainfo import (
-    Package,
-    Section,
-    SubSection,
-    Quantity,
-)
-
-from nomad_material_processing import (
-    TimeSeries,
-)
-from nomad_material_processing.vapor_deposition.pvd import (
-    PVDEvaporationSource,
-    PVDSource,
-    PVDStep,
-    PhysicalVaporDeposition,
-)
 
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
     ELNComponentEnum,
+)
+from nomad.metainfo import (
+    Quantity,
+    SchemaPackage,
+    Section,
+    SubSection,
+)
+
+from nomad_material_processing.general import (
+    TimeSeries,
+)
+from nomad_material_processing.vapor_deposition.pvd.general import (
+    PhysicalVaporDeposition,
+    PVDEvaporationSource,
+    PVDSource,
+    PVDStep,
 )
 
 if TYPE_CHECKING:
@@ -48,7 +48,13 @@ if TYPE_CHECKING:
         BoundLogger,
     )
 
-m_package = Package(name='Thermal Evaporation')
+from nomad.config import config
+
+m_package = SchemaPackage(name='Thermal Evaporation')
+
+configuration = config.get_plugin_entry_point(
+    'nomad_material_processing.vapor_deposition.pvd:thermal_schema',
+)
 
 
 class ThermalEvaporationHeaterTemperature(TimeSeries):
@@ -228,7 +234,7 @@ class ThermalEvaporation(PhysicalVaporDeposition):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(ThermalEvaporation, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 m_package.__init_metainfo__()

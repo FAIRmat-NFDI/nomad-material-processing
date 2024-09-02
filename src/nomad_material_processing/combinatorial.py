@@ -1,5 +1,3 @@
-import json
-
 #
 # Copyright The NOMAD Authors.
 #
@@ -20,17 +18,8 @@ import json
 from typing import (
     TYPE_CHECKING,
 )
+
 import plotly.graph_objects as go
-from nomad.datamodel.metainfo.plot import (
-    PlotlyFigure,
-    PlotSection,
-)
-from nomad.metainfo import (
-    Package,
-    Quantity,
-    SubSection,
-    Section,
-)
 from nomad.datamodel.data import (
     ArchiveSection,
     EntryData,
@@ -43,6 +32,16 @@ from nomad.datamodel.metainfo.basesections import (
     Collection,
     CompositeSystem,
     CompositeSystemReference,
+)
+from nomad.datamodel.metainfo.plot import (
+    PlotlyFigure,
+    PlotSection,
+)
+from nomad.metainfo import (
+    Package,
+    Quantity,
+    Section,
+    SubSection,
 )
 
 if TYPE_CHECKING:
@@ -65,8 +64,8 @@ class CombinatorialLibrary(CompositeSystem, EntryData, PlotSection):
 
     def plot(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         from nomad.search import (
-            search,
             MetadataPagination,
+            search,
         )
 
         query = {
@@ -143,7 +142,7 @@ class CombinatorialLibrary(CompositeSystem, EntryData, PlotSection):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(CombinatorialLibrary, self).normalize(archive, logger)
+        super().normalize(archive, logger)
         self.figures = []
         self.plot(archive, logger)
 
@@ -191,7 +190,7 @@ class CombinatorialSamplePosition(ArchiveSection):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(CombinatorialSamplePosition, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 class CombinatorialLibraryReference(CompositeSystemReference):
@@ -265,7 +264,7 @@ class CombinatorialSample(CompositeSystem, EntryData):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(CombinatorialSample, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 # Discrete combinatorial library classes:
@@ -285,7 +284,7 @@ class DiscreteCombinatorialSample(CompositeSystem):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(DiscreteCombinatorialSample, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 class DiscreteCombinatorialSampleReference(CompositeSystemReference):
@@ -325,7 +324,7 @@ class DiscreteCombinatorialSampleReference(CompositeSystemReference):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(DiscreteCombinatorialSampleReference, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 class DiscreteCombinatorialLibrary(Collection):
@@ -361,7 +360,7 @@ class DiscreteCombinatorialLibrary(Collection):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(DiscreteCombinatorialLibrary, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 m_package.__init_metainfo__()

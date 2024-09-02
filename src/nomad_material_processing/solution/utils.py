@@ -15,13 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-from typing import TYPE_CHECKING
-
 import json
 import math
-import re
+from typing import TYPE_CHECKING
 
-import pandas as pd
 import yaml
 
 if TYPE_CHECKING:
@@ -80,11 +77,10 @@ def dict_nan_equal(dict1, dict2):
     return True
 
 
-def create_archive(
+def create_archive(  # noqa: PLR0913
     entry_dict, context, filename, file_type, logger, *, overwrite: bool = False
 ):
     from nomad.datamodel.context import ClientContext
-    from nomad.datamodel import EntryArchive
 
     file_exists = context.raw_path_exists(filename)
     dicts_are_equal = None
@@ -125,7 +121,10 @@ def create_unique_filename(
         suffix: Usually the file extension. Default is 'archive.json'.
     """
     i = 0
-    template = lambda i: f'{prefix}_{i}.{suffix}'
+
+    def template(i):
+        return f'{prefix}_{i}.{suffix}'
+
     if not archive.m_context.raw_path_exists(template(i)):
         return template(i)
     while True:

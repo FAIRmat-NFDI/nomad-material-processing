@@ -18,27 +18,28 @@
 from typing import (
     TYPE_CHECKING,
 )
-from nomad.metainfo import (
-    Package,
-    Section,
-    SubSection,
-    Quantity,
-)
+
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
     ELNComponentEnum,
 )
 from nomad.datamodel.metainfo.basesections import (
     CompositeSystem,
-    SystemComponent,
     ReadableIdentifiers,
+    SystemComponent,
+)
+from nomad.metainfo import (
+    Quantity,
+    SchemaPackage,
+    Section,
+    SubSection,
 )
 
-from nomad_material_processing.vapor_deposition.pvd import (
+from nomad_material_processing.vapor_deposition.pvd.general import (
+    PhysicalVaporDeposition,
     PVDEvaporationSource,
     PVDSource,
     PVDStep,
-    PhysicalVaporDeposition,
 )
 
 if TYPE_CHECKING:
@@ -49,7 +50,13 @@ if TYPE_CHECKING:
         BoundLogger,
     )
 
-m_package = Package(name='Pulsed Laser Deposition')
+from nomad.config import config
+
+m_package = SchemaPackage(name='Pulsed Laser Deposition')
+
+configuration = config.get_plugin_entry_point(
+    'nomad_material_processing.vapor_deposition.pvd:pld_schema',
+)
 
 
 class PLDTarget(CompositeSystem):
@@ -175,7 +182,7 @@ class PulsedLaserDeposition(PhysicalVaporDeposition):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(PulsedLaserDeposition, self).normalize(archive, logger)
+        super().normalize(archive, logger)
 
 
 m_package.__init_metainfo__()

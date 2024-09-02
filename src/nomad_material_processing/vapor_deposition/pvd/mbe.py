@@ -15,14 +15,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from typing import (
+    TYPE_CHECKING,
+)
 
+from nomad.config import config
 from nomad.metainfo import (
-    Package,
-    Quantity,
+    SchemaPackage,
     Section,
 )
-from nomad_material_processing.vapor_deposition.pvd import (
+
+from nomad_material_processing.vapor_deposition.pvd.general import (
     PhysicalVaporDeposition,
+)
+
+if TYPE_CHECKING:
+    from nomad.datamodel.datamodel import (
+        EntryArchive,
+    )
+    from structlog.stdlib import (
+        BoundLogger,
+    )
+
+
+m_package = SchemaPackage(name='Molecular Beam Epitaxy')
+
+configuration = config.get_plugin_entry_point(
+    'nomad_material_processing.vapor_deposition.pvd:mbe_schema',
 )
 
 
@@ -54,4 +73,4 @@ class MolecularBeamEpitaxy(PhysicalVaporDeposition):
             normalized.
             logger (BoundLogger): A structlog logger.
         """
-        super(MolecularBeamEpitaxy, self).normalize(archive, logger)
+        super().normalize(archive, logger)
