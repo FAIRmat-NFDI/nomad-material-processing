@@ -620,8 +620,9 @@ class Miscut(ArchiveSection):
     the intentional deviation from a specific crystallographic orientation,
     commonly expressed as the angular displacement of a crystal plane.
 
-    It can either be specified as directed along one of the crystallographic axes or in a specific
-    direction in the crystal defined by a main direction and the perpendicular one.
+    It can either be specified as directed along one of the crystallographic axes or
+    in a specific direction in the crystal defined by a main direction and the
+    perpendicular one.
     """
 
     angle = Quantity(
