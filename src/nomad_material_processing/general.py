@@ -11,7 +11,11 @@ if TYPE_CHECKING:
 import numpy as np
 from nomad.config import config
 from nomad.datamodel.data import ArchiveSection, EntryData
-from nomad.datamodel.metainfo.annotations import ELNAnnotation, ELNComponentEnum
+from nomad.datamodel.metainfo.annotations import (
+    ELNAnnotation,
+    ELNComponentEnum,
+    SectionProperties,
+)
 from nomad.datamodel.metainfo.basesections import (
     CompositeSystem,
     CompositeSystemReference,
@@ -32,13 +36,6 @@ from nomad.metainfo import (
     Section,
     SectionProxy,
     SubSection,
-)
-
-
-from nomad.datamodel.metainfo.annotations import (
-    ELNAnnotation,
-    Filter,
-    SectionProperties,
 )
 
 m_package = SchemaPackage(
@@ -533,7 +530,8 @@ class CrystallographicDirection(ArchiveSection):
         The reciprocal lattice vector associated with the family of lattice planes is
         OH = h a* + k b* + l c*, where a*, b*, c* are the reciprocal lattice basis
         vectors. OH is perpendicular to the family of lattice planes and OH = 1/d where
-        d is the lattice spacing of the family.""",
+        d is the lattice spacing of the family.
+        Ref. https://dictionary.iucr.org/Miller_indices""",
     )
     hkl_direct = SubSection(
         MillerIndices,
@@ -543,7 +541,8 @@ class CrystallographicDirection(ArchiveSection):
         This corresponds to taking the coordinates of the first lattice node on that
         direction after the origin as direction indices.
         When a primitive unit cell is used, the direction indices are all integer;
-        they may instead be rational when a centred unit cell is adopted.""",
+        they may instead be rational when a centred unit cell is adopted.
+        Ref. https://dictionary.iucr.org/Direction_indices""",
     )
 
 
@@ -623,12 +622,6 @@ class Miscut(ArchiveSection):
 
     It can either be specified as directed along one of the crystallographic axes or in a specific
     direction in the crystal defined by a main direction and the perpendicular one.
-
-    Refs.
-    https://dictionary.iucr.org/Miller_indices
-    https://dictionary.iucr.org/Direction_indices
-
-
     """
 
     angle = Quantity(
