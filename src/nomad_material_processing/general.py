@@ -525,7 +525,7 @@ class CrystallographicDirection(ArchiveSection):
     """
 
     hkl_reciprocal = SubSection(
-        MillerIndices,
+        section_def=MillerIndices,
         description="""
         The reciprocal lattice vector associated with the family of lattice planes is
         OH = h a* + k b* + l c*, where a*, b*, c* are the reciprocal lattice basis
@@ -534,7 +534,7 @@ class CrystallographicDirection(ArchiveSection):
         Ref. https://dictionary.iucr.org/Miller_indices""",
     )
     hkl_direct = SubSection(
-        MillerIndices,
+        section_def=MillerIndices,
         description="""
         In three-dimensional space, the direction passing through the origin and the
         lattice nodes nh,nk,nl, where n is an integer, has direction indices [hkl].
@@ -568,10 +568,10 @@ class CartesianMiscutOrientation(MiscutOrientation):
     """
 
     orientation = SubSection(
-        CrystallographicDirection,
+        section_def=CrystallographicDirection,
     )
     orientation_perp = SubSection(
-        CrystallographicDirection,
+        section_def=CrystallographicDirection,
         description='A direction perpendicular to the first given',
     )
 
@@ -587,7 +587,7 @@ class PolarMiscutOrientation(MiscutOrientation):
     """
 
     orientation = SubSection(
-        CrystallographicDirection,
+        section_def=CrystallographicDirection,
     )
     rho = Quantity(
         type=float,
@@ -648,7 +648,7 @@ class Miscut(ArchiveSection):
         unit='deg',
     )
     miscut_orientation = SubSection(
-        MiscutOrientation,
+        section_def=MiscutOrientation,
         description='The orientation of the miscut (or offcut).',
     )
     directions_image = Quantity(
