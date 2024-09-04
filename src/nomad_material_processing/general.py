@@ -34,6 +34,13 @@ from nomad.metainfo import (
     SubSection,
 )
 
+
+from nomad.datamodel.metainfo.annotations import (
+    ELNAnnotation,
+    Filter,
+    SectionProperties,
+)
+
 m_package = SchemaPackage(
     aliases=[
         'nomad_material_processing',
@@ -444,6 +451,170 @@ class IrregularParallelSurfaces(Geometry):
     )
 
 
+class MillerIndices(ArchiveSection):
+    """
+    The Miller indices are a notation system in crystallography for planes in crystal
+    (Bravais) lattices. In particular, a family of lattice planes is determined by three
+    integers h, k, and l, the Miller indices.
+    """
+
+    m_def = Section()
+    h_index = Quantity(
+        type=float,
+        description='The Miller index h.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
+    )
+    k_index = Quantity(
+        type=float,
+        description='The Miller index k.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
+    )
+    l_index = Quantity(
+        type=float,
+        description='The Miller index l.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
+    )
+
+
+class BravaisMillerIndices(MillerIndices):
+    """
+    With hexagonal and rhombohedral lattice systems, it is possible to use the
+    Bravais-Miller system, which uses four indices (h k i l) that obey the constraint
+    h + k + i = 0.
+    """
+
+    m_def = Section(
+        description='A component added to the solution.',
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                order=[
+                    'h_index',
+                    'k_index',
+                    'i_index',
+                    'l_index',
+                ],
+            ),
+        ),
+    )
+    i = Quantity(
+        type=float,
+        description='The Miller index i.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
+    )
+
+
+class CrystallographicDirection(ArchiveSection):
+    """
+    A specific crystallographic plane or direction within a crystal structure.
+    The same property can be described in the direct (or real) space or in the
+    reciprocal space.
+
+    The (hkl) indices in direct space and [hkl] indices in reciprocal space describe
+    the same set of crystallographic planes,
+    but their interpretation differs between the two spaces.
+    In direct space,
+    (hkl) indices describe the orientation of a plane within the crystal.
+    In reciprocal space,
+    [hkl] indices describe a point in the reciprocal lattice that is perpendicular
+    to the corresponding (hkl) plane in direct space.
+    """
+
+    hkl_reciprocal = SubSection(
+        MillerIndices,
+        description="""
+        The reciprocal lattice vector associated with the family of lattice planes is
+        OH = h a* + k b* + l c*, where a*, b*, c* are the reciprocal lattice basis
+        vectors. OH is perpendicular to the family of lattice planes and OH = 1/d where
+        d is the lattice spacing of the family.""",
+    )
+    hkl_direct = SubSection(
+        MillerIndices,
+        description="""
+        In three-dimensional space, the direction passing through the origin and the
+        lattice nodes nh,nk,nl, where n is an integer, has direction indices [hkl].
+        This corresponds to taking the coordinates of the first lattice node on that
+        direction after the origin as direction indices.
+        When a primitive unit cell is used, the direction indices are all integer;
+        they may instead be rational when a centred unit cell is adopted.""",
+    )
+
+
+class MiscutOrientation(ArchiveSection):
+    """
+    This direction can be described by a crystallographic direction
+    [hkl], which indicates the direction of the tilt relative to the crystal axes.
+
+    The miscut might be directed in a non-pure crystallographic direction.
+    In this case two components must be specified,
+    either in Cartesian or polar coordinates.
+    """
+
+
+class CartesianMiscutOrientation(MiscutOrientation):
+    """
+    This direction can be described by a crystallographic direction
+    [hkl], which indicates the direction of the tilt relative to the crystal axes.
+
+    The miscut might be directed in a non-pure crystallographic direction.
+    In this case two components must be specified,
+    either in Cartesian or polar coordinates.
+    """
+
+    orientation = SubSection(
+        CrystallographicDirection,
+    )
+    orientation_perp = SubSection(
+        CrystallographicDirection,
+        description='A direction perpendicular to the first given',
+    )
+
+
+class PolarMiscutOrientation(MiscutOrientation):
+    """
+    This direction can be described by a crystallographic direction
+    [hkl], which indicates the direction of the tilt relative to the crystal axes.
+
+    The miscut might be directed in a non-pure crystallographic direction.
+    In this case two components must be specified,
+    either in Cartesian or polar coordinates.
+    """
+
+    orientation = SubSection(
+        CrystallographicDirection,
+    )
+    rho = Quantity(
+        type=float,
+        unit='meter',
+        description="""
+        Module of polar coordinates
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='nanometer',
+        ),
+    )
+
+    theta = Quantity(
+        type=float,
+        unit='degree',
+        description="""
+        Angle of the miscut direction relative to the main orientation
+        given in this section.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
+    )
+
+
 class Miscut(ArchiveSection):
     """
     The miscut in a crystalline substrate refers to
@@ -482,31 +653,9 @@ class Miscut(ArchiveSection):
         ),
         unit='deg',
     )
-    hkl_reciprocal = Quantity(
-        type=str,
-        description="""Orientation of the miscut (or offcut).
-        The reciprocal lattice vector associated with the family of lattice planes is
-        OH = h a* + k b* + l c*, where a*, b*, c* are the reciprocal lattice basis
-        vectors. OH is perpendicular to the family of lattice planes and OH = 1/d where
-        d is the lattice spacing of the family.""",
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.StringEditQuantity,
-            label='Miscut Reciprocal Indices (hkl)',
-        ),
-    )
-    hkl_direct = Quantity(
-        type=str,
-        description="""Orientation of the miscut (or offcut).
-        In three-dimensional space, the direction passing through the origin and the
-        lattice nodes nh,nk,nl, where n is an integer, has direction indices [hkl].
-        This corresponds to taking the coordinates of the first lattice node on that
-        direction after the origin as direction indices.
-        When a primitive unit cell is used, the direction indices are all integer;
-        they may instead be rational when a centred unit cell is adopted.""",
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.StringEditQuantity,
-            label='Miscut Direct Orientation [hkl]',
-        ),
+    miscut_orientation = SubSection(
+        MiscutOrientation,
+        description='The orientation of the miscut (or offcut).',
     )
     directions_image = Quantity(
         type=str,
@@ -580,40 +729,14 @@ class SubstrateCrystalProperties(CrystalProperties):
             component=ELNComponentEnum.EnumEditQuantity,
         ),
     )
-    hkl_reciprocal = Quantity(
-        type=str,
-        description="""The reciprocal lattice vector associated with the family of
-        lattice planes is OH = h a* + k b* + l c*, where a*, b*, c* are the reciprocal
-        lattice basis vectors. OH is perpendicular to the family of lattice planes and
-        OH = 1/d where d is the lattice spacing of the family.""",
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.StringEditQuantity,
-            label='Reciprocal Indices (hkl)',
-        ),
-    )
-    hkl_direct = Quantity(
-        type=str,
-        description="""In three-dimensional space, the direction passing through the
-        origin and the lattice nodes nh,nk,nl, where n is an integer, has direction
-        indices [hkl]. This corresponds to taking the coordinates of the first lattice
-        node on that direction after the origin as direction indices.
-        When a primitive unit cell is used, the direction indices are all integer;
-        they may instead be rational when a centred unit cell is adopted.""",
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.StringEditQuantity,
-            label='Direct Orientation [hkl]',
-        ),
+    surface_orientation = SubSection(
+        section_def=CrystallographicDirection,
+        description='The orientation of the substrate surface.',
     )
     miscut = SubSection(
         section_def=Miscut,
         description="""
-        Miscut of the substrate along the reference orientation.
-        """,
-    )
-    miscut_perpendicular = SubSection(
-        section_def=Miscut,
-        description="""
-        Miscut of the substrate along a direction perpendicular to the reference.
+        Miscut of the substrate.
         """,
     )
 
