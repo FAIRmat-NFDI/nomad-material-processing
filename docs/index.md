@@ -2,21 +2,29 @@
 
 Welcome to the official documentation for the **NOMAD-materials-processing Plugin**! This plugin provides NOMAD schemas, readers, and parsers for data of materials science synthesis processes in alignment with the FAIR (Findable, Accessible, Interoperable, and Reusable) principles. It serves as a community or standard plugin, offering commonly used schemas and classes/sections for materials processing data that can be shared across a community.
 
-## Supported Measurement Techniques
+## Supported Materials Processing Techniques
 
 Currently, this plugin supports the following materials processing techniques:
 
-- **Vapor deposition**:
+- **Synthesis from Gas Phase**:
+  Supports different *Vapor Deposition* methods:
+  ```bash
+  Vapor Deposition
+  ├── Phyiscal Vapor Deposition (PVD)
+  │       ├── Molecular Beam Epitaxy (MBE)
+  │       ├── Pulsed Laser Deposition (PLD)
+  │       ├── Sputtering
+  │       └── Thermal Evaporation
+  │
+  └── Chemical Vapor Deposition (CVD)
+          └── Metalorganic Vapor Phase Epitaxy (MOVPE)
+  ```
 
-  Supports Physical Vapor Deposition (PVD) and Chemical Vapor Deposition (CVD) based processes such as:
-  Molecular Beam Epitaxy (MBE), Pulsed Laser Deposition (PLD), Sputtering, Thermal Evaporation, and Metalorganic Vapor Phase Epitaxy (MOVPE)
-
-- **wet chemistry**:
+- **Synthesis from Solution**:
 
   Supports Solution Preparation
 
-Additional materials processing techniques are actively being developed and will be included soon, including:
-Bulk Crystal growth (Synthesis from the melt), Polymerization, ...(what is coming???)
+Additional materials processing techniques are actively being developed and will be included soon, including Synthesis from the melt (Bulk Crystal growth), Synthesis by Assembly (e.g. Polymerization).
 
 Stay tuned for updates as more methods become available!
 
