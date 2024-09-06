@@ -1,8 +1,8 @@
 site_name: Documentation
 site_description: |
-  The documentation for NOMAD plugin nomad-materials-processing.
+  The documentation for NOMAD plugin nomad-material-processing.
 site_author: The NOMAD Authors
-repo_url: https://github.com/FAIRmat-NFDI/nomad-materials-processing
+repo_url: https://github.com/FAIRmat-NFDI/nomad-material-processing
 edit_uri: ""
 
 nav:
@@ -13,7 +13,7 @@ nav:
   - How-To Guides:
     - Install this Plugin: how_to/install.md
     - Use this Plugin: how_to/use_this_plugin.md
-    - Develop this Plugin: how_to/develop.md
+    - Contribute to this Plugin: how_to/develop.md
   - References: reference/references.md
   - Tutorials: tutorial/tutorial.md
   - Contact: contact.md
