@@ -642,6 +642,13 @@ class VaporDepositionStep(ActivityStep):
             component='BoolEditQuantity',
         ),
     )
+    step_index = Quantity(
+        type=str,
+        description='The sequential index of the step in the growth process',
+        a_eln={
+            'component': 'StringEditQuantity',
+        },
+    )
     duration = Quantity(
         type=float,
         unit='second',

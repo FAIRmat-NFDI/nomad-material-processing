@@ -19,13 +19,15 @@ from typing import (
     TYPE_CHECKING,
 )
 
+from nomad.datamodel.data import EntryData
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
     ELNComponentEnum,
+    SectionProperties,
 )
-from nomad.datamodel.metainfo.basesections import (
-    PubChemPureSubstanceSection,
-    PureSubstanceComponent,
+from nomad.datamodel.metainfo.plot import PlotSection
+from nomad.datamodel.metainfo.workflow import (
+    Link,
 )
 from nomad.metainfo import (
     Quantity,
@@ -34,16 +36,18 @@ from nomad.metainfo import (
     SubSection,
 )
 
-from nomad_material_processing.general import (
-    TimeSeries,
+from nomad_material_processing.vapor_deposition.cvd.general import (
+    CVDSource,
+    CVDStep,
+    Rotation,
 )
 from nomad_material_processing.vapor_deposition.general import (
-    EvaporationSource,
-    GasFlow,
-    MolarFlowRate,
+    ChamberEnvironment,
     Pressure,
+    SampleParameters,
+    SubstrateHeater,
     Temperature,
-    VaporDepositionSource,
+    VaporDeposition,
     VolumetricFlowRate,
 )
 
@@ -57,6 +61,155 @@ m_package = SchemaPackage()
 configuration = config.get_plugin_entry_point(
     'nomad_material_processing.vapor_deposition.cvd:movpe_schema',
 )
+
+
+class FilamentTemperature(Temperature):
+    """
+    Temperature of a heated element used to keep the substrate hot.
+    """
+
+    value = Quantity(
+        type=float,
+        unit='kelvin',
+        a_eln=ELNAnnotation(
+            defaultDisplayUnit='celsius',
+        ),
+        shape=['*'],
+    )
+    set_value = Quantity(
+        type=float,
+        description='The set value(s) (i.e. the intended values) set.',
+        shape=['*'],
+        unit='kelvin',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='celsius',
+            label='Set value',
+        ),
+    )
+
+
+class MovpeSampleParameters(SampleParameters):
+    filament_temperature = SubSection(
+        section_def=FilamentTemperature,
+    )
+
+
+class MovpeChamberEnvironment(ChamberEnvironment):
+    uniform_gas_flow_rate = SubSection(
+        section_def=VolumetricFlowRate,
+    )
+    pressure = SubSection(
+        section_def=Pressure,
+    )
+    throttle_valve = SubSection(
+        section_def=Pressure,
+    )
+    rotation = SubSection(
+        section_def=Rotation,
+    )
+    heater = SubSection(
+        section_def=SubstrateHeater,
+    )
+
+
+class StepMovpe(CVDStep, PlotSection):
+    """
+    Growth step for MOVPE
+    """
+
+    m_def = Section(
+        a_eln=None,
+    )
+    sample_parameters = SubSection(
+        section_def=MovpeSampleParameters,
+        repeats=True,
+    )
+    sources = SubSection(
+        section_def=CVDSource,
+        repeats=True,
+    )
+    environment = SubSection(
+        section_def=MovpeChamberEnvironment,
+    )
+
+
+class Movpe(VaporDeposition, EntryData):
+    """
+    Metal-organic Vapor Phase Epitaxy (MOVPE) is a chemical vapor deposition method
+    used to produce single- or multi-layered thin films.
+    """
+
+    m_def = Section(
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                order=[
+                    'name',
+                    'method',
+                    'datetime',
+                    'end_time',
+                    'duration',
+                ],
+            ),
+        ),
+        label_quantity='lab_id',
+    )
+    method = Quantity(
+        type=str,
+        default='MOVPE',
+    )
+    steps = SubSection(
+        section_def=StepMovpe,
+        repeats=True,
+    )
+
+    def normalize(self, archive, logger):
+        """
+        The workflow of the Movpe process archive is populated
+        with the input and output links.
+        """
+        archive.workflow2 = None
+        super().normalize(archive, logger)
+        if self.steps is not None:
+            inputs = []
+            outputs = []
+            for step in self.steps:
+                if step.sample_parameters is not None:
+                    for sample in step.sample_parameters:
+                        if sample.layer is not None:
+                            outputs.append(
+                                Link(
+                                    name=f'{sample.layer.name}',
+                                    section=sample.layer.reference,
+                                )
+                            )
+                        if sample.substrate is not None:
+                            outputs.append(
+                                Link(
+                                    name=f'{sample.substrate.name}',
+                                    section=sample.substrate.reference,
+                                )
+                            )
+                        if (
+                            sample.substrate is not None
+                            and sample.substrate.reference is not None
+                        ):
+                            if hasattr(
+                                getattr(sample.substrate.reference, 'substrate'),
+                                'name',
+                            ):
+                                inputs.append(
+                                    Link(
+                                        name=f'{sample.substrate.reference.substrate.name}',
+                                        section=getattr(
+                                            sample.substrate.reference.substrate,
+                                            'reference',
+                                            None,
+                                        ),
+                                    )
+                                )
+            archive.workflow2.outputs.extend(set(outputs))
+            archive.workflow2.inputs.extend(set(inputs))
 
 
 m_package.__init_metainfo__()

@@ -492,7 +492,7 @@ class CVDStep(VaporDepositionStep):
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
-        The normalizer for the `PVDStep` class.
+        The normalizer for the `CVDStep` class.
 
         Args:
             archive (EntryArchive): The archive containing the section that is being
@@ -509,8 +509,8 @@ class PhysicalVaporDeposition(VaporDeposition):
     at the surface. [database_cross_reference: https://orcid.org/0000-0002-0640-0422]
 
     Synonyms:
-     - PVD
-     - physical vapor deposition
+     - CVD
+     - chemical vapor deposition
     """
 
     m_def = Section(
@@ -530,7 +530,7 @@ class PhysicalVaporDeposition(VaporDeposition):
         description="""
         The steps of the deposition process.
         """,
-        section_def=PVDStep,
+        section_def=CVDStep,
         repeats=True,
     )
 
