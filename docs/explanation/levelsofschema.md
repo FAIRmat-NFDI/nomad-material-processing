@@ -101,3 +101,6 @@ Moving on with the description of the scientific data model contained in this pl
 - solution:
   - general.py
   - utils.py
+
+
+!!! todo: add description of each module
