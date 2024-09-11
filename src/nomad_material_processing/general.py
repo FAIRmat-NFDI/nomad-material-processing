@@ -1265,4 +1265,18 @@ class CleaningRecipe(Cleaning, Recipe, EntryData):
     )
 
 
+class Sample(CompositeSystem, EntryData):
+    """
+    Contains information about the sample id, geometry, and reference to the material
+    system under `components` sub-section.
+    """
+
+    components = CompositeSystem.components.m_copy()
+    components.section_def = SystemComponent
+
+    geometry = SubSection(
+        section_def=Geometry,
+    )
+
+
 m_package.__init_metainfo__()
