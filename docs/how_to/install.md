@@ -16,7 +16,7 @@ You need to modify the `plugins.txt` file and add the following lines:
 nomad-material-processing
 ```
 
-This will add the latest version of the NOMAD-Measurements Plugin to your NOMAD Oasis image.
+This will add the latest version of the NOMAD-material-processing Plugin to your NOMAD Oasis image.
 If you want to add a specific version of the plugin you will need to provide the specific version tag or commit sha, for example:
 
 ```
