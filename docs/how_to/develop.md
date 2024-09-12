@@ -6,7 +6,7 @@ The NOMAD-material-processing plugin represents a community plugin to share comm
     open issue
     create pull request
 
-# How to Contribute to the NOMAD Measurements Plugin
+# How to Contribute to the NOMAD-material-processing Plugin
 
 The **NOMAD-material-processing plugin** is a community-driven effort aimed at providing shared data schemas, readers, and parsers for materials processing data. We encourage contributions from all users to help enhance and expand the plugin, making it more robust and broadly applicable. If you have any questions or need assistance, feel free to [contact us](../contact.md) — we’re here to help you get involved!
 
