@@ -58,11 +58,20 @@ A very general module containing several categories of classes:
 - `Miscut` another subsection of  `Substrate` to specify the miscut of the orientation of the surface in terms of angular deviation toward crystallographic directions.
 - `CrystalProperties` and `ElectronicProperties`, found as subsection of sample entities that need these parameters.
 - simple activities performed on samples: `Etching`, `Annealing`, `Cleaning`. They also include a `Recipe` that can be referenced inside to avoid repetition for routinary tasks.
-
+- `TimeSeries` a general class that shapes every kind of parameters logged along a time window. The quantities referring to the measured parameter are `value` and `time`. `set_value` and `set_time` can also be specified, as they usually differ from the measured ones. Several subclasses inheriting from this one can be found nested in the package.
 
 #### nomad_material_processing.vapor_deposition.general
 
+The classes and now specified toward a specified group of techniques. The master class in this module is `VaporDeposition`, inheriting from `SampleDeposition`.
 
+The other classes found here are specifying the subsections found in the steps of the `VaporDeposition` process.
+`VaporDepositionStep` contains three subsections allowing to describe the parameters usually recorded during an experiment:
+
+- `VaporDepositionSource` the metadata on which kind of source will bring the raw material in the recation chamber. This is a list because many sources can be present at the same time.
+- `SampleParameter` this subsection hosts the references to the `ThinFilm` deposited and the `ThinFilmStack` or `Substrate` used as support of the deposition. This subsection is also used to record sample-specific parameters in the process, such as tempearture, or growth rate. This is a list because many samples can be grown at the same time.
+- `ChamberEnvironment` collects the metadata connected to the whole reaction chamber that cannot be linked to one single sample.
+
+These three subsections are the backbone of the `VaporDeposition` process and they are usually inherited whenever a specific experiment requires to extend them.
 
 #### nomad_material_processing.vapor_deposition.cvd
 #### nomad_material_processing.vapor_deposition.cvd.general
