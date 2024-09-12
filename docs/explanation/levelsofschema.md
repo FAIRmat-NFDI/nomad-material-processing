@@ -1,8 +1,8 @@
-## Levels of schemas in NOMAD
+# Levels of schemas in NOMAD
 
 It is important to understand the structure and relationship of different types of schemas in NOMAD. Here we break down the levels of schemas and how they interact. For detailed information, please visit the [official NOMAD documentation](https://nomad-lab.eu/prod/v1/staging/docs/explanation/data.html#schema).
 
-### Types of Schemas in NOMAD
+## Types of Schemas in NOMAD
 
 NOMAD categorizes its schemas into multiple levels, each serving distinct purposes while ensuring consistent data organization and interoperability:
 
@@ -21,7 +21,7 @@ FAIRmat's Area A for synthesis data provides two community plugins, NOMAD Measur
 
 4. **User Defined Sections**: These schemas are developed by users and are specific to a method or an instrument, a lab, or a full institute. They build upon the base sections and community plugins, tailoring them to meet specific research needs. In this level, users can define more specialized structures that directly reflect the specific characteristics of their experiments or simulations.
 
-### How These Schemas Relate to Each Other
+## How These Schemas Relate to Each Other
 
 The relationships between these schema levels can be visualized as a layered model:
 
@@ -31,7 +31,7 @@ The relationships between these schema levels can be visualized as a layered mod
 
 - **User Schemas**: Inherit and specialize community plugins sections, if availbale, or the base sections according to specific requirements.
 
-### Encouraged Usage
+## Encouraged Usage
 
 NOMAD encourages users to first explore the available community/standard plugins and base sections before developing their own schemas. By doing so, they can maximize interoperability and benefit from established structures, while still retaining the flexibility to adapt the schema to their unique needs.
 
