@@ -12,7 +12,17 @@ This guide will walk you through the different ways to use the NOMAD-material-pr
 
 ## Using "Built-in Schemas"
 
-In this section, we will demonstrate how to use the standard, built-in schemas provided by the plugin without any specialization. These schemas can be directly instantiated to create entries in NOMAD.
+In this section, we will demonstrate how to use the standard, built-in **entry** schemas
+provided by the plugin without any specialization. These schemas can be directly
+instantiated to create entries in a NOMAD Oasis.
+
+1. Start a new upload and click on the **CREATE FROM SCHEMA** button.
+2. Select the schema from the drop-down menu, add the name for the entry, and
+hit **CREATE**.
+
+    <img src="../assets/use-built-in-schema-1.png" alt="How to use built-in schemas: picture 1" width="80%"/>
+
+    <img src="../assets/use-built-in-schema-2.png" alt="How to use built-in schemas: picture 2" width="80%"/>
 
 ## Inheriting and Specializing Using Custom YAML Schemas
 
