@@ -5,3 +5,6 @@
 
 **subsections** a class can contain some subsection "nested" or "composed" inside it. These classes are not related by inheritance relationship.
 
+**EntryData**
+
+**ArchiveSection**
