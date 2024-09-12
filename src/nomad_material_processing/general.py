@@ -55,6 +55,7 @@ class Geometry(ArchiveSection):
         description='The measure of the amount of space occupied in 3D space.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
+            defaultDisplayUnit='millimeter ** 3',
         ),
         unit='meter ** 3',
     )
