@@ -90,20 +90,20 @@ nomad-material-processing/
 
 Each method has a dedicated [module](https://docs.python.org/3/tutorial/modules.html), i. e., a python file.
 
-- general.py
-- vapor deposition:
-  - cvd:
-    - general.py
-    - movpe.py
-  - pvd:
-    - general.py
-    - mbe.py
-    - pld.py
-    - sputtering.py
-    - thermal.py
-- solution:
-  - general.py
-  - utils.py
+#### nomad_material_processing.general
 
+Question: should we go class by class ? ?
 
+#### nomad_material_processing.vapor_deposition
+
+#### nomad_material_processing.vapor_deposition.cvd
+#### nomad_material_processing.vapor_deposition.cvd.general
+#### nomad_material_processing.vapor_deposition.cvd.movpe
+#### nomad_material_processing.vapor_deposition.pvd
+#### nomad_material_processing.vapor_deposition.pvd.general
+#### nomad_material_processing.vapor_deposition.pvd.mbe
+#### nomad_material_processing.vapor_deposition.pvd.pld
+#### nomad_material_processing.vapor_deposition.pvd.sputtering
+#### nomad_material_processing.vapor_deposition.pvd.thermal
+#### nomad_material_processing.solution.general
 !!! todo: add description of each module
