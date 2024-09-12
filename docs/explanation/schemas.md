@@ -109,12 +109,20 @@ Classes dedicated to the Metal-organic Vapor Phase Epitaxy (MOVPE) technique.
 
 ### nomad_material_processing.vapor_deposition.pvd.thermal
 
+
 ### nomad_material_processing.solution.general
 
-`solution.general` module contains the following entry sections (used to create
-NOMAD [entries](https://nomad-lab.eu/prod/v1/docs/reference/glossary.html#entry)):
+The main entry sections in this module are
+[`Solution`](#nomad_material_processingsolutiongeneralsolution) and
+[`SolutionPreparation`](#nomad_material_processing.solution.general.SolutionPreparation) which can
+be used to create NOMAD
+[entries](https://nomad-lab.eu/prod/v1/docs/reference/glossary.html#entry).
+There's a long list of other auxiliary sections supporting these entry section which
+can be accessed in the
+[metainfo browser](https://nomad-lab.eu/prod/v1/oasis/gui/analyze/metainfo/nomad_material_processing)
+by seaching for: `"nomad_material_processing.solution.general"`
 
-#### `Solution`
+#### `nomad_material_processing.solution.general.Solution`
 
 Describes liquid solutions by extending the
 [`CompositeSystem`](https://nomad-lab.eu/prod/v1/docs/howto/customization/base_sections.html#system) with quantities: _pH_, _mass_,
@@ -139,11 +147,12 @@ class Solution(CompositeSystem, EntryData):
     solution_storage: SolutionStorage
 ```
 
-!!! hint
+!!! info
     The _measured_volume_ field is user-defined. By default, the automation in
     `Solution` uses _calculated_volume_, but if _measured_volume_ is provided, it will take
     precedence. This is useful when the final solution volume differs from the sum of its
     component volumes, and should be specified by the user.
+
 The _components_ sub-section, inherited from `CompositeSystem` and re-defined, is used to describe
 a list of components used in the solution. Each of them contributes to the _mass_ and
 _calculated_volume_ of the solution. The component can either nest a
@@ -170,7 +179,6 @@ class SolutionComponent(PureSubstanceComponent):
     molar_concentration: MolarConcentration
 ```
 
-
 `SolutionComponentReference` makes a reference to another `Solution` entry and specifies
 the amount used. Based on this, _solutes_ and _solvents_ of the referenced solution are
 copied over to the first solution. Their mass and volume are adjusted based on the
@@ -191,7 +199,38 @@ combined into one.
 The _solution_storage_ uses `SolutionStorage` section to describe storage conditions
 , i.e., temperature and atmosphere, along with preparation and expiry dates.
 
-#### `SolutionPreparation`
+#### `nomad_material_processing.solution.general.SolutionPreparation`
 
-Extends [`Process`](https://nomad-lab.eu/prod/v1/docs/howto/customization/base_sections.html#process)
-to describe the recipe for solution preparation.
+Describes the steps of solution preparation by extending
+[`Process`](https://nomad-lab.eu/prod/v1/docs/howto/customization/base_sections.html#process).
+Based on the steps added, it also creates a `Solution` entry and references it under the
+_solution_ sub-section.
+
+```py
+class SolutionPreparation(Process, EntryData):
+    solution_name: str
+    solution: SolutionReference
+    step: list[SolutionPreparationStep]
+```
+
+The generated `Solution` entry picks its name from _solution_name_, if specified.
+Otherwise, it will be uniquely named as `"unnamed_solution_{i}"`, where `i` will be an
+integer starting from 0. Currently, the following `SolutionPreparationStep` are defined:
+
+- `AddSolutionComponent`: Adds a `SolutionComponent` or `SolutionComponentReference` to
+_components_ list of the generated `Solution` entry. It also contains a sub-section
+`measurement` which can be used to specify the methodology used for measuring the
+component like pipetting and scaling.
+```py
+class AddSolutionComponent(SolutionPreparationStep):
+    solution_component: Union(
+        SolutionComponent,
+        SolutionComponentReference,
+    )
+    measurement: MeasurementMethodology
+```
+
+- `Agitation`: Specifies the process of agitating the solution. There are more sections
+inheriting this class and describing specific techniques:
+`MechanicalStirring(Agitation)` and `Sonication(Agitation)`.
+
