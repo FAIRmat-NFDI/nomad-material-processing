@@ -12,15 +12,14 @@ Every entry in NOMAD must inherit from `EntryData`, whenever a class is only use
 2. **Base Sections**: These are central to NOMAD's data model and are designed to maintain interoperability between different database entries. The base sections follow an entity-activity model tailored for materials science, capturing essential relationships between key entities like samples, instruments, processes, measurements, analyses, experiments, and simulations. The goal is to provide standardized structures for data representation.
 
 
-	- **Important Note**: Base sections in NOMAD are abstract and should not be instantiated directly. Instead, users must implement these sections in their own schemas (referred to as user schemas) by inheriting from a base section and `nomad.datamodel.EntryData`. Users are strongly encouraged to use the most specialized section available for their use case.
+	!!! Note
+        Base sections in NOMAD are abstract and should not be instantiated directly. Instead, users must implement these sections in their own schemas (referred to as user schemas) by inheriting from a base section and `nomad.datamodel.EntryData`. Users are strongly encouraged to use the most specialized section available for their use case.
 
 
 3. **Community/Standard Plugins**: FAIRmat offers standardized schemas for common methods, processes, and instruments that are generalized and not tied to any specific lab or setup. These schemas are derived from recurring patterns identified across user schemas. Users can inherit from these standard plugins in a similar manner as the base sections, further specializing them as needed while still maintaining a consistent structure for broader community use.
 FAIRmat's Area A for synthesis data provides two community plugins, NOMAD Measurements and NOMAD Materials Processing.
 
 4. **User Defined Sections**: These schemas are developed by users and are specific to a method or an instrument, a lab, or a full institute. They build upon the base sections and community plugins, tailoring them to meet specific research needs. In this level, users can define more specialized structures that directly reflect the specific characteristics of their experiments or simulations.
-
-
 
 ### How These Schemas Relate to Each Other
 
@@ -43,18 +42,20 @@ In next documentation sections, an overview of the available methods will be pro
 ![Levels of schema](../assets/levelsschema.png)
 
 
-## Community/Standard Schemas
+## NOMAD Material Processing: a Community plugin
 
 The NOMAD Material Processing Plugin contains schemas for different synthesis methods.
 An overview of the package structure is shown below.
 
-There are some technical aspects of the package that should be mentioned but they are not crucial for the data model understanding itself.
+### Technical description
 
-- it is an `src` structured package, i. e., the source code is contained within the `src` folder instead of being spread directly within the root folder.
-- the package structure is defined by the presence of `__init__.py` files. Inside each of these files, the **entry points** of the plugin are specifiec.
-- the package is pip installable. The `project.toml` file defines what will be installed, the dependencies, further details. The **entry points** that will be installed are listed in thsi file.
+There are some technical aspects of the package that should be mentioned but they are not crucial for the data model understanding itself:
 
-```
+- It is structured according to the [src layout](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/).
+- It is a [regular Python package](https://docs.python.org/3/reference/import.html#regular-packages), i. e., the structure is defined by the presence of `__init__.py` files. Each of these files contains one or multiple [entry points](https://nomad-lab.eu/prod/v1/staging/docs/howto/plugins/plugins.html#plugin-entry-points). These are used to load a portion of the code within your NOMAD through a specific section in the `nomad.yaml` file.
+- It is pip installable. The `project.toml` file defines what will be installed, the dependencies, further details. The **entry points** included are listed in this file.
+
+```text
 nomad-material-processing/
 ├── docs
 ├── pyproject.toml
@@ -85,7 +86,9 @@ nomad-material-processing/
 └── tests
 ```
 
-Moving on with the description of the scientific data model contained in this plugin, each method has a dedicated module, i. e., a python file.
+### Data model description
+
+Each method has a dedicated [module](https://docs.python.org/3/tutorial/modules.html), i. e., a python file.
 
 - general.py
 - vapor deposition:
