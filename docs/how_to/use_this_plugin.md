@@ -28,6 +28,24 @@ hit **CREATE**.
 
 Here, we will guide you through how to extend and specialize the built-in schemas using custom YAML schemas. This approach allows you to tailor the schema to your specific requirements while still leveraging the standardized base provided by the plugin.
 
+The schemas found in the plugin are general base sections and they go more and more specific in several techniques, however, they can be limiting in case of your own requirements.
+
+Luckily, NOMAD provides a way of adding technique-specific behavior to the ELNs: YAML schemas - config file containing schemas added to the upload
+
+Using a `Solution` example, we will show how to specialize a class with a YAML schema.
+
+We will use a custom YAML schema to define the following sections:
+* list here the section .......................
+
+This leads to an improvement over the initial class
+
+place here a YAML file  ....................... .......................
+
+You can learn in detail how to create your own YAML schemas in our previous [tutorial 8](https://youtu.be/5VXGZNlz9rc?feature=shared) and [tutorial 13](https://github.com/FAIRmat-NFDI/AreaA-Examples/tree/main/tutorial13/part2).
+You can navigate in the [tutorial 8](https://github.com/FAIRmat-NFDI/AreaA-Examples/tree/main/tutorial8) repository
+to see some other examples of YAML files that inherit and extend existing classes.
+
+
 ## Inheriting and Specializing Using Python Schema Plugins
 
 For users needing more advanced customization, we will show you how to inherit and specialize schemas using Python schema plugins. This method allows for dynamic, programmatic extensions of the standard schemas to accommodate complex use cases.
