@@ -101,20 +101,25 @@ dedicated to the Metal-organic Vapor Phase Epitaxy (MOVPE) technique.
 
 ### Physical Vapor Deposition (PVD)
 The `nomad_material_processing.vapor_deposition.pvd.general` module contains classes
-describing a general Physical Vapor Deposition (PVD) process.
+describing a general Physical Vapor Deposition (PVD) process. This adopts the three
+general concepts from the vapor deposition above (the chamber, the sources, and the
+ substrates) and specializes them for various PVD techniques:
 
+#### Pulsed Laser Deposition (PLD)
+The `nomad_material_processing.vapor_deposition.pvd.pld` module adds a specialized laser
+source with its corresponding parameters.
 
-### Molecular Beam Epitaxy (MBE)
-`nomad_material_processing.vapor_deposition.pvd.mbe`
+#### Sputtering
+The `nomad_material_processing.vapor_deposition.pvd.sputtering` module adds a specialized
+sputtering source with its corresponding parameters.
 
-### Pulsed Laser Deposition (PLD)
-`nomad_material_processing.vapor_deposition.pvd.pld`
+#### Thermal Evaporation
+The `nomad_material_processing.vapor_deposition.pvd.thermal` module adds a specialized
+thermal evaporation source with its corresponding parameters.
 
-### Sputtering
-`nomad_material_processing.vapor_deposition.pvd.sputtering`
-
-### Thermal Evaporation
-`nomad_material_processing.vapor_deposition.pvd.thermal`
+#### Molecular Beam Epitaxy (MBE)
+The `nomad_material_processing.vapor_deposition.pvd.mbe` module uses the thermal evaporation
+source and also adds a plasma source.
 
 
 ### nomad_material_processing.solution.general
