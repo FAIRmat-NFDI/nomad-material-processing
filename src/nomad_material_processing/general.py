@@ -657,7 +657,7 @@ class Miscut(ArchiveSection):
         The orientation of the miscut (or offcut) in Cartesian coordinates.""",
     )
     polar_miscut = SubSection(
-        section_def=CartesianMiscut,
+        section_def=PolarMiscut,
         description="""
         The orientation of the miscut (or offcut) in Cartesian coordinates.""",
     )
