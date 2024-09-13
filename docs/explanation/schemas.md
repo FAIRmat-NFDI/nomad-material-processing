@@ -113,7 +113,7 @@ Classes dedicated to the Metal-organic Vapor Phase Epitaxy (MOVPE) technique.
 ### nomad_material_processing.solution.general
 
 The main entry sections in this module are
-[`Solution`](#nomad_material_processingsolutiongeneralsolution) and
+[`Solution`](#nomad_material_processing.solution.general.Solution) and
 [`SolutionPreparation`](#nomad_material_processing.solution.general.SolutionPreparation) which can
 be used to create NOMAD
 [entries](https://nomad-lab.eu/prod/v1/docs/reference/glossary.html#entry).
