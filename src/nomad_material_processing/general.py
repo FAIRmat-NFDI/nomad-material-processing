@@ -660,7 +660,7 @@ class Miscut(ArchiveSection):
     polar_miscut = SubSection(
         section_def=PolarMiscut,
         description="""
-        The orientation of the miscut (or offcut) in Cartesian coordinates.""",
+        The orientation of the miscut (or offcut) in polar coordinates.""",
     )
     directions_image = Quantity(
         type=str,
