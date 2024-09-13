@@ -546,90 +546,23 @@ class CrystallographicDirection(ArchiveSection):
     )
 
 
-class MiscutOrientation(ArchiveSection):
+class ProjectedMiscutOrientation(CrystallographicDirection):
     """
-    This direction can be described by a crystallographic direction
-    [hkl], which indicates the direction of the tilt relative to the crystal axes.
+    The overall miscut angle is the total angular deviation
+    from the primary plane of the substrate.
+    However, this overall miscut can be described as having components projected onto
+    two perpendicular crystallographic directions that lie in the primary surface plane.
+    The angular miscut is defined as a tilt (in degree) along these two directions.
 
-    The miscut might be directed in a non-pure crystallographic direction.
-    In this case two components must be specified,
-    either in Cartesian or polar coordinates.
-    """
-
-
-class CartesianMiscutOrientation(MiscutOrientation):
-    """
-    This direction can be described by a crystallographic direction
-    [hkl], which indicates the direction of the tilt relative to the crystal axes.
-
-    The miscut might be directed in a non-pure crystallographic direction.
-    In this case two components must be specified,
-    either in Cartesian or polar coordinates.
-    """
-
-    orientation = SubSection(
-        section_def=CrystallographicDirection,
-    )
-    orientation_perp = SubSection(
-        section_def=CrystallographicDirection,
-        description='A direction perpendicular to the first given',
-    )
-
-
-class PolarMiscutOrientation(MiscutOrientation):
-    """
-    This direction can be described by a crystallographic direction
-    [hkl], which indicates the direction of the tilt relative to the crystal axes.
-
-    The miscut might be directed in a non-pure crystallographic direction.
-    In this case two components must be specified,
-    either in Cartesian or polar coordinates.
-    """
-
-    orientation = SubSection(
-        section_def=CrystallographicDirection,
-    )
-    rho = Quantity(
-        type=float,
-        unit='meter',
-        description="""
-        Module of polar coordinates
-        """,
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.NumberEditQuantity,
-            defaultDisplayUnit='nanometer',
-        ),
-    )
-
-    theta = Quantity(
-        type=float,
-        unit='degree',
-        description="""
-        Angle of the miscut direction relative to the main orientation
-        given in this section.
-        """,
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.NumberEditQuantity,
-        ),
-    )
-
-
-class Miscut(ArchiveSection):
-    """
-    The miscut in a crystalline substrate refers to
-    the intentional deviation from a specific crystallographic orientation,
-    commonly expressed as the angular displacement of a crystal plane.
-
-    It can either be specified as directed along one of the crystallographic axes or
-    in a specific direction in the crystal defined by a main direction and the
-    perpendicular one.
+    The projected miscut orientation specifies the tilt angle along one
+    crystallographic direction.
     """
 
     angle = Quantity(
         type=float,
         description="""
         The miscut angle (or offcut angle, or angular displacement offset) toward
-        the crystallographic orientation of the substrate.
+        the specified crystallographic direction.
         """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
@@ -647,9 +580,86 @@ class Miscut(ArchiveSection):
         ),
         unit='deg',
     )
-    miscut_orientation = SubSection(
-        section_def=MiscutOrientation,
-        description='The orientation of the miscut (or offcut).',
+
+
+class CartesianMiscut(ArchiveSection):
+    """
+    The miscut might be directed in a non-pure crystallographic direction.
+    In this case two components must be specified, in Cartesian coordinates.
+
+    If the miscut is directed in a pure crystallographic direction,
+    only one component can be filled in.
+    """
+
+    reference_orientation = SubSection(
+        section_def=ProjectedMiscutOrientation,
+        description='The reference direction of the miscut.',
+    )
+    perpendicular_orientation = SubSection(
+        section_def=ProjectedMiscutOrientation,
+        description='A direction perpendicular to the reference direction.',
+    )
+
+
+class PolarMiscut(ArchiveSection):
+    """
+    This direction can be described by a crystallographic direction
+    [hkl], which indicates the direction of the tilt relative to the crystal axes.
+
+    The miscut might be directed in a non-pure crystallographic direction.
+    In this case two components must be specified,
+    either in Cartesian or polar coordinates.
+    """
+
+    rho = Quantity(
+        type=float,
+        unit='degree',
+        description="""
+        Out-of-plane tilt angle, defined in polar coordinates
+        as a module in the out-of-plane axis.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
+    )
+    theta = Quantity(
+        type=float,
+        unit='degree',
+        description="""
+        In-plane angle of the miscut toward the reference orientation.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
+    )
+    reference_orientation = SubSection(
+        section_def=CrystallographicDirection,
+        description='The reference direction of the miscut.',
+    )
+
+
+class Miscut(ArchiveSection):
+    """
+    The miscut in a crystalline substrate refers to
+    the intentional deviation from a specific crystallographic orientation,
+    commonly expressed as the angular displacement of a crystal plane.
+
+    The overall miscut angle is the total angular deviation
+    from the primary plane of the substrate.
+    However, this overall miscut can be described as having components projected onto
+    two perpendicular crystallographic directions that lie in the primary surface plane.
+    The angular miscut is defined as a tilt (in degree) along these two directions.
+    """
+
+    cartesian_miscut = SubSection(
+        section_def=CartesianMiscut,
+        description="""
+        The orientation of the miscut (or offcut) in Cartesian coordinates.""",
+    )
+    polar_miscut = SubSection(
+        section_def=CartesianMiscut,
+        description="""
+        The orientation of the miscut (or offcut) in Cartesian coordinates.""",
     )
     directions_image = Quantity(
         type=str,
