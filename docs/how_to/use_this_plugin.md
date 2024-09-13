@@ -32,19 +32,61 @@ The schemas found in the plugin are general base sections and they go more and m
 
 Luckily, NOMAD provides a way of adding technique-specific behavior to the ELNs: YAML schemas - config file containing schemas added to the upload
 
-Using a `Solution` example, we will show how to specialize a class with a YAML schema.
+Using a `SolutionPreparation` example, we show how to specialize a class with a YAML schema.
+Two quantities, namely `initial_temperature` and `final_temperature` are added to `AddSolutionComponent` class, and `SolutionPreparation` is customized with this new class in the `steps` subsection.
+We use a custom YAML schema to define the following sections:
 
-We will use a custom YAML schema to define the following sections:
-* list here the section .......................
+- `SolutionPreparation`
+- `AddSolutionComponent`
 
 This leads to an improvement over the initial class
 
-place here a YAML file  ....................... .......................
+```yaml
+definitions:
+  name: 'Solution customization'
+  sections:
+    MyAddSolutionComponent:
+      m_annotations:
+        eln:
+          properties:
+            order:
+              - 'name'
+              - 'start_time'
+              - 'duration'
+              - 'comment'
+              - 'solution_component'
+      base_sections:
+        - nomad_material_processing.solution.general.AddSolutionComponent
+      quantities:
+        initial_temperature:
+          type: np.float64
+          unit: celsius
+          description: "initial temperature set for ramp"
+          m_annotations:
+            eln:
+              component: NumberEditQuantity
+              defaultDisplayUnit: celsius
+        final_temperature:
+          type: np.float64
+          unit: celsius
+          description: "final temperature set for ramp"
+          m_annotations:
+            eln:
+              component: NumberEditQuantity
+              defaultDisplayUnit: celsius
+    MySolutionPreparation:
+      base_sections:
+        - nomad_material_processing.solution.general.Solution
+        - nomad.datamodel.data.EntryData
+      sub_sections:
+        steps:
+          repeats: True
+          section: '#/MyAddSolutionComponent'
+```
 
 You can learn in detail how to create your own YAML schemas in our previous [tutorial 8](https://youtu.be/5VXGZNlz9rc?feature=shared) and [tutorial 13](https://github.com/FAIRmat-NFDI/AreaA-Examples/tree/main/tutorial13/part2).
 You can navigate in the [tutorial 8](https://github.com/FAIRmat-NFDI/AreaA-Examples/tree/main/tutorial8) repository
 to see some other examples of YAML files that inherit and extend existing classes.
-
 
 ## Inheriting and Specializing Using Python Schema Plugins
 
