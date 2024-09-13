@@ -26,9 +26,6 @@ from nomad.datamodel.metainfo.annotations import (
     SectionProperties,
 )
 from nomad.datamodel.metainfo.plot import PlotSection
-from nomad.datamodel.metainfo.workflow import (
-    Link,
-)
 from nomad.metainfo import (
     Quantity,
     SchemaPackage,
@@ -48,7 +45,6 @@ from nomad_material_processing.vapor_deposition.general import (
     SampleParameters,
     SubstrateHeater,
     Temperature,
-    VaporDeposition,
     VolumetricFlowRate,
 )
 

@@ -27,7 +27,6 @@ from nomad.datamodel.metainfo.basesections import (
     PubChemPureSubstanceSection,
     PureSubstanceComponent,
 )
-
 from nomad.metainfo import (
     Quantity,
     SchemaPackage,
@@ -43,15 +42,13 @@ from nomad_material_processing.vapor_deposition.general import (
     GasFlow,
     MolarFlowRate,
     Pressure,
-    Temperature,
-    VaporDepositionSource,
-    VolumetricFlowRate,
-    VaporDeposition,
-    VaporDepositionStep,
-    EvaporationSource,
     SampleParameters,
+    Temperature,
+    VaporDeposition,
+    VaporDepositionSource,
+    VaporDepositionStep,
+    VolumetricFlowRate,
 )
-
 
 if TYPE_CHECKING:
     from nomad.datamodel.datamodel import (
