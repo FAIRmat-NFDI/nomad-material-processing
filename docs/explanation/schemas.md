@@ -46,9 +46,9 @@ nomad-material-processing/
 
 Each method has a dedicated [module](https://docs.python.org/3/tutorial/modules.html), i. e., a python file.
 
-### nomad_material_processing.general
+### General
 
-A very general module containing several categories of classes:
+The `nomad_material_processing.general` module contains several general categories of classes:
 
 - an abstract process class `SampleDeposition` that is inherited in the specific processes such as MOVPE, MBE, PLD, etc.
 - `Substrate` and `CrystallineSubstrate` entities, the support used in `SampleDeposition` activities.
@@ -60,9 +60,10 @@ A very general module containing several categories of classes:
 - simple activities performed on samples: `Etching`, `Annealing`, `Cleaning`. They also include a `Recipe` that can be referenced inside to avoid repetition for routinary tasks.
 - `TimeSeries` a general class that shapes every kind of parameters logged along a time window. The quantities referring to the measured parameter are `value` and `time`. `set_value` and `set_time` can also be specified, as they usually differ from the measured ones. Several subclasses inheriting from this one can be found nested in the package.
 
-### nomad_material_processing.vapor_deposition.general
+### Vapor Deposition
 
-The classes and now specified toward a group of techniques. The master class in this module is `VaporDeposition`, inheriting from `SampleDeposition`.
+The `nomad_material_processing.vapor_deposition.general` module contains classes describing
+a general vapor deposition process. The master class in this module is `VaporDeposition`, inheriting from `SampleDeposition`.
 
 The other classes found here are specifying the subsections found in the steps of the `VaporDeposition` process.
 `VaporDepositionStep` contains three subsections allowing to describe the parameters usually recorded during an experiment:
@@ -74,9 +75,9 @@ This class is in turn composed by three dinstinct elements, namely the `Componen
 
 These three subsections are the backbone of the `VaporDeposition` process and they are usually inherited whenever a specific experiment requires to extend them.
 
-### nomad_material_processing.vapor_deposition.cvd.general
+### Chemical Vapor Deposition
 
-This module contains specifications of `VaporDepositionSource` and `TimeSeries` commonly adopted in CVD techniques:
+The `nomad_material_processing.vapor_deposition.cvd.general` module contains specifications of `VaporDepositionSource` and `TimeSeries` commonly adopted in CVD techniques:
 
 Sources for CVD are inheriting from `CVDSource`, that is in turn a `VaporDepositionSource`.
 
@@ -93,21 +94,27 @@ Sources for CVD are inheriting from `CVDSource`, that is in turn a `VaporDeposit
 - `PushPurgeGasFlow` contains two `VolumetricFlowRate` subsections that record the source and drain fluxes of the carries gas in the chamber.
 
 
-### nomad_material_processing.vapor_deposition.cvd.movpe
+### Metal-organic Vapor Phase Epitaxy (MOVPE)
 
-Classes dedicated to the Metal-organic Vapor Phase Epitaxy (MOVPE) technique.
+The `nomad_material_processing.vapor_deposition.cvd.movpe` module contains classes
+dedicated to the Metal-organic Vapor Phase Epitaxy (MOVPE) technique.
 
-### nomad_material_processing.vapor_deposition.pvd
+### Physical Vapor Deposition (PVD)
+The `nomad_material_processing.vapor_deposition.pvd.general` module contains classes
+describing a general Physical Vapor Deposition (PVD) process.
 
-### nomad_material_processing.vapor_deposition.pvd.general
 
-### nomad_material_processing.vapor_deposition.pvd.mbe
+### Molecular Beam Epitaxy (MBE)
+`nomad_material_processing.vapor_deposition.pvd.mbe`
 
-### nomad_material_processing.vapor_deposition.pvd.pld
+### Pulsed Laser Deposition (PLD)
+`nomad_material_processing.vapor_deposition.pvd.pld`
 
-### nomad_material_processing.vapor_deposition.pvd.sputtering
+### Sputtering
+`nomad_material_processing.vapor_deposition.pvd.sputtering`
 
-### nomad_material_processing.vapor_deposition.pvd.thermal
+### Thermal Evaporation
+`nomad_material_processing.vapor_deposition.pvd.thermal`
 
 
 ### nomad_material_processing.solution.general
