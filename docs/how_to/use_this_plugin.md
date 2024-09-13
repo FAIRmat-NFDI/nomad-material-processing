@@ -90,6 +90,51 @@ to see some other examples of YAML files that inherit and extend existing classe
 
 ## Inheriting and Specializing Using Python Schema Plugins
 
-For users needing more advanced customization, we will show you how to inherit and specialize schemas using Python schema plugins. This method allows for dynamic, programmatic extensions of the standard schemas to accommodate complex use cases.
+The most customizable way of using the sections defined in the `nomad-material-processing`
+plugin is to extend the sections in another NOMAD schema plugin.
 
-By following these steps, you can seamlessly integrate the NOMAD-material-processing plugin into your workflows and adapt it to meet your specific needs.
+For a detailed tutorial on how to setup and develop a plugin we refer you to the
+tutorial on [Developing a NOMAD Plugin](https://nomad-lab.eu/prod/v1/staging/docs/tutorial/develop_plugin.html).
+
+Once your plugin is setup you can include the required `nomad-material-processing` version
+as a dependency in your `pyproject.toml`:
+```toml
+dependencies = [
+    "nomad-material-processing>=1.0.0",
+]
+```
+
+In your schema packages you can then import the desired section definitions and specialize
+them to your need by adding any additional quantities or sub sections that you require:
+```py
+from nomad_material_processing.vapor_deposition.pvd.thermal import (
+    ThermalEvaporation,
+    ThermalEvaporationStep,
+)
+from nomad.metainfo import Quantity
+
+
+class MyThermalEvaporationStep(ThermalEvaporationStep):
+    my_additional_quantity = Quantity(
+        type=str,
+        description='My additional string quantity`
+    )
+
+
+class MyThermalEvaporation(ThermalEvaporation):
+    steps = SubSection(
+        description="""
+        Specialized steps of my thermal evaporation process.
+        """,
+        section_def=MyThermalEvaporationStep,
+        repeats=True,
+    )
+```
+
+By using existing sub section names (see `steps` in the example above) you can specialize
+the sub sections. Please keep in mind that the specialized sub section should always
+inherit the original one. In the example above the `step` sub section used to be of type
+`ThermalEvaporation` but we specialized it to `MyThermalEvaporation` step but made sure
+that this section inherits `ThermalEvaporation`. By doing this we ensure the
+[polymorphism](https://en.wikipedia.org/wiki/Polymorphism_(computer_science)) and that we
+will always find steps of (sub)type `ThermalEvaporationStep` in a `ThermalEvaporation`.
