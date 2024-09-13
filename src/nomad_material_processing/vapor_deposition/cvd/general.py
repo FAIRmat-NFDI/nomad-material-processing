@@ -67,7 +67,7 @@ m_package = SchemaPackage(
 )
 
 configuration = config.get_plugin_entry_point(
-    'nomad_material_processing.vapor_deposition.cvd:movpe_schema',
+    'nomad_material_processing.vapor_deposition.cvd:schema',
 )
 
 
