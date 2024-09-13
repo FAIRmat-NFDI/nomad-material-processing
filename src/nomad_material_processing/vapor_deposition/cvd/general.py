@@ -42,13 +42,21 @@ from nomad_material_processing.vapor_deposition.general import (
     GasFlow,
     MolarFlowRate,
     Pressure,
+    SampleParameters,
     Temperature,
+    VaporDeposition,
     VaporDepositionSource,
+    VaporDepositionStep,
     VolumetricFlowRate,
 )
 
 if TYPE_CHECKING:
-    pass
+    from nomad.datamodel.datamodel import (
+        EntryArchive,
+    )
+    from structlog.stdlib import (
+        BoundLogger,
+    )
 
 from nomad.config import config
 
@@ -463,6 +471,77 @@ class MistSource(CVDSource):
         section_def=MistEvaporator,
     )
     material = SubSection(section_def=ComponentConcentration, repeats=True)
+
+
+class CVDStep(VaporDepositionStep):
+    """
+    A step of any physical vapor deposition process.
+    """
+
+    step_index = Quantity(
+        type=str,
+        description='The sequential index of the step in the growth process',
+        a_eln={
+            'component': 'StringEditQuantity',
+        },
+    )
+    sources = SubSection(
+        section_def=CVDSource,
+        repeats=True,
+    )
+    sample_parameters = SubSection(
+        section_def=SampleParameters,
+        repeats=True,
+    )
+
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+        """
+        The normalizer for the `CVDStep` class.
+
+        Args:
+            archive (EntryArchive): The archive containing the section that is being
+            normalized.
+            logger (BoundLogger): A structlog logger.
+        """
+        super().normalize(archive, logger)
+
+
+class ChemicalVaporDeposition(VaporDeposition):
+    """
+    A synthesis method where the substrate is exposed
+    to one or more volatile precursors,
+    which react or decompose on the surface to produce a deposit.
+    [database_cross_reference: https://orcid.org/0000-0002-0640-0422]
+
+    Synonyms:
+    - chemical vapor deposition
+    - CVD (chemical vapour deposition) synthesis
+    - chemical-vapor deposition
+    - chemical-vapour deposition
+    - CVD
+    """
+
+    m_def = Section(
+        links=['http://purl.obolibrary.org/obo/CHMO_0001314'],
+    )
+    steps = SubSection(
+        description="""
+        The steps of the deposition process.
+        """,
+        section_def=CVDStep,
+        repeats=True,
+    )
+
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+        """
+        The normalizer for the `PhysicalVaporDeposition` class.
+
+        Args:
+            archive (EntryArchive): The archive containing the section that is being
+            normalized.
+            logger (BoundLogger): A structlog logger.
+        """
+        super().normalize(archive, logger)
 
 
 m_package.__init_metainfo__()
