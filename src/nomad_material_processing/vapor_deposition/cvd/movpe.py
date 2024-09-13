@@ -37,6 +37,7 @@ from nomad.metainfo import (
 )
 
 from nomad_material_processing.vapor_deposition.cvd.general import (
+    ChemicalVaporDeposition,
     CVDSource,
     CVDStep,
     Rotation,
@@ -134,7 +135,7 @@ class StepMovpe(CVDStep, PlotSection):
     )
 
 
-class Movpe(VaporDeposition, EntryData):
+class Movpe(ChemicalVaporDeposition, EntryData):
     """
     Metal-organic Vapor Phase Epitaxy (MOVPE) is a chemical vapor deposition method
     used to produce single- or multi-layered thin films.
@@ -162,54 +163,6 @@ class Movpe(VaporDeposition, EntryData):
         section_def=StepMovpe,
         repeats=True,
     )
-
-    def normalize(self, archive, logger):
-        """
-        The workflow of the Movpe process archive is populated
-        with the input and output links.
-        """
-        archive.workflow2 = None
-        super().normalize(archive, logger)
-        if self.steps is not None:
-            inputs = []
-            outputs = []
-            for step in self.steps:
-                if step.sample_parameters is not None:
-                    for sample in step.sample_parameters:
-                        if sample.layer is not None:
-                            outputs.append(
-                                Link(
-                                    name=f'{sample.layer.name}',
-                                    section=sample.layer.reference,
-                                )
-                            )
-                        if sample.substrate is not None:
-                            outputs.append(
-                                Link(
-                                    name=f'{sample.substrate.name}',
-                                    section=sample.substrate.reference,
-                                )
-                            )
-                        if (
-                            sample.substrate is not None
-                            and sample.substrate.reference is not None
-                        ):
-                            if hasattr(
-                                getattr(sample.substrate.reference, 'substrate'),
-                                'name',
-                            ):
-                                inputs.append(
-                                    Link(
-                                        name=f'{sample.substrate.reference.substrate.name}',
-                                        section=getattr(
-                                            sample.substrate.reference.substrate,
-                                            'reference',
-                                            None,
-                                        ),
-                                    )
-                                )
-            archive.workflow2.outputs.extend(set(outputs))
-            archive.workflow2.inputs.extend(set(inputs))
 
 
 m_package.__init_metainfo__()

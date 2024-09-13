@@ -481,6 +481,13 @@ class CVDStep(VaporDepositionStep):
     A step of any physical vapor deposition process.
     """
 
+    step_index = Quantity(
+        type=str,
+        description='The sequential index of the step in the growth process',
+        a_eln={
+            'component': 'StringEditQuantity',
+        },
+    )
     sources = SubSection(
         section_def=CVDSource,
         repeats=True,
@@ -502,29 +509,23 @@ class CVDStep(VaporDepositionStep):
         super().normalize(archive, logger)
 
 
-class PhysicalVaporDeposition(VaporDeposition):
+class ChemicalVaporDeposition(VaporDeposition):
     """
-    A synthesis technique where vaporized molecules or atoms condense on a surface,
-    forming a thin layer. The process is purely physical; no chemical reaction occurs
-    at the surface. [database_cross_reference: https://orcid.org/0000-0002-0640-0422]
+    A synthesis method where the substrate is exposed
+    to one or more volatile precursors,
+    which react or decompose on the surface to produce a deposit.
+    [database_cross_reference: https://orcid.org/0000-0002-0640-0422]
 
     Synonyms:
-     - CVD
-     - chemical vapor deposition
+    - chemical vapor deposition
+    - CVD (chemical vapour deposition) synthesis
+    - chemical-vapor deposition
+    - chemical-vapour deposition
+    - CVD
     """
 
     m_def = Section(
-        links=['http://purl.obolibrary.org/obo/CHMO_0001356'],
-        a_plot=[
-            dict(
-                x='steps/:/environment/pressure/time',
-                y='steps/:/environment/pressure/value',
-            ),
-            dict(
-                x='steps/:/source/:/vapor_source/power/time',
-                y='steps/:/source/:/vapor_source/power/value',
-            ),
-        ],
+        links=['http://purl.obolibrary.org/obo/CHMO_0001314'],
     )
     steps = SubSection(
         description="""
