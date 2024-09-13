@@ -11,7 +11,11 @@ if TYPE_CHECKING:
 import numpy as np
 from nomad.config import config
 from nomad.datamodel.data import ArchiveSection, EntryData
-from nomad.datamodel.metainfo.annotations import ELNAnnotation, ELNComponentEnum
+from nomad.datamodel.metainfo.annotations import (
+    ELNAnnotation,
+    ELNComponentEnum,
+    SectionProperties,
+)
 from nomad.datamodel.metainfo.basesections import (
     CompositeSystem,
     CompositeSystemReference,
@@ -445,41 +449,225 @@ class IrregularParallelSurfaces(Geometry):
     )
 
 
-class Miscut(ArchiveSection):
+class MillerIndices(ArchiveSection):
     """
-    The miscut in a crystalline substrate refers to
-    the intentional deviation from a specific crystallographic orientation,
-    commonly expressed as the angular displacement of a crystal plane.
+    The Miller indices are a notation system in crystallography for planes in crystal
+    (Bravais) lattices. In particular, a family of lattice planes is determined by three
+    integers h, k, and l, the Miller indices.
+    """
+
+    m_def = Section()
+    h_index = Quantity(
+        type=float,
+        description='The Miller index h.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
+    )
+    k_index = Quantity(
+        type=float,
+        description='The Miller index k.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
+    )
+    l_index = Quantity(
+        type=float,
+        description='The Miller index l.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
+    )
+
+
+class BravaisMillerIndices(MillerIndices):
+    """
+    With hexagonal and rhombohedral lattice systems, it is possible to use the
+    Bravais-Miller system, which uses four indices (h k i l) that obey the constraint
+    h + k + i = 0.
+    """
+
+    m_def = Section(
+        description='A component added to the solution.',
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                order=[
+                    'h_index',
+                    'k_index',
+                    'i_index',
+                    'l_index',
+                ],
+            ),
+        ),
+    )
+    i = Quantity(
+        type=float,
+        description='The Miller index i.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
+    )
+
+
+class CrystallographicDirection(ArchiveSection):
+    """
+    A specific crystallographic plane or direction within a crystal structure.
+    The same property can be described in the direct (or real) space or in the
+    reciprocal space.
+
+    The (hkl) indices in direct space and [hkl] indices in reciprocal space describe
+    the same set of crystallographic planes,
+    but their interpretation differs between the two spaces.
+    In direct space,
+    (hkl) indices describe the orientation of a plane within the crystal.
+    In reciprocal space,
+    [hkl] indices describe a point in the reciprocal lattice that is perpendicular
+    to the corresponding (hkl) plane in direct space.
+    """
+
+    hkl_reciprocal = SubSection(
+        section_def=MillerIndices,
+        description="""
+        The reciprocal lattice vector associated with the family of lattice planes is
+        OH = h a* + k b* + l c*, where a*, b*, c* are the reciprocal lattice basis
+        vectors. OH is perpendicular to the family of lattice planes and OH = 1/d where
+        d is the lattice spacing of the family.
+        Ref. https://dictionary.iucr.org/Miller_indices""",
+    )
+    hkl_direct = SubSection(
+        section_def=MillerIndices,
+        description="""
+        In three-dimensional space, the direction passing through the origin and the
+        lattice nodes nh,nk,nl, where n is an integer, has direction indices [hkl].
+        This corresponds to taking the coordinates of the first lattice node on that
+        direction after the origin as direction indices.
+        When a primitive unit cell is used, the direction indices are all integer;
+        they may instead be rational when a centred unit cell is adopted.
+        Ref. https://dictionary.iucr.org/Direction_indices""",
+    )
+
+
+class ProjectedMiscutOrientation(CrystallographicDirection):
+    """
+    The overall miscut angle is the total angular deviation
+    from the primary plane of the substrate.
+    However, this overall miscut can be described as having components projected onto
+    two perpendicular crystallographic directions that lie in the primary surface plane.
+    The angular miscut is defined as a tilt (in degree) along these two directions.
+
+    The projected miscut orientation specifies the tilt angle along one
+    crystallographic direction.
     """
 
     angle = Quantity(
         type=float,
         description="""
-        The angular displacement from the crystallographic orientation of the substrate.
+        The miscut angle (or offcut angle, or angular displacement offset) toward
+        the specified crystallographic direction.
         """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
             defaultDisplayUnit='deg',
-            label='Miscut Angle',
         ),
         unit='deg',
     )
     angle_deviation = Quantity(
         type=float,
-        description='The ± deviation in the angular displacement.',
+        description='The ± deviation of the angular displacement offset.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.NumberEditQuantity,
             defaultDisplayUnit='deg',
-            label='± Miscut Angle Deviation',
+            label='± Angle Deviation',
         ),
         unit='deg',
     )
-    orientation = Quantity(
-        type=str,
-        description='The direction of the miscut in Miller index, [hkl].',
+
+
+class CartesianMiscut(ArchiveSection):
+    """
+    The miscut might be directed in a non-pure crystallographic direction.
+    In this case two components must be specified, in Cartesian coordinates.
+
+    If the miscut is directed in a pure crystallographic direction,
+    only one component can be filled in.
+    """
+
+    reference_orientation = SubSection(
+        section_def=ProjectedMiscutOrientation,
+        description='The reference direction of the miscut.',
+    )
+    perpendicular_orientation = SubSection(
+        section_def=ProjectedMiscutOrientation,
+        description='A direction perpendicular to the reference direction.',
+    )
+
+
+class PolarMiscut(ArchiveSection):
+    """
+    This direction can be described by a crystallographic direction
+    [hkl], which indicates the direction of the tilt relative to the crystal axes.
+
+    The miscut might be directed in a non-pure crystallographic direction.
+    In this case two components must be specified,
+    either in Cartesian or polar coordinates.
+    """
+
+    rho = Quantity(
+        type=float,
+        unit='degree',
+        description="""
+        Out-of-plane tilt angle, defined in polar coordinates
+        as a module in the out-of-plane axis.
+        """,
         a_eln=ELNAnnotation(
-            component=ELNComponentEnum.StringEditQuantity,
-            label='Miscut Orientation [hkl]',
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
+    )
+    theta = Quantity(
+        type=float,
+        unit='degree',
+        description="""
+        In-plane angle of the miscut toward the reference orientation.
+        """,
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.NumberEditQuantity,
+        ),
+    )
+    reference_orientation = SubSection(
+        section_def=CrystallographicDirection,
+        description='The reference direction of the miscut.',
+    )
+
+
+class Miscut(ArchiveSection):
+    """
+    The miscut in a crystalline substrate refers to
+    the intentional deviation from a specific crystallographic orientation,
+    commonly expressed as the angular displacement of a crystal plane.
+
+    The overall miscut angle is the total angular deviation
+    from the primary plane of the substrate.
+    However, this overall miscut can be described as having components projected onto
+    two perpendicular crystallographic directions that lie in the primary surface plane.
+    The angular miscut is defined as a tilt (in degree) along these two directions.
+    """
+
+    cartesian_miscut = SubSection(
+        section_def=CartesianMiscut,
+        description="""
+        The orientation of the miscut (or offcut) in Cartesian coordinates.""",
+    )
+    polar_miscut = SubSection(
+        section_def=PolarMiscut,
+        description="""
+        The orientation of the miscut (or offcut) in Cartesian coordinates.""",
+    )
+    directions_image = Quantity(
+        type=str,
+        description='A schematic representation of the miscut directions.',
+        a_browser={'adaptor': 'RawFileAdaptor'},
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.FileEditQuantity,
         ),
     )
 
@@ -546,24 +734,15 @@ class SubstrateCrystalProperties(CrystalProperties):
             component=ELNComponentEnum.EnumEditQuantity,
         ),
     )
-    orientation = Quantity(
-        type=str,
-        description="""
-        Alignment of crystal lattice with respect to a vector normal to the surface
-        specified using Miller indices.
-        """,
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.StringEditQuantity,
-            label='Substrate Orientation (hkl)',
-        ),
+    surface_orientation = SubSection(
+        section_def=CrystallographicDirection,
+        description='The orientation of the substrate surface.',
     )
     miscut = SubSection(
         section_def=Miscut,
         description="""
-        Section describing any miscut of the substrate with respect to the substrate
-        orientation.
+        Miscut of the substrate.
         """,
-        repeats=True,
     )
 
 
