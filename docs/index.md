@@ -24,7 +24,7 @@ Currently, this plugin supports the following materials processing techniques:
 
   Supports Solution Preparation
 
-Additional materials processing techniques are actively being developed and will be included soon, including Synthesis from the melt (Bulk Crystal growth), Synthesis by Assembly (e.g. Polymerization).
+Additional materials processing techniques are actively being developed and will be included soon, including Synthesis from the Melt (bulk crystal growth), Synthesis by Assembly (e.g. polymerization).
 
 Stay tuned for updates as more methods become available!
 
