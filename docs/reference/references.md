@@ -9,7 +9,3 @@ It can be accessed through the *Analyze* tab in any NOMAD instance. To explore t
 **subclass** whenever a Python class inherits from another one, this is called subclass, meaning that it is semantically a children of the inherited one.
 
 **subsections** a class can contain some subsection "nested" or "composed" inside it. These classes are not related by inheritance relationship.
-
-**EntryData**
-
-**ArchiveSection**
