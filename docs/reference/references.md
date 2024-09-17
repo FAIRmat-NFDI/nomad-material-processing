@@ -10,4 +10,5 @@ It can be accessed through the *Analyze* tab in any NOMAD instance. To explore t
 
 **subsections** a class can contain some subsection "nested" or "composed" inside it. These classes are not related by inheritance relationship.
 
-Please also refer to the [glossary in the NOMAD documentation](https://nomad-lab.eu/prod/v1/staging/docs/glossary.html) to find definitions and explanations for specific technical terms used throughout the NOMAD software.
+!!! info
+    Please also refer to the [glossary in the NOMAD documentation](https://nomad-lab.eu/prod/v1/staging/docs/glossary.html) to find definitions and explanations for specific technical terms used throughout the NOMAD software.
