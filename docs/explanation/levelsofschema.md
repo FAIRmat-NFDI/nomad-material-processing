@@ -29,7 +29,7 @@ The relationships between these schema levels can be visualized as a layered mod
 
 - **Community/Standard Plugins**: Inherit and specialize the base sections and provide generalized versions of common user schemas, making them clearly shaped on distinct fields of materials science while still allowing broad applicability across the community.
 
-- **User Schemas**: Inherit and specialize community plugins sections, if availbale, or the base sections according to given requirements.
+- **User Schemas**: Inherit and specialize community plugins sections, if available, or the base sections according to given requirements.
 
 ## Encouraged Usage
 
