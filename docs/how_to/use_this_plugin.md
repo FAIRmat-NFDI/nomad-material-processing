@@ -33,7 +33,7 @@ The schemas found in the plugin are general base sections and they go more and m
 Therefore, NOMAD provides a way of adding technique-specific behavior to the ELNs: YAML schemas - a config file containing schemas added to an NOMAD upload.
 
 Using a `SolutionPreparation` example, we show how to specialize a class with a YAML schema.
-Two quantities, namely `initial_temperature` and `final_temperature` are added to `AddSolutionComponent` class, and `SolutionPreparation` is customized with this new class in the `steps` subsection.
+Two quantities, namely `initial_temperature` and `final_temperature` are added to `AddSolutionComponent` class, and `SolutionPreparation` is customized with this new class in the `steps` [subsection](../reference/references.md#subsection).
 We use a custom YAML schema to define the following sections:
 
 - `SolutionPreparation`
@@ -105,7 +105,7 @@ dependencies = [
 ```
 
 In your schema packages you can then import the desired section definitions and specialize
-them to your need by adding any additional quantities or sub sections that you require:
+them to your need by adding any additional quantities or [subsections](../reference/references.md#subsection) that you require:
 ```py
 from nomad_material_processing.vapor_deposition.pvd.thermal import (
     ThermalEvaporation,
@@ -131,9 +131,9 @@ class MyThermalEvaporation(ThermalEvaporation):
     )
 ```
 
-By using existing sub section names (see `steps` in the example above) you can specialize
-the sub sections. Please keep in mind that the specialized sub section should always
-inherit the original one. In the example above the `step` sub section used to be of type
+By using existing [subsection](../reference/references.md#subsection) names (see `steps` in the example above) you can specialize
+the [subsections](../reference/references.md#subsection). Please keep in mind that the specialized [subsection](../reference/references.md#subsection) should always
+inherit the original one. In the example above the `step` [subsection](../reference/references.md#subsection) used to be of type
 `ThermalEvaporation` but we specialized it to `MyThermalEvaporation` step but made sure
 that this section inherits `ThermalEvaporation`. By doing this we ensure the
 [polymorphism](https://en.wikipedia.org/wiki/Polymorphism_(computer_science)) and that we

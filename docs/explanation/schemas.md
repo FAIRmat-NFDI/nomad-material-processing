@@ -5,10 +5,11 @@ An overview of the package structure is shown below.
 
 ## Technical description
 
-There are some technical aspects to understand the Python package built for this plugin, they are not crucial for the data model understanding itself:
+This section introduces some aspects of the Python package built for this plugin. Despite they are not crucial for the understanding of the data model, they can help installing or developing it.
 
 - It is structured according to the [src layout](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/).
-- It is a [regular Python package](https://docs.python.org/3/reference/import.html#regular-packages), i. e., the structure is defined by the presence of `__init__.py` files. Each of these files contains one or multiple [entry points](https://nomad-lab.eu/prod/v1/staging/docs/howto/plugins/plugins.html#plugin-entry-points). These are used to load a portion of the code within your NOMAD through a specific section in the `nomad.yaml` file.
+- It is a [regular Python package](https://docs.python.org/3/reference/import.html#regular-packages), i. e., the structure is defined by the presence of `__init__.py` files.
+- The `__init__.py` files contain one or multiple [entry points](https://nomad-lab.eu/prod/v1/staging/docs/howto/plugins/plugins.html#plugin-entry-points). These are used to load a portion of the code within your NOMAD through a specific section in the `nomad.yaml` file. If this section is not specified, all the entry points are loaded by default.
 - It is pip installable. The `project.toml` file defines what will be installed, the dependencies, further details. The **entry points** included are listed in this file.
 
 ```text
@@ -44,7 +45,7 @@ nomad-material-processing/
 
 ## Data model description
 
-Each method has a dedicated [module](https://docs.python.org/3/tutorial/modules.html), i. e., a python file.
+Each method is separated in a dedicated [module](https://docs.python.org/3/tutorial/modules.html), i. e., a python file.
 
 ### General
 
@@ -54,26 +55,26 @@ The `nomad_material_processing.general` module contains several general categori
 - `Substrate` and `CrystallineSubstrate` entities, the support used in `SampleDeposition` activities.
 - `ThinFilm` entity, usually created during `SampleDeposition` activities.
 - `ThinFilmStack` in case of processes producing multilayer samples. This class also contains a reference to the `Substrate`.
-- `Geometry` and it's subclasses, defining the commonly found macroscopic shapes of a sample. It is a subsection composed within the `Substrate`. They include `Parallelepiped`, `SquareCuboid`, `RectangleCuboid`, `TruncatedCone`, `Cylinder`, `CylinderSector`, `IrregularParallelSurfaces`.
-- `Miscut` another subsection of  `Substrate` to specify the miscut of the orientation of the surface in terms of angular deviation toward crystallographic directions.
-- `CrystalProperties` and `ElectronicProperties`, found as subsection of sample entities that need these parameters.
+- `Geometry` and its [subclasses](../reference/references.md#subclass), defining the commonly found macroscopic shapes of a sample. It is a [subsection](../reference/references.md#subsection) composed within the `Substrate`. They include `Parallelepiped`, `SquareCuboid`, `RectangleCuboid`, `TruncatedCone`, `Cylinder`, `CylinderSector`, `IrregularParallelSurfaces`.
+- `Miscut` another [subsection](../reference/references.md#subsection) of  `Substrate` to specify the miscut of the orientation of the surface in terms of angular deviation toward crystallographic directions.
+- `CrystalProperties` and `ElectronicProperties`, found as [subsection](../reference/references.md#subsection) of sample entities that need these parameters.
 - simple activities performed on samples: `Etching`, `Annealing`, `Cleaning`. They also include a `Recipe` that can be referenced inside to avoid repetition for routinary tasks.
-- `TimeSeries` a general class that shapes every kind of parameters logged along a time window. The quantities referring to the measured parameter are `value` and `time`. `set_value` and `set_time` can also be specified, as they usually differ from the measured ones. Several subclasses inheriting from this one can be found nested in the package.
+- `TimeSeries` a general class that shapes every kind of parameters logged along a time window. The quantities referring to the measured parameter are `value` and `time`. `set_value` and `set_time` can also be specified, as they usually differ from the measured ones. Several [subclasses](../reference/references.md#subclass) inheriting from this one can be found nested in the package.
 
 ### Vapor Deposition
 
 The `nomad_material_processing.vapor_deposition.general` module contains classes describing
 a general vapor deposition process. The master class in this module is `VaporDeposition`, inheriting from `SampleDeposition`.
 
-The other classes found here are specifying the subsections found in the steps of the `VaporDeposition` process.
-`VaporDepositionStep` contains three subsections allowing to describe the parameters usually recorded during an experiment:
+The other classes found here are specifying the [subsections](../reference/references.md#subsection) found in the steps of the `VaporDeposition` process.
+`VaporDepositionStep` contains three [subsections](../reference/references.md#subsection) allowing to describe the parameters usually recorded during an experiment:
 
 - `VaporDepositionSource` the metadata on which kind of source will bring the raw material in the recation chamber.
 This class is in turn composed by three dinstinct elements, namely the `Component` material to be evaporated, the `EvaporationSource` that is the element that produces the vapor, and `MolarFlowRate` that is a time series recording the molar flux exiting the source. This is used as a list within the `VaporDepositionStep` because many sources can be present at the same time.
-- `SampleParameter` this subsection hosts the references to the `ThinFilm` deposited and the `ThinFilmStack` or `Substrate` used as support of the deposition. This subsection is also used to record sample-specific parameters in the process, such as tempearture, or growth rate. This is a list because many samples can be grown at the same time.
-- `ChamberEnvironment` collects the metadata connected to the whole reaction chamber that cannot be linked to one single sample. It usually contains temperature or `GasFlow` subsections.
+- `SampleParameter` this [subsection](../reference/references.md#subsection) hosts the references to the `ThinFilm` deposited and the `ThinFilmStack` or `Substrate` used as support of the deposition. This [subsection](../reference/references.md#subsection) is also used to record sample-specific parameters in the process, such as tempearture, or growth rate. This is a list because many samples can be grown at the same time.
+- `ChamberEnvironment` collects the metadata connected to the whole reaction chamber that cannot be linked to one single sample. It usually contains temperature or `GasFlow` [subsections](../reference/references.md#subsection).
 
-These three subsections are the backbone of the `VaporDeposition` process and they are usually inherited whenever a specific experiment requires to extend them.
+These three [subsections](../reference/references.md#subsection) are the backbone of the `VaporDeposition` process and they are usually inherited whenever a specific experiment requires to extend them.
 
 ### Chemical Vapor Deposition
 
@@ -84,14 +85,14 @@ Sources for CVD are inheriting from `CVDSource`, that is in turn a `VaporDeposit
 - `BubblerSource` defines a bubbler commonly used in CVD for liquid precursors.
 - `FlashSource` the vapor is generated by a `FlashEvaporator`.
 - `MistSource` another kind of source adopetd in CVD.
-- `GasCylinderSource` a simple cylinder containing some gas phase precursor. In this case the `EvaporationSource` subclass, called `GasCylinderEvaporator`, is not really evaporating as the precursor is already at the gas state.
+- `GasCylinderSource` a simple cylinder containing some gas phase precursor. In this case the `EvaporationSource` [subclass](../reference/references.md#subclass), called `GasCylinderEvaporator`, is not really evaporating as the precursor is already at the gas state.
 - `GasLineSource` used for gaseous precursors that are provided through a stable installation sourcing gas from facilities external to the lab.
 
 `TimeSeries` used in CVD are:
 
 - `Rotation` specifies rotation frequency of the substrate holder in the chamber
-- `PartialVaporPressure` as subclass of `Pressure`
-- `PushPurgeGasFlow` contains two `VolumetricFlowRate` subsections that record the source and drain fluxes of the carries gas in the chamber.
+- `PartialVaporPressure` as [subclass](../reference/references.md#subclass) of `Pressure`
+- `PushPurgeGasFlow` contains two `VolumetricFlowRate` [subsections](../reference/references.md#subsection) that record the source and drain fluxes of the carries gas in the chamber.
 
 
 ### Metal-organic Vapor Phase Epitaxy (MOVPE)
