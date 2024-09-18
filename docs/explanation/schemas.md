@@ -5,7 +5,7 @@ An overview of the package structure is shown below.
 
 ## Technical description
 
-This section introduces some aspects of the Python package built for this plugin. Despite they are not crucial for the understanding of the data model, they can help installing or developing it.
+This section introduces some aspects of the Python package built for this plugin. Despite not being crucial for the understanding of the data model, they can help installing or developing it.
 
 - It is structured according to the [src layout](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/).
 - It is a [regular Python package](https://docs.python.org/3/reference/import.html#regular-packages), i. e., the structure is defined by the presence of `__init__.py` files.
