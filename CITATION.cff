@@ -18,4 +18,5 @@ authors:
     family-names: Näsström
     orcid: 'https://orcid.org/0000-0002-3264-1692'
 repository-code: 'https://github.com/FAIRmat-NFDI/nomad-material-processing'
+url: 'https://fairmat-nfdi.github.io/nomad-material-processing/'
 license: MIT
