@@ -12,14 +12,14 @@ Every entry in NOMAD must inherit from `EntryData`, whenever a class is only use
 2. **Base Sections**: These are central to NOMAD's data model and are designed to maintain interoperability between different database entries. The base sections follow an entity-activity model tailored for materials science, capturing essential relationships between key entities like samples, instruments, processes, measurements, analyses, experiments, and simulations. The goal is to provide standardized structures for data representation.
 
 
-	!!! Note
-        Base sections in NOMAD are abstract and should not be instantiated directly. Instead, users must implement these sections in their own schemas (referred to as user schemas) by inheriting from a base section and `nomad.datamodel.EntryData`. Users are strongly encouraged to use the most specialized section available for their use case.
+!!! Note
+    Base sections in NOMAD are abstract and should not be instantiated directly. Instead, users must implement these sections in their own schemas (referred to as user schemas) by inheriting from a base section and `nomad.datamodel.EntryData`. Users are strongly encouraged to use the most specialized section available for their use case..
 
 
-3. **Community/Standard Plugins**: FAIRmat offers standardized schemas for common methods, processes, and instruments that are generalized and not tied to any individual lab or setup. These schemas are derived from recurring patterns identified across user schemas. Users can inherit from these standard plugins in a similar manner as the base sections, further specializing them as needed while still maintaining a consistent structure for broader community use.
+1. **Community/Standard Plugins**: FAIRmat offers standardized schemas for common methods, processes, and instruments that are generalized and not tied to any individual lab or setup. These schemas are derived from recurring patterns identified across user schemas. Users can inherit from these standard plugins in a similar manner as the base sections, further specializing them as needed while still maintaining a consistent structure for broader community use.
 FAIRmat's Area A for synthesis data provides two community plugins, NOMAD Measurements and NOMAD Materials Processing.
 
-4. **User Defined Sections**: These schemas are developed by users and are tailored for a method or an instrument, a lab, or a research institute. They build upon the base sections and community plugins, tailoring them to meet specific research needs. In this level, users can define more specialized structures that directly reflect the unique characteristics of their experiments or simulations.
+1. **User Defined Sections**: These schemas are developed by users and are tailored for a method or an instrument, a lab, or a research institute. They build upon the base sections and community plugins, tailoring them to meet specific research needs. In this level, users can define more specialized structures that directly reflect the unique characteristics of their experiments or simulations.
 
 ## How These Schemas Relate to Each Other
 
