@@ -17,9 +17,7 @@ authors:
   - given-names: Hampus
     family-names: Näsström
     orcid: 'https://orcid.org/0000-0002-3264-1692'
-identifiers:
-  - type: doi
-    value: 10.5281/zenodo.13786015
+doi: 10.5281/zenodo.13786015
 repository-code: 'https://github.com/FAIRmat-NFDI/nomad-material-processing'
 url: 'https://fairmat-nfdi.github.io/nomad-material-processing/'
 abstract: >-
