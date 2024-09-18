@@ -33,4 +33,4 @@ url: 'https://fairmat-nfdi.github.io/nomad-material-processing/'
 abstract: >-
   A NOMAD plugin containing base sections for material
   processing.
-license: MIT
+license: Apache-2.0
