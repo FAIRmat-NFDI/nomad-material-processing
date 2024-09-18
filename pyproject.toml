@@ -23,12 +23,12 @@ readme = "README.md"
 authors = [
     { name = "Andrea Albino", email = 'andrea.albino@physik.hu-berlin.de' },
     { name = "Sebastian Brückner", email = 'sebastian.brueckner@ikz-berlin.de' },
-    { name = "Ahmed Ilias" },
+    { name = "Michael Götte" },
+    { name = "Ahmed Ilyas" },
     { name = "Sarthak Kapoor", email = 'sarthak.kapoor@physik.hu-berlin.de' },
     { name = "José A. Márquez", email = 'jose.marquez@physik.hu-berlin.de' },
     { name = "Hampus Näsström", email = 'hampus.naesstroem@physik.hu-berlin.de' },
     { name = "Markus Scheidgen" },
-    { name = "Michael Götte" },
 ]
 license = { file = "LICENSE" }
 dependencies = [
