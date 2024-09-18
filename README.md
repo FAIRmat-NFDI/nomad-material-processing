@@ -2,6 +2,7 @@
 ![](https://img.shields.io/pypi/pyversions/nomad-material-processing)
 ![](https://img.shields.io/pypi/l/nomad-material-processing)
 ![](https://img.shields.io/pypi/v/nomad-material-processing)
+[![DOI](https://zenodo.org/badge/678740680.svg)](https://zenodo.org/doi/10.5281/zenodo.13786015)
 
 # NOMAD's Material Processing Plugin
 This is a plugin for [NOMAD](https://nomad-lab.eu) which contains base sections for
