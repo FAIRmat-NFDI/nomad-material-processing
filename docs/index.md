@@ -1,10 +1,10 @@
-# Welcome to the NOMAD-materials-processing Plugin Documentation
+# Welcome to the NOMAD Material Processing Plugin Documentation
 
-Welcome to the official documentation for the **NOMAD-materials-processing Plugin**! This plugin provides NOMAD schemas, readers, and parsers for data of materials science synthesis processes in alignment with the FAIR (Findable, Accessible, Interoperable, and Reusable) principles. It serves as a community or standard plugin, offering commonly used schemas and classes/sections for materials processing data that can be shared across a community.
+Welcome to the official documentation for the **NOMAD Material Processing Plugin**! This plugin provides NOMAD schemas, readers, and parsers for data of materials science synthesis processes in alignment with the FAIR (Findable, Accessible, Interoperable, and Reusable) principles. It serves as a community or standard plugin, offering commonly used schemas and classes/sections for material processing data that can be shared across a community.
 
-## Supported Materials Processing Techniques
+## Supported Material Processing Techniques
 
-Currently, this plugin supports the following materials processing techniques:
+Currently, this plugin supports the following material processing techniques:
 
 - **Synthesis from Gas Phase**:
   Supports different *Vapor Deposition* methods:
@@ -23,7 +23,7 @@ Currently, this plugin supports the following materials processing techniques:
 - **Synthesis from Solution**:
   Supports Solution Preparation
 
-Additional materials processing techniques are actively being developed and will be included soon, including Synthesis from the Melt (bulk crystal growth), Synthesis by Assembly (e.g. polymerization).
+Additional material processing techniques are actively being developed and will be included soon, including Synthesis from the Melt (bulk crystal growth), Synthesis by Assembly (e.g. polymerization).
 
 Stay tuned for updates as more methods become available!
 
@@ -31,8 +31,8 @@ Stay tuned for updates as more methods become available!
 
 This documentation builds upon the general [NOMAD documentation](https://nomad-lab.eu/prod/v1/staging/docs/explanation/data.html). Here, you will find comprehensive guides on:
 
-- **Using the Plugin**: Step-by-step instructions on how to integrate and use the NOMAD Materials Processing Plugin in your NOMAD Oasis.
-- **Data Structures and Supported Methods**: Detailed descriptions of the available schemas, sections, and supported materials processing techniques.
+- **Using the Plugin**: Step-by-step instructions on how to integrate and use the NOMAD Material Processing Plugin in your NOMAD Oasis.
+- **Data Structures and Supported Methods**: Detailed descriptions of the available schemas, sections, and supported material processing techniques.
 - **Contributing**: Learn how you can contribute to the ongoing development of this plugin.
 
 ## About NOMAD
