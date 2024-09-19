@@ -17,7 +17,7 @@ Every entry in NOMAD must inherit from `EntryData`, whenever a class is only use
 
 
 1. **Community/Standard Plugins**: FAIRmat offers standardized schemas for common methods, processes, and instruments that are generalized and not tied to any individual lab or setup. These schemas are derived from recurring patterns identified across user schemas. Users can inherit from these standard plugins in a similar manner as the base sections, further specializing them as needed while still maintaining a consistent structure for broader community use.
-FAIRmat's Area A for synthesis data provides two community plugins, NOMAD Measurements and NOMAD Materials Processing.
+FAIRmat's Area A for synthesis data provides two community plugins, NOMAD Measurements and NOMAD Material Processing.
 
 1. **User Defined Sections**: These schemas are developed by users and are tailored for a method or an instrument, a lab, or a research institute. They build upon the base sections and community plugins, tailoring them to meet specific research needs. In this level, users can define more specialized structures that directly reflect the unique characteristics of their experiments or simulations.
 

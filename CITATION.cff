@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: nomad-material-processing
+title: NOMAD Material Processing Plugin
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
@@ -31,6 +31,13 @@ doi: 10.5281/zenodo.13786015
 repository-code: 'https://github.com/FAIRmat-NFDI/nomad-material-processing'
 url: 'https://fairmat-nfdi.github.io/nomad-material-processing/'
 abstract: >-
-  A NOMAD plugin containing base sections for material
-  processing.
+  `nomad-material-processing` is a plugin for the NOMAD software (https://zenodo.org/doi/10.5281/zenodo.8366162)
+  adding data schemas and parsers for material processing data.
+  For example, it can be used to store process data from various vapor deposition techniques,
+  such as metal-organic vapor phase epitaxy (MOVPE) or pulsed laser deposition (PLD),
+  into a common data format that can be analyzed, explored, and published in NOMAD.
+  The plugin is community driven and primarily aims at providing usability to users
+  through practical data parsers and common data schemas.
+  The data schemas continue to develop with the community to ultimately provide Findable,
+  Accessible, Interoperable, and Reusable (FAIR) data.
 license: Apache-2.0
