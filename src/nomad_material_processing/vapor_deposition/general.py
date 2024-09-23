@@ -190,6 +190,7 @@ class SubstrateHolder(Entity):
         """,
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.StringEditQuantity,
+            label="holder_id"
         ),
     )
     material = SubSection(section_def=PubChemPureSubstanceSection, repeats=True)
