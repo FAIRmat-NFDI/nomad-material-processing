@@ -189,7 +189,7 @@ class SubstrateHolder(Entity):
         The lab ID of the substrate holder.
         """,
         a_eln=ELNAnnotation(
-            component=ELNComponentEnum.StringEditQuantity,
+            component=ELNComponentEnum.StringEditQuantity, label='holder_id'
         ),
     )
     material = SubSection(section_def=PubChemPureSubstanceSection, repeats=True)
