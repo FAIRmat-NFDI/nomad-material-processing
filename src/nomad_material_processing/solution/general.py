@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Union
 from nomad.datamodel.data import (
     ArchiveSection,
     EntryData,
+    EntryDataCategory,
 )
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
@@ -21,6 +22,7 @@ from nomad.datamodel.metainfo.basesections import (
     SystemComponent,
 )
 from nomad.metainfo import (
+    Category,
     Datetime,
     MEnum,
     Quantity,
@@ -50,6 +52,17 @@ m_package = SchemaPackage(
 configuration = config.get_plugin_entry_point(
     'nomad_material_processing.solution:schema'
 )
+
+
+class SolutionCategory(EntryDataCategory):
+    """
+    Category for entry schemas related to solutions.
+    """
+
+    m_def = Category(
+        label='Solutions',
+        categories=[EntryDataCategory],
+    )
 
 
 class MolarConcentration(ArchiveSection):
@@ -298,6 +311,7 @@ class Solution(CompositeSystem, EntryData):
 
     # TODO make the solvents, solutes, and elemental_composition subsection noneditable.
     m_def = Section(
+        categories=[SolutionCategory],
         description='A homogeneous liquid mixture composed of two or more substances.',
         a_eln=ELNAnnotation(
             properties=SectionProperties(
@@ -827,6 +841,7 @@ class SolutionPreparation(Process, EntryData):
 
     # TODO populate the instruments section based on the steps.methodology.instrument
     m_def = Section(
+        categories=[SolutionCategory],
         description='Section for describing steps of solution preparation.',
         a_eln=ELNAnnotation(
             properties=SectionProperties(
