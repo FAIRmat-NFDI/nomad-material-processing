@@ -38,41 +38,32 @@ if TYPE_CHECKING:
     )
 
 from nomad.config import config
-
-from nomad_material_processing.vapor_deposition.pvd.general import (
-    SourcePower,
-    PhysicalVaporDeposition,
-    PVDEvaporationSource,
-    PVDSource,
+from nomad.datamodel.data import (
+    EntryData,
 )
-
-from nomad_material_processing.general import (
-    Geometry,
-)
-
 from nomad.datamodel.metainfo.annotations import (
     ELNAnnotation,
     ELNComponentEnum,
     Filter,
     SectionProperties,
 )
-
-from nomad.datamodel.data import (
-    EntryData,
-)
-
 from nomad.datamodel.metainfo.basesections import (
     CompositeSystem,
     ReadableIdentifiers,
     SystemComponent,
 )
-
 from nomad.metainfo import (
     Datetime,
-    Quantity,
-    SchemaPackage,
-    Section,
     SubSection,
+)
+
+from nomad_material_processing.general import (
+    Geometry,
+)
+from nomad_material_processing.vapor_deposition.pvd.general import (
+    PVDEvaporationSource,
+    PVDSource,
+    SourcePower,
 )
 
 m_package = SchemaPackage(name='Sputter Deposition')
@@ -80,6 +71,7 @@ m_package = SchemaPackage(name='Sputter Deposition')
 configuration = config.get_plugin_entry_point(
     'nomad_material_processing.vapor_deposition.pvd:sputtering_schema',
 )
+
 
 class SputterDeposition(PhysicalVaporDeposition):
     """
@@ -112,6 +104,7 @@ class SputterDeposition(PhysicalVaporDeposition):
         """
         super().normalize(archive, logger)
 
+
 class Magnetron(PVDEvaporationSource):
     """
     A representation of the magnetron device.
@@ -133,9 +126,12 @@ class Magnetron(PVDEvaporationSource):
         ),
     )
 
+
 class SputteringTarget(CompositeSystem, EntryData):
     """
-    A representation of the target material used in sputtering. It cointains the target ID, the delivery date and the actual date where the target was installed inside the chamber.
+    A representation of the target material used in sputtering. It cointains the target
+    ID, the delivery date and the actual date where the target was installed
+    inside the chamber.
     """
 
     m_def = Section(a_eln={'hide': ['datetime']})
@@ -163,8 +159,8 @@ class SputteringTarget(CompositeSystem, EntryData):
         ),
     )
 
-class SputteringTargetComponent(SystemComponent):
 
+class SputteringTargetComponent(SystemComponent):
     m_def = Section(a_eln={'hide': ['mass_fraction', 'mass']})
 
     lab_id = Quantity(
@@ -181,18 +177,24 @@ class SputteringTargetComponent(SystemComponent):
         ),
     )
 
+
 class SputteringSource(PVDSource):
     """
-    A representation of both the magentron and the target material, which works as a source of atoms for sputtering.
+    A representation of both the magentron and the target material, which works as
+    a source of atoms for sputtering.
     """
 
-    m_def = Section(a_eln=ELNAnnotation(hide=['name'],
-                                        properties=SectionProperties(visible=Filter(exclude=
-                                        ['impinging_flux', 'vapor_molar_flow_rate']))),
-        links=['http://purl.obolibrary.org/obo/CHMO_0002896'],     )
+    m_def = Section(
+        a_eln=ELNAnnotation(
+            hide=['name'],
+            properties=SectionProperties(
+                visible=Filter(exclude=['impinging_flux', 'vapor_molar_flow_rate'])
+            ),
+        ),
+        links=['http://purl.obolibrary.org/obo/CHMO_0002896'],
+    )
 
-    vapor_source = SubSection(section_def=Magnetron,
-                        repeats=True)
+    vapor_source = SubSection(section_def=Magnetron, repeats=True)
 
 
 m_package.__init_metainfo__()
