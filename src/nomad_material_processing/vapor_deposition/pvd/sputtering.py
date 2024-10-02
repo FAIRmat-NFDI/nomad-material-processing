@@ -38,33 +38,6 @@ if TYPE_CHECKING:
     )
 
 from nomad.config import config
-from nomad.datamodel.data import (
-    EntryData,
-)
-from nomad.datamodel.metainfo.annotations import (
-    ELNAnnotation,
-    ELNComponentEnum,
-    Filter,
-    SectionProperties,
-)
-from nomad.datamodel.metainfo.basesections import (
-    CompositeSystem,
-    ReadableIdentifiers,
-    SystemComponent,
-)
-from nomad.metainfo import (
-    Datetime,
-    SubSection,
-)
-
-from nomad_material_processing.general import (
-    Geometry,
-)
-from nomad_material_processing.vapor_deposition.pvd.general import (
-    PVDEvaporationSource,
-    PVDSource,
-    SourcePower,
-)
 
 m_package = SchemaPackage(name='Sputter Deposition')
 
@@ -103,98 +76,6 @@ class SputterDeposition(PhysicalVaporDeposition):
             logger (BoundLogger): A structlog logger.
         """
         super().normalize(archive, logger)
-
-
-class Magnetron(PVDEvaporationSource):
-    """
-    A representation of the magnetron device.
-    """
-
-    m_def = Section(
-        a_plot=dict(
-            x='power/time',
-            y='power/value',
-        ),
-    )
-
-    power = SourcePower()
-
-    Description = Quantity(
-        type=str,
-        a_eln=ELNAnnotation(
-            component='RichTextEditQuantity',
-        ),
-    )
-
-
-class SputteringTarget(CompositeSystem, EntryData):
-    """
-    A representation of the target material used in sputtering. It cointains the target
-    ID, the delivery date and the actual date where the target was installed
-    inside the chamber.
-    """
-
-    m_def = Section(a_eln={'hide': ['datetime']})
-
-    target_id = SubSection(
-        section_def=ReadableIdentifiers,
-    )
-
-    geometry = SubSection(
-        section_def=Geometry,
-        description='Section containing the geometry of the target.',
-    )
-
-    delivery_date = Quantity(
-        type=Datetime,
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.DateEditQuantity,
-        ),
-    )
-
-    installation_date = Quantity(
-        type=Datetime,
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.DateEditQuantity,
-        ),
-    )
-
-
-class SputteringTargetComponent(SystemComponent):
-    m_def = Section(a_eln={'hide': ['mass_fraction', 'mass']})
-
-    lab_id = Quantity(
-        type=str,
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.StringEditQuantity,
-            label='Target ID',
-        ),
-    )
-    system = Quantity(
-        type=SputteringTarget,
-        a_eln=ELNAnnotation(
-            component=ELNComponentEnum.ReferenceEditQuantity,
-        ),
-    )
-
-
-class SputteringSource(PVDSource):
-    """
-    A representation of both the magentron and the target material, which works as
-    a source of atoms for sputtering.
-    """
-
-    m_def = Section(
-        a_eln=ELNAnnotation(
-            hide=['name'],
-            properties=SectionProperties(
-                visible=Filter(exclude=['impinging_flux', 'vapor_molar_flow_rate'])
-            ),
-        ),
-        links=['http://purl.obolibrary.org/obo/CHMO_0002896'],
-    )
-
-    vapor_source = SubSection(section_def=Magnetron, repeats=True)
 
 
 m_package.__init_metainfo__()
