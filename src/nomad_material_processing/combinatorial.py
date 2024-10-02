@@ -41,9 +41,9 @@ from nomad.datamodel.metainfo.plot import (
 from nomad.metainfo import (
     Package,
     Quantity,
+    Reference,
     Section,
     SubSection,
-    Reference,
 )
 
 if TYPE_CHECKING:
