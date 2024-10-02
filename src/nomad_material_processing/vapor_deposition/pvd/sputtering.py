@@ -117,9 +117,7 @@ class Magnetron(PVDEvaporationSource):
         ),
     )
 
-    power = SourcePower()
-
-    Description = Quantity(
+    description = Quantity(
         type=str,
         a_eln=ELNAnnotation(
             component='RichTextEditQuantity',
