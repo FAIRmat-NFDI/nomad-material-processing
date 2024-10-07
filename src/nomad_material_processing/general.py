@@ -28,7 +28,8 @@ from nomad.datamodel.metainfo.basesections2 import (
     Process,
     ProcessStep,
     SynthesisMethod,
-    SubSystem,
+    NestedSubSystem,
+    ReferencedSubSystem,
     GeometricalSpace,
 )
 from nomad.datamodel.metainfo.workflow import (
