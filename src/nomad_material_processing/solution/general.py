@@ -18,7 +18,9 @@ from nomad.datamodel.metainfo.basesections import (
 from nomad.datamodel.metainfo.basesections2 import (
     System,
     SystemReference,
-    SubSystem,
+    NestedSubSystem,
+    ReferencedSubSystem,
+    SubSystemProperties,
 )
 from nomad.metainfo import (
     Category,
@@ -147,33 +149,11 @@ class SolutionStorage(ArchiveSection):
     )
 
 
-class SolutionSubSystem(SubSystem):
+class SolutionSubSystemProperties(SubSystemProperties):
     """
-    Base class for a component added to the solution.
+    Properties for the `SolutionSubSystem` section.
     """
 
-    # # TODO get the density of the component automatically if not provided
-    # m_def = Section(
-    #     description='A component added to the solution.',
-    #     a_eln=ELNAnnotation(
-    #         properties=SectionProperties(
-    #             order=[
-    #                 'name',
-    #                 'substance_name',
-    #                 'component_role',
-    #                 'volume',
-    #                 'density',
-    #                 'mass',
-    #                 'molar_concentration',
-    #             ],
-    #             visible=Filter(
-    #                 exclude=[
-    #                     'mass_fraction',
-    #                 ],
-    #             ),
-    #         ),
-    #     ),
-    # )
     volume = Quantity(
         type=float,
         description='The volume of the liquid component.',
@@ -222,6 +202,41 @@ class SolutionSubSystem(SubSystem):
         unit='kilogram / liter',
     )
     molar_concentration = SubSection(section_def=MolarConcentration)
+
+
+class SolutionNestedSubSystem(NestedSubSystem):
+    """
+    Base class for a component added to the solution.
+    """
+
+    properties = SubSection(
+        section_def=SolutionSubSystemProperties,
+        description="""
+        Section describing the properties of the sub system.
+        """,
+    )
+    # # TODO get the density of the component automatically if not provided
+    # m_def = Section(
+    #     description='A component added to the solution.',
+    #     a_eln=ELNAnnotation(
+    #         properties=SectionProperties(
+    #             order=[
+    #                 'name',
+    #                 'substance_name',
+    #                 'component_role',
+    #                 'volume',
+    #                 'density',
+    #                 'mass',
+    #                 'molar_concentration',
+    #             ],
+    #             visible=Filter(
+    #                 exclude=[
+    #                     'mass_fraction',
+    #                 ],
+    #             ),
+    #         ),
+    #     ),
+    # )
 
     # TODO fit the following normalization methods coming from SolutionComponent class
 
@@ -280,21 +295,21 @@ class SolutionSubSystem(SubSystem):
     #     if moles:
     #         self.molar_concentration.calculated_concentration = moles / volume
 
-    # def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
-    #     """
-    #     Normalize method for the `SolutionComponent` section. Sets the mass if volume
-    #     and density are provided.
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+        """
+        Normalize method for the `SolutionComponent` section. Sets the mass if volume
+        and density are provided.
 
-    #     Args:
-    #         archive (EntryArchive): A NOMAD archive.
-    #         logger (BoundLogger): A structlog logger.
-    #     """
-    #     if self.substance_name and self.pure_substance is None:
-    #         self.pure_substance = PubChemPureSubstanceSection(name=self.substance_name)
-    #         self.pure_substance.normalize(archive, logger)
-    #     if self.volume and self.density:
-    #         self.mass = self.volume * self.density
-    #     super().normalize(archive, logger)
+        Args:
+            archive (EntryArchive): A NOMAD archive.
+            logger (BoundLogger): A structlog logger.
+        """
+        #     if self.substance_name and self.pure_substance is None:
+        #         self.pure_substance = PubChemPureSubstanceSection(name=self.substance_name)
+        #         self.pure_substance.normalize(archive, logger)
+        if self.volume and self.density:
+            self.mass = self.volume * self.density
+        super().normalize(archive, logger)
 
     # TODO fit the following normalization methods coming from SolutionComponentReference class
 
@@ -328,6 +343,19 @@ class SolutionSubSystem(SubSystem):
     #     super().normalize(archive, logger)
 
 
+class SolutionReferencedSubSystem(ReferencedSubSystem):
+    """
+    Base class for a component added to the solution.
+    """
+
+    properties = SubSection(
+        section_def=SolutionSubSystemProperties,
+        description="""
+        Section describing the properties of the sub system.
+        """,
+    )
+
+
 class Solution(System, EntryData):
     """
     Section for decribing liquid solutions.
@@ -349,7 +377,7 @@ class Solution(System, EntryData):
                     'mass',
                     'density',
                     'description',
-                    'components',
+                    'sub_systems',
                     'elemental_composition',
                     'solvents',
                     'solutes',
@@ -403,13 +431,24 @@ class Solution(System, EntryData):
         unit='liter',
     )
     sub_systems = SubSection(
-        section_def=SolutionSubSystem,
-        description='The components of the solution',
+        section_def=SolutionNestedSubSystem,
+        description="""
+        A list of all the components that make up the system.
+        """,
         repeats=True,
     )
+
+    sub_systems_reference = SubSection(
+        section_def=SolutionReferencedSubSystem,
+        description="""
+        A list of all the component references that make up the system.
+        """,
+        repeats=True,
+    )
+    # TODO include also the nested versions of solvent and solute
     solvents = SubSection(
         link='https://doi.org/10.1351/goldbook.S05751',
-        section_def=SolutionSubSystem,
+        section_def=SolutionReferencedSubSystem,
         description="""
         The term applied to the whole initial liquid phase containing the extractant.
         """,
@@ -417,7 +456,7 @@ class Solution(System, EntryData):
     )
     solutes = SubSection(
         link='https://doi.org/10.1351/goldbook.S05744',
-        section_def=SolutionSubSystem,
+        section_def=SolutionReferencedSubSystem,
         description="""
         The minor component of a solution which is regarded as having been dissolved
         by the solvent.
@@ -678,7 +717,8 @@ class AddSolutionComponent(SolutionPreparationStep):
             ),
         ),
     )
-    solution_component = SubSection(section_def=SolutionSubSystem)
+    # TODO deal with the case when the component is a nested section
+    solution_component = SubSection(section_def=SolutionReferencedSubSystem)
     measurement = SubSection(section_def=MeasurementMethodology)
 
     # TODO fit the following normalization methods coming from AddSolutionComponent class
