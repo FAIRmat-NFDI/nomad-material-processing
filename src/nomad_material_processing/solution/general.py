@@ -377,11 +377,13 @@ class Solution(System, EntryData):
                     'mass',
                     'density',
                     'description',
+                    'solution_storage',
                     'sub_systems',
-                    'elemental_composition',
+                    'sub_systems_reference',
                     'solvents',
                     'solutes',
                 ],
+                visible=Filter(exclude=['geometry']),
             ),
         ),
     )
@@ -448,7 +450,7 @@ class Solution(System, EntryData):
     # TODO include also the nested versions of solvent and solute
     solvents = SubSection(
         link='https://doi.org/10.1351/goldbook.S05751',
-        section_def=SolutionReferencedSubSystem,
+        section_def=SolutionNestedSubSystem,
         description="""
         The term applied to the whole initial liquid phase containing the extractant.
         """,
@@ -456,7 +458,7 @@ class Solution(System, EntryData):
     )
     solutes = SubSection(
         link='https://doi.org/10.1351/goldbook.S05744',
-        section_def=SolutionReferencedSubSystem,
+        section_def=SolutionNestedSubSystem,
         description="""
         The minor component of a solution which is regarded as having been dissolved
         by the solvent.
@@ -717,7 +719,31 @@ class AddSolutionComponent(SolutionPreparationStep):
             ),
         ),
     )
-    # TODO deal with the case when the component is a nested section
+
+    solution_component = SubSection(section_def=SolutionNestedSubSystem)
+    measurement = SubSection(section_def=MeasurementMethodology)
+
+
+class AddSolutionReferencedComponent(SolutionPreparationStep):
+    """
+    Section for adding a component to the solution.
+    """
+
+    m_def = Section(
+        description='Step for adding a component to the solution.',
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                order=[
+                    'name',
+                    'start_time',
+                    'duration',
+                    'comment',
+                    'solution_component',
+                ],
+            ),
+        ),
+    )
+
     solution_component = SubSection(section_def=SolutionReferencedSubSystem)
     measurement = SubSection(section_def=MeasurementMethodology)
 
