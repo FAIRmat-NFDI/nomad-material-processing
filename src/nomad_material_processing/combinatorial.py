@@ -374,6 +374,9 @@ class CombinatorialProperty(ArchiveSection):
     )
     measurements = Quantity(
         type=Reference(Measurement.m_def),
+        description="""
+        List of measurements used to determine the property.
+        """,
         shape=['*'],
     )
 
