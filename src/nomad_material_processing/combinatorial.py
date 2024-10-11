@@ -385,7 +385,7 @@ class Formula(CombinatorialProperty):
     value = Quantity(
         type=str,
         description="""
-        The formula of the sample.
+        The molecular formula of the sample.
         """,
     )
 
