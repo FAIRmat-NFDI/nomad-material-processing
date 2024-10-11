@@ -32,6 +32,7 @@ from nomad.datamodel.metainfo.basesections import (
     Collection,
     CompositeSystem,
     CompositeSystemReference,
+    Measurement,
 )
 from nomad.datamodel.metainfo.plot import (
     PlotlyFigure,
@@ -40,6 +41,7 @@ from nomad.datamodel.metainfo.plot import (
 from nomad.metainfo import (
     Package,
     Quantity,
+    Reference,
     Section,
     SubSection,
 )
@@ -361,6 +363,256 @@ class DiscreteCombinatorialLibrary(Collection):
             logger (BoundLogger): A structlog logger.
         """
         super().normalize(archive, logger)
+
+
+class CombinatorialProperty(ArchiveSection):
+    model = Quantity(
+        type=str,
+        description="""
+        The model used to calculate the property.
+        """,
+    )
+    measurements = Quantity(
+        type=Reference(Measurement.m_def),
+        description="""
+        List of measurements used to determine the property.
+        """,
+        shape=['*'],
+    )
+
+
+class Formula(CombinatorialProperty):
+    value = Quantity(
+        type=str,
+        description="""
+        The molecular formula of the sample.
+        """,
+    )
+
+
+class Thickness(CombinatorialProperty):
+    value = Quantity(
+        type=float,
+        description="""
+        The (average) thickness of the sample.
+        """,
+        unit='m',
+    )
+
+
+class Conductivity(CombinatorialProperty):
+    value = Quantity(
+        type=float,
+        description="""
+        The conductivity of the sample.
+        """,
+        unit='S/m',
+    )
+
+
+class CarrierLifetime(CombinatorialProperty):
+    value = Quantity(
+        type=float,
+        description="""
+        The lifetime of the (majority) carriers in the sample.
+        """,
+        unit='s',
+    )
+
+
+class BandGap(CombinatorialProperty):
+    value = Quantity(
+        type=float,
+        description="""
+        The band gap of the sample.
+        """,
+        unit='eV',
+    )
+
+
+class Synthesis(CombinatorialProperty):
+    method = Quantity(
+        type=str,
+        description="""
+        The method used to synthesize the material.
+        """,
+    )
+    temperature = Quantity(
+        type=float,
+        description="""
+        The (maximum) temperature at which the material was synthesized.
+        """,
+        unit='K',
+    )
+    pressure = Quantity(
+        type=float,
+        description="""
+        The (average) pressure at which the material was synthesized.
+        """,
+        unit='Pa',
+    )
+    atmosphere = Quantity(
+        type=str,
+        description="""
+        The atmosphere in which the material was synthesized.
+        """,
+    )
+
+
+class Photoluminescence(CombinatorialProperty):
+    peak_position = Quantity(
+        type=float,
+        description="""
+        The peak position of the photoluminescence spectrum.
+        """,
+        unit='nm',
+    )
+    fwhm = Quantity(
+        type=float,
+        description="""
+        The full width at half maximum of the photoluminescence spectrum.
+        """,
+        unit='nm',
+    )
+    peak_area = Quantity(
+        type=float,
+        description="""
+        The peak area of the photoluminescence spectrum.
+        """,
+    )
+    absorbed_power_flux = Quantity(
+        type=float,
+        description="""
+        The (assumed) absorbed power flux of the sample during the photoluminescence
+        measurement.
+        """,
+        unit='W/m^2',
+    )
+    excitation_wavelength = Quantity(
+        type=float,
+        description="""
+        The (peak) wavelength of the excitation source used during the photoluminescence
+        measurement.
+        """,
+        unit='nm',
+    )
+    plqy = Quantity(
+        type=float,
+        description="""
+        The photoluminescence quantum yield of the sample.
+        """,
+    )
+
+
+class XRayDiffraction(CombinatorialProperty):
+    def derive_n_values(self):
+        if self.intensity is not None:
+            return len(self.intensity)
+        if self.scattering_vector is not None:
+            return len(self.scattering_vector)
+        else:
+            return 0
+
+    n_values = Quantity(type=int, derived=derive_n_values)
+
+    intensity = Quantity(
+        type=float,
+        description="""
+        The intensity of the X-ray diffraction pattern.
+        """,
+        shape=['n_values'],
+    )
+    scattering_vector = Quantity(
+        type=float,
+        description="""
+        The corresponding scattering vector values of the measured X-ray diffraction
+        pattern.
+        """,
+        shape=['n_values'],
+        unit='1/nm',
+    )
+
+
+class ComplexRefractiveIndex(CombinatorialProperty):
+    def derive_n_values(self):
+        if self.n is not None:
+            return len(self.n)
+        if self.k is not None:
+            return len(self.k)
+        if self.photon_wavelength is not None:
+            return len(self.photon_wavelength)
+        else:
+            return 0
+
+    n_values = Quantity(type=int, derived=derive_n_values)
+
+    n = Quantity(
+        type=float,
+        description="""
+        The (real part of the) refractive index of the sample.
+        """,
+        shape=['n_values'],
+    )
+    k = Quantity(
+        type=float,
+        description="""
+        The attenuation coefficient of the sample.
+        """,
+        shape=['n_values'],
+    )
+    photon_wavelength = Quantity(
+        type=float,
+        description="""
+        The wavelength of the photons used to measure the complex refractive index.
+        """,
+        unit='nm',
+        shape=['n_values'],
+    )
+
+
+class Photovoltaic(CombinatorialProperty):
+    efficiency = Quantity(
+        type=float,
+        description="""
+        The (theoretical) efficiency of the sample as a solar cell under AM1.5G.
+        """,
+    )
+    jsc = Quantity(
+        type=float,
+        description="""
+        The (theoretical) short circuit current of the sample as a solar cell under
+        AM1.5G.
+        """,
+        unit='A/m^2',
+    )
+    voc = Quantity(
+        type=float,
+        description="""
+        The (theoretical) open circuit voltage of the sample as a solar cell under
+        AM1.5G.
+        """,
+        unit='V',
+    )
+    ff = Quantity(
+        type=float,
+        description="""
+        The (theoretical) fill factor of the sample as a solar cell under
+        AM1.5G.
+        """,
+    )
+
+
+class ThinFilmCombinatorialSample(CombinatorialSample):
+    formula = SubSection(section_def=Formula)
+    thickness = SubSection(section_def=Thickness)
+    conductivity = SubSection(section_def=Conductivity)
+    carrier_lifetime = SubSection(section_def=CarrierLifetime)
+    band_gap = SubSection(section_def=BandGap)
+    synthesis = SubSection(section_def=Synthesis)
+    photoluminescence = SubSection(section_def=Photoluminescence)
+    xray_diffraction = SubSection(section_def=XRayDiffraction)
+    complex_refractive_index = SubSection(section_def=ComplexRefractiveIndex)
+    photovoltaic = SubSection(section_def=Photovoltaic)
 
 
 m_package.__init_metainfo__()
