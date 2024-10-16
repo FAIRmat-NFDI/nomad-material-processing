@@ -11,15 +11,16 @@ from nomad.datamodel.metainfo.annotations import (
     SectionProperties,
 )
 from nomad.datamodel.metainfo.basesections import (
-    Component,
-    CompositeSystem,
-    CompositeSystemReference,
     InstrumentReference,
     Process,
     ProcessStep,
-    PubChemPureSubstanceSection,
-    PureSubstanceComponent,
-    SystemComponent,
+)
+from nomad.datamodel.metainfo.basesections2 import (
+    System,
+    SystemReference,
+    NestedSubSystem,
+    ReferencedSubSystem,
+    SubSystemProperties,
 )
 from nomad.metainfo import (
     Category,
@@ -148,9 +149,9 @@ class SolutionStorage(ArchiveSection):
     )
 
 
-class BaseSolutionComponent(Component):
+class SolutionSubSystemProperties(SubSystemProperties):
     """
-    Base class for a component added to the solution.
+    Properties for the `SolutionSubSystem` section.
     """
 
     volume = Quantity(
@@ -162,35 +163,6 @@ class BaseSolutionComponent(Component):
             minValue=0,
         ),
         unit='liter',
-    )
-
-
-class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
-    """
-    Section for a component added to the solution.
-    """
-
-    # TODO get the density of the component automatically if not provided
-    m_def = Section(
-        description='A component added to the solution.',
-        a_eln=ELNAnnotation(
-            properties=SectionProperties(
-                order=[
-                    'name',
-                    'substance_name',
-                    'component_role',
-                    'volume',
-                    'density',
-                    'mass',
-                    'molar_concentration',
-                ],
-                visible=Filter(
-                    exclude=[
-                        'mass_fraction',
-                    ],
-                ),
-            ),
-        ),
     )
     component_role = Quantity(
         type=MEnum(
@@ -230,62 +202,98 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         unit='kilogram / liter',
     )
     molar_concentration = SubSection(section_def=MolarConcentration)
-    pure_substance = SubSection(section_def=PubChemPureSubstanceSection)
 
-    def _calculate_moles(self, logger: 'BoundLogger' = None) -> Union[Quantity, None]:
-        """
-        A private method to calculate the moles of a component in the solution.
 
-        Args:
-            component (SolutionComponent): The component to calculate the moles for.
-            logger (BoundLogger): A structlog logger.
+class SolutionNestedSubSystem(NestedSubSystem):
+    """
+    Base class for a component added to the solution.
+    """
 
-        Returns:
-            Union[Quantity, None]: The moles of the component in the solution.
-        """
-        if self.volume and self.density:
-            self.mass = self.volume * self.density
+    properties = SubSection(
+        section_def=SolutionSubSystemProperties,
+        description="""
+        Section describing the properties of the sub system.
+        """,
+    )
+    # # TODO get the density of the component automatically if not provided
+    # m_def = Section(
+    #     description='A component added to the solution.',
+    #     a_eln=ELNAnnotation(
+    #         properties=SectionProperties(
+    #             order=[
+    #                 'name',
+    #                 'substance_name',
+    #                 'component_role',
+    #                 'volume',
+    #                 'density',
+    #                 'mass',
+    #                 'molar_concentration',
+    #             ],
+    #             visible=Filter(
+    #                 exclude=[
+    #                     'mass_fraction',
+    #                 ],
+    #             ),
+    #         ),
+    #     ),
+    # )
 
-        if not self.pure_substance.molecular_mass:
-            if logger:
-                logger.warning(
-                    f'Could not calculate moles of the "{self.name}" as molecular '
-                    'mass is missing.'
-                )
-            return
-        if not self.mass:
-            if logger:
-                logger.warning(
-                    f'Could not calculate moles of the "{self.name}" as mass is '
-                    'missing.'
-                )
-            return
-        moles = self.mass / (self.pure_substance.molecular_mass * ureg.N_A)
-        return moles.to_base_units()
+    # TODO fit the following normalization methods coming from SolutionComponent class
 
-    def calculate_molar_concentration(
-        self, volume: Quantity, logger: 'BoundLogger' = None
-    ) -> None:
-        """
-        Calculate the molar concentration of the component
-        in a given volume of solution.
+    # def _calculate_moles(self, logger: 'BoundLogger' = None) -> Union[Quantity, None]:
+    #     """
+    #     A private method to calculate the moles of a component in the solution.
 
-        Args:
-            volume (Quantity): The volume of the solution.
-            logger (BoundLogger): A structlog logger.
-        """
-        if not volume:
-            if logger:
-                logger.warning(
-                    f'Volume of the solution is missing, can not calculate the '
-                    f'concentration of the component {self.name}.'
-                )
-            return
-        if not self.molar_concentration:
-            self.molar_concentration = MolarConcentration()
-        moles = self._calculate_moles(logger)
-        if moles:
-            self.molar_concentration.calculated_concentration = moles / volume
+    #     Args:
+    #         component (SolutionComponent): The component to calculate the moles for.
+    #         logger (BoundLogger): A structlog logger.
+
+    #     Returns:
+    #         Union[Quantity, None]: The moles of the component in the solution.
+    #     """
+    #     if self.volume and self.density:
+    #         self.mass = self.volume * self.density
+
+    #     if not self.pure_substance.molecular_mass:
+    #         if logger:
+    #             logger.warning(
+    #                 f'Could not calculate moles of the "{self.name}" as molecular '
+    #                 'mass is missing.'
+    #             )
+    #         return
+    #     if not self.mass:
+    #         if logger:
+    #             logger.warning(
+    #                 f'Could not calculate moles of the "{self.name}" as mass is '
+    #                 'missing.'
+    #             )
+    #         return
+    #     moles = self.mass / (self.pure_substance.molecular_mass * ureg.N_A)
+    #     return moles.to_base_units()
+
+    # def calculate_molar_concentration(
+    #     self, volume: Quantity, logger: 'BoundLogger' = None
+    # ) -> None:
+    #     """
+    #     Calculate the molar concentration of the component
+    #     in a given volume of solution.
+
+    #     Args:
+    #         volume (Quantity): The volume of the solution.
+    #         logger (BoundLogger): A structlog logger.
+    #     """
+    #     if not volume:
+    #         if logger:
+    #             logger.warning(
+    #                 f'Volume of the solution is missing, can not calculate the '
+    #                 f'concentration of the component {self.name}.'
+    #             )
+    #         return
+    #     if not self.molar_concentration:
+    #         self.molar_concentration = MolarConcentration()
+    #     moles = self._calculate_moles(logger)
+    #     if moles:
+    #         self.molar_concentration.calculated_concentration = moles / volume
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
@@ -296,15 +304,59 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
             archive (EntryArchive): A NOMAD archive.
             logger (BoundLogger): A structlog logger.
         """
-        if self.substance_name and self.pure_substance is None:
-            self.pure_substance = PubChemPureSubstanceSection(name=self.substance_name)
-            self.pure_substance.normalize(archive, logger)
+        #     if self.substance_name and self.pure_substance is None:
+        #         self.pure_substance = PubChemPureSubstanceSection(name=self.substance_name)
+        #         self.pure_substance.normalize(archive, logger)
         if self.volume and self.density:
             self.mass = self.volume * self.density
         super().normalize(archive, logger)
 
+    # TODO fit the following normalization methods coming from SolutionComponentReference class
 
-class Solution(CompositeSystem, EntryData):
+    # def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+    #     """
+    #     Normalize method for the `SolutionComponentReference` section. Sets the name and
+    #     volume of the component solution based on the reference.
+
+    #     Args:
+    #         archive (EntryArchive): A NOMAD archive.
+    #         logger (BoundLogger): A structlog logger.
+    #     """
+    #     if self.system:
+    #         if not self.name:
+    #             self.name = self.system.name
+    #         available_volume = self.system.calculated_volume
+    #         if self.system.measured_volume:
+    #             available_volume = self.system.measured_volume
+    #         if not self.volume:
+    #             # assume entire volume of the solution is used
+    #             self.volume = available_volume
+    #         elif self.volume > available_volume:
+    #             logger.warning(
+    #                 f'The volume used for the "{self.name}" is greater than the '
+    #                 'available volume of the solution. Setting it to the available '
+    #                 'volume.'
+    #             )
+    #             self.volume = available_volume
+    #         if self.system.density:
+    #             self.mass = self.system.density * self.volume
+    #     super().normalize(archive, logger)
+
+
+class SolutionReferencedSubSystem(ReferencedSubSystem):
+    """
+    Base class for a component added to the solution.
+    """
+
+    properties = SubSection(
+        section_def=SolutionSubSystemProperties,
+        description="""
+        Section describing the properties of the sub system.
+        """,
+    )
+
+
+class Solution(System, EntryData):
     """
     Section for decribing liquid solutions.
     """
@@ -325,11 +377,13 @@ class Solution(CompositeSystem, EntryData):
                     'mass',
                     'density',
                     'description',
-                    'components',
-                    'elemental_composition',
+                    'solution_storage',
+                    'sub_systems',
+                    'sub_systems_reference',
                     'solvents',
                     'solutes',
                 ],
+                visible=Filter(exclude=['geometry']),
             ),
         ),
     )
@@ -378,14 +432,25 @@ class Solution(CompositeSystem, EntryData):
         ),
         unit='liter',
     )
-    components = SubSection(
-        section_def=BaseSolutionComponent,
-        description='The components of the solution',
+    sub_systems = SubSection(
+        section_def=SolutionNestedSubSystem,
+        description="""
+        A list of all the components that make up the system.
+        """,
         repeats=True,
     )
+
+    sub_systems_reference = SubSection(
+        section_def=SolutionReferencedSubSystem,
+        description="""
+        A list of all the component references that make up the system.
+        """,
+        repeats=True,
+    )
+    # TODO include also the nested versions of solvent and solute
     solvents = SubSection(
         link='https://doi.org/10.1351/goldbook.S05751',
-        section_def=SolutionComponent,
+        section_def=SolutionNestedSubSystem,
         description="""
         The term applied to the whole initial liquid phase containing the extractant.
         """,
@@ -393,7 +458,7 @@ class Solution(CompositeSystem, EntryData):
     )
     solutes = SubSection(
         link='https://doi.org/10.1351/goldbook.S05744',
-        section_def=SolutionComponent,
+        section_def=SolutionNestedSubSystem,
         description="""
         The minor component of a solution which is regarded as having been dissolved
         by the solvent.
@@ -407,149 +472,149 @@ class Solution(CompositeSystem, EntryData):
         """,
     )
 
-    @staticmethod
-    def combine_components(component_list, logger: 'BoundLogger' = None) -> None:
-        """
-        Combine multiple `SolutionComponent` instances with the same PubChem CID number.
-        Following properties are accumulated for combined components: mass, volume.
-        If the mass or volume is not provided for a component, it is not combined.
+    # @staticmethod
+    # def combine_components(component_list, logger: 'BoundLogger' = None) -> None:
+    #     """
+    #     Combine multiple `SolutionComponent` instances with the same PubChem CID number.
+    #     Following properties are accumulated for combined components: mass, volume.
+    #     If the mass or volume is not provided for a component, it is not combined.
 
-        Args:
-            component_list (list): A list of `SolutionComponent` instances.
-            logger (BoundLogger): A structlog logger.
-        """
-        combined_components = {}
-        unprocessed_components = []
-        for component in component_list:
-            if not component.pure_substance.pub_chem_cid:
-                unprocessed_components.append(component.m_copy(deep=True))
-                continue
-            comparison_key = component.pure_substance.pub_chem_cid
-            if comparison_key in combined_components:
-                for prop in ['mass', 'volume']:
-                    val1 = getattr(combined_components[comparison_key], prop, None)
-                    val2 = getattr(component, prop, None)
-                    if val1 and val2:
-                        setattr(combined_components[comparison_key], prop, val1 + val2)
-                    elif val1:
-                        setattr(combined_components[comparison_key], prop, val1)
-                    elif val2:
-                        setattr(combined_components[comparison_key], prop, val2)
-            else:
-                combined_components[comparison_key] = component.m_copy(deep=True)
+    #     Args:
+    #         component_list (list): A list of `SolutionComponent` instances.
+    #         logger (BoundLogger): A structlog logger.
+    #     """
+    #     combined_components = {}
+    #     unprocessed_components = []
+    #     for component in component_list:
+    #         if not component.pure_substance.pub_chem_cid:
+    #             unprocessed_components.append(component.m_copy(deep=True))
+    #             continue
+    #         comparison_key = component.pure_substance.pub_chem_cid
+    #         if comparison_key in combined_components:
+    #             for prop in ['mass', 'volume']:
+    #                 val1 = getattr(combined_components[comparison_key], prop, None)
+    #                 val2 = getattr(component, prop, None)
+    #                 if val1 and val2:
+    #                     setattr(combined_components[comparison_key], prop, val1 + val2)
+    #                 elif val1:
+    #                     setattr(combined_components[comparison_key], prop, val1)
+    #                 elif val2:
+    #                     setattr(combined_components[comparison_key], prop, val2)
+    #         else:
+    #             combined_components[comparison_key] = component.m_copy(deep=True)
 
-        combined_components = list(combined_components.values())
-        combined_components.extend(unprocessed_components)
+    #     combined_components = list(combined_components.values())
+    #     combined_components.extend(unprocessed_components)
 
-        return combined_components
+    #     return combined_components
 
-    def calculate_volume(self, logger: 'BoundLogger' = None) -> None:
-        """
-        Calculate the volume of the solution by adding the volumes of its components.
+    # def calculate_volume(self, logger: 'BoundLogger' = None) -> None:
+    #     """
+    #     Calculate the volume of the solution by adding the volumes of its components.
 
-        Args:
-            logger (BoundLogger): A structlog logger.
-        """
-        self.calculated_volume = ureg.Quantity(0, 'milliliter')
-        for component in self.components:
-            if not component.volume:
-                if component.component_role == 'Solvent' and logger:
-                    logger.warning(
-                        f'The volume of the solvent component "{component.name}" is '
-                        'missing.'
-                    )
-                continue
-            self.calculated_volume += component.volume
+    #     Args:
+    #         logger (BoundLogger): A structlog logger.
+    #     """
+    #     self.calculated_volume = ureg.Quantity(0, 'milliliter')
+    #     for component in self.components:
+    #         if not component.volume:
+    #             if component.component_role == 'Solvent' and logger:
+    #                 logger.warning(
+    #                     f'The volume of the solvent component "{component.name}" is '
+    #                     'missing.'
+    #                 )
+    #             continue
+    #         self.calculated_volume += component.volume
 
-    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:  # noqa: PLR0912, PLR0915
-        """
-        Normalize method for the `Solution` section. Calculate the total volume of the
-        solution. Populates the solvents and solutes with the components based on the
-        `component_role`. If a component doesn't have pure_substance section, it is
-        skipped. In case of components that are solutions, the quantity of their
-        solvents and solutes is scaled based on their quantity used. Combines the
-        components with the same PubChem CID. Set the mass, density, and elemental
-        composition of the solution.
+    # def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:  # noqa: PLR0912, PLR0915
+    #     """
+    #     Normalize method for the `Solution` section. Calculate the total volume of the
+    #     solution. Populates the solvents and solutes with the components based on the
+    #     `component_role`. If a component doesn't have pure_substance section, it is
+    #     skipped. In case of components that are solutions, the quantity of their
+    #     solvents and solutes is scaled based on their quantity used. Combines the
+    #     components with the same PubChem CID. Set the mass, density, and elemental
+    #     composition of the solution.
 
-        Args:
-            archive (EntryArchive): A NOMAD archive.
-            logger (BoundLogger): A structlog logger.
-        """
-        self.solvents, self.solutes = [], []
+    #     Args:
+    #         archive (EntryArchive): A NOMAD archive.
+    #         logger (BoundLogger): A structlog logger.
+    #     """
+    #     self.solvents, self.solutes = [], []
 
-        self.calculate_volume(logger)
-        volume = self.calculated_volume
-        if self.measured_volume:
-            volume = self.measured_volume
+    #     self.calculate_volume(logger)
+    #     volume = self.calculated_volume
+    #     if self.measured_volume:
+    #         volume = self.measured_volume
 
-        for component in self.components:
-            if isinstance(component, SolutionComponent):
-                if not component.pure_substance or not component.mass:
-                    logger.warning(
-                        f'Either the pure_substance sub_section or mass for the '
-                        f'component "{component.name}" is missing. Not adding it to '
-                        f'the "{component.component_role.lower()}' + 's' + '" list.'
-                    )
-                    continue
-                component.mass_fraction = None
-                component.calculate_molar_concentration(volume, logger)
-                if component.component_role == 'Solvent':
-                    self.solvents.append(component.m_copy(deep=True))
-                elif component.component_role == 'Solute':
-                    self.solutes.append(component.m_copy(deep=True))
-            elif isinstance(component, SolutionComponentReference):
-                # add solutes and solvents from the solution
-                # while taking the volume used into account
-                if component.system:
-                    scaler = 1
-                    if component.volume:
-                        # update scaler based on the volume used
-                        total_available_volume = component.system.calculated_volume
-                        if component.system.measured_volume:
-                            total_available_volume = component.system.measured_volume
-                        if total_available_volume:
-                            scaler = component.volume / total_available_volume
+    #     for component in self.components:
+    #         if isinstance(component, SolutionComponent):
+    #             if not component.pure_substance or not component.mass:
+    #                 logger.warning(
+    #                     f'Either the pure_substance sub_section or mass for the '
+    #                     f'component "{component.name}" is missing. Not adding it to '
+    #                     f'the "{component.component_role.lower()}' + 's' + '" list.'
+    #                 )
+    #                 continue
+    #             component.mass_fraction = None
+    #             component.calculate_molar_concentration(volume, logger)
+    #             if component.component_role == 'Solvent':
+    #                 self.solvents.append(component.m_copy(deep=True))
+    #             elif component.component_role == 'Solute':
+    #                 self.solutes.append(component.m_copy(deep=True))
+    #         elif isinstance(component, SolutionComponentReference):
+    #             # add solutes and solvents from the solution
+    #             # while taking the volume used into account
+    #             if component.system:
+    #                 scaler = 1
+    #                 if component.volume:
+    #                     # update scaler based on the volume used
+    #                     total_available_volume = component.system.calculated_volume
+    #                     if component.system.measured_volume:
+    #                         total_available_volume = component.system.measured_volume
+    #                     if total_available_volume:
+    #                         scaler = component.volume / total_available_volume
 
-                    if component.system.solvents:
-                        for solvent in component.system.solvents:
-                            self.solvents.append(solvent.m_copy(deep=True))
-                            if self.solvents[-1].volume:
-                                self.solvents[-1].volume *= scaler
-                            if self.solvents[-1].mass:
-                                self.solvents[-1].mass *= scaler
-                    if component.system.solutes:
-                        for solute in component.system.solutes:
-                            self.solutes.append(solute.m_copy(deep=True))
-                            if self.solutes[-1].volume:
-                                self.solutes[-1].volume *= scaler
-                            if self.solutes[-1].mass:
-                                self.solutes[-1].mass *= scaler
+    #                 if component.system.solvents:
+    #                     for solvent in component.system.solvents:
+    #                         self.solvents.append(solvent.m_copy(deep=True))
+    #                         if self.solvents[-1].volume:
+    #                             self.solvents[-1].volume *= scaler
+    #                         if self.solvents[-1].mass:
+    #                             self.solvents[-1].mass *= scaler
+    #                 if component.system.solutes:
+    #                     for solute in component.system.solutes:
+    #                         self.solutes.append(solute.m_copy(deep=True))
+    #                         if self.solutes[-1].volume:
+    #                             self.solutes[-1].volume *= scaler
+    #                         if self.solutes[-1].mass:
+    #                             self.solutes[-1].mass *= scaler
 
-        self.solvents = self.combine_components(self.solvents, logger)
-        self.solutes = self.combine_components(self.solutes, logger)
+    #     self.solvents = self.combine_components(self.solvents, logger)
+    #     self.solutes = self.combine_components(self.solutes, logger)
 
-        for component in self.solvents:
-            component.calculate_molar_concentration(volume, logger)
-        for component in self.solutes:
-            component.calculate_molar_concentration(volume, logger)
+    #     for component in self.solvents:
+    #         component.calculate_molar_concentration(volume, logger)
+    #     for component in self.solutes:
+    #         component.calculate_molar_concentration(volume, logger)
 
-        mass = 0
-        self.mass = None
-        self.density = None
-        for component in self.solvents + self.solutes:
-            mass += component.mass
-        if mass:
-            self.mass = mass
-            if volume:
-                self.density = self.mass / volume
+    #     mass = 0
+    #     self.mass = None
+    #     self.density = None
+    #     for component in self.solvents + self.solutes:
+    #         mass += component.mass
+    #     if mass:
+    #         self.mass = mass
+    #         if volume:
+    #             self.density = self.mass / volume
 
-        # TODO check if the elemental_composition is adjusted based on the volume used
-        # of the starter solutions
-        self.elemental_composition = []
-        super().normalize(archive, logger)
+    #     # TODO check if the elemental_composition is adjusted based on the volume used
+    #     # of the starter solutions
+    #     self.elemental_composition = []
+    #     super().normalize(archive, logger)
 
 
-class SolutionReference(CompositeSystemReference):
+class SolutionReference(SystemReference):
     """
     A section used for referencing the Solution.
     """
@@ -562,74 +627,6 @@ class SolutionReference(CompositeSystemReference):
             label='Solution Reference',
         ),
     )
-
-
-class SolutionComponentReference(SystemComponent, BaseSolutionComponent):
-    """
-    Section for referencing a solution that is being used as a component.
-    """
-
-    m_def = Section(
-        description='A reference to the solution that is being used as a component.',
-        a_eln=ELNAnnotation(
-            properties=SectionProperties(
-                order=[
-                    'name',
-                    'system',
-                    'volume',
-                    'mass',
-                ],
-                visible=Filter(
-                    exclude=[
-                        'mass_fraction',
-                    ],
-                ),
-            ),
-        ),
-    )
-    system = Quantity(
-        type=Solution,  # Reference(System.m_def)
-        description='A reference to the solution.',
-        a_eln=dict(component='ReferenceEditQuantity'),
-    )
-    mass = Quantity(
-        type=float,
-        description='The mass of the solution used.',
-        a_eln=ELNAnnotation(
-            defaultDisplayUnit='gram',
-            minValue=0,
-        ),
-        unit='kilogram',
-    )
-
-    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
-        """
-        Normalize method for the `SolutionComponentReference` section. Sets the name and
-        volume of the component solution based on the reference.
-
-        Args:
-            archive (EntryArchive): A NOMAD archive.
-            logger (BoundLogger): A structlog logger.
-        """
-        if self.system:
-            if not self.name:
-                self.name = self.system.name
-            available_volume = self.system.calculated_volume
-            if self.system.measured_volume:
-                available_volume = self.system.measured_volume
-            if not self.volume:
-                # assume entire volume of the solution is used
-                self.volume = available_volume
-            elif self.volume > available_volume:
-                logger.warning(
-                    f'The volume used for the "{self.name}" is greater than the '
-                    'available volume of the solution. Setting it to the available '
-                    'volume.'
-                )
-                self.volume = available_volume
-            if self.system.density:
-                self.mass = self.system.density * self.volume
-        super().normalize(archive, logger)
 
 
 class SolutionPreparationStep(ProcessStep):
@@ -722,39 +719,66 @@ class AddSolutionComponent(SolutionPreparationStep):
             ),
         ),
     )
-    solution_component = SubSection(section_def=BaseSolutionComponent)
+
+    solution_component = SubSection(section_def=SolutionNestedSubSystem)
     measurement = SubSection(section_def=MeasurementMethodology)
 
-    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
-        """
-        Normalize method for the `AddSolutionComponent` section. Sets the name of the
-        step based on component name or component role.
 
-        Args:
-            archive (EntryArchive): A NOMAD archive.
-            logger (BoundLogger): A structlog logger.
-        """
-        if self.solution_component and isinstance(
-            self.solution_component, SolutionComponent
-        ):
-            if not self.name:
-                if self.solution_component.name:
-                    self.name = f'Add {self.solution_component.name}'
-                else:
-                    self.name = f'Add {self.solution_component.component_role}'
-        elif (
-            self.solution_component
-            and isinstance(self.solution_component, SolutionComponentReference)
-            and self.solution_component.system
-        ):
-            solution = self.solution_component.system
-            if not self.name:
-                if solution.name:
-                    self.name = f'Add {solution.name}'
-                else:
-                    self.name = 'Add Solution'
+class AddSolutionReferencedComponent(SolutionPreparationStep):
+    """
+    Section for adding a component to the solution.
+    """
 
-        super().normalize(archive, logger)
+    m_def = Section(
+        description='Step for adding a component to the solution.',
+        a_eln=ELNAnnotation(
+            properties=SectionProperties(
+                order=[
+                    'name',
+                    'start_time',
+                    'duration',
+                    'comment',
+                    'solution_component',
+                ],
+            ),
+        ),
+    )
+
+    solution_component = SubSection(section_def=SolutionReferencedSubSystem)
+    measurement = SubSection(section_def=MeasurementMethodology)
+
+    # TODO fit the following normalization methods coming from AddSolutionComponent class
+
+    # def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+    #     """
+    #     Normalize method for the `AddSolutionComponent` section. Sets the name of the
+    #     step based on component name or component role.
+
+    #     Args:
+    #         archive (EntryArchive): A NOMAD archive.
+    #         logger (BoundLogger): A structlog logger.
+    #     """
+    #     if self.solution_component and isinstance(
+    #         self.solution_component, SolutionComponent
+    #     ):
+    #         if not self.name:
+    #             if self.solution_component.name:
+    #                 self.name = f'Add {self.solution_component.name}'
+    #             else:
+    #                 self.name = f'Add {self.solution_component.component_role}'
+    #     elif (
+    #         self.solution_component
+    #         and isinstance(self.solution_component, SolutionComponentReference)
+    #         and self.solution_component.system
+    #     ):
+    #         solution = self.solution_component.system
+    #         if not self.name:
+    #             if solution.name:
+    #                 self.name = f'Add {solution.name}'
+    #             else:
+    #                 self.name = 'Add Solution'
+
+    #     super().normalize(archive, logger)
 
 
 class Agitation(SolutionPreparationStep):
