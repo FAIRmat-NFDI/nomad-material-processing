@@ -43,7 +43,7 @@ from nomad.metainfo import (
     Quantity,
     Reference,
     Section,
-    SubSection,
+    SubSection
 )
 
 if TYPE_CHECKING:
@@ -369,9 +369,18 @@ class CombinatorialProperty(ArchiveSection):
     model = Quantity(
         type=str,
         description="""
-        The model used to calculate the property.
+        The model/calculation method used to calculate the property.
         """,
     )
+
+    analysis = Quantity(
+        type=str,
+        description="""
+        The model used to calculate the property.
+        """,
+        a_browser=dict(adaptor='RawFileAdaptor'),
+    )
+
     measurements = Quantity(
         type=Reference(Measurement.m_def),
         description="""
@@ -459,49 +468,73 @@ class Synthesis(CombinatorialProperty):
     )
 
 
-class Photoluminescence(CombinatorialProperty):
-    peak_position = Quantity(
+class PLPeakPostion(CombinatorialProperty):
+    value = Quantity(
         type=float,
         description="""
-        The peak position of the photoluminescence spectrum.
-        """,
+      The peak position of the photoluminescence spectrum.
+      """,
         unit='nm',
     )
-    fwhm = Quantity(
+
+
+class PLFWHM(CombinatorialProperty):
+    value = Quantity(
         type=float,
         description="""
-        The full width at half maximum of the photoluminescence spectrum.
-        """,
+      The full width at half maximum of the photoluminescence spectrum.
+      """,
         unit='nm',
     )
-    peak_area = Quantity(
+
+
+class PLPeakArea(CombinatorialProperty):
+    value = Quantity(
         type=float,
         description="""
-        The peak area of the photoluminescence spectrum.
-        """,
+      The peak area of the photoluminescence spectrum.
+      """,
     )
-    absorbed_power_flux = Quantity(
+
+
+class PLAbsorbedPowerFlux(CombinatorialProperty):
+    value = Quantity(
         type=float,
         description="""
-        The (assumed) absorbed power flux of the sample during the photoluminescence
-        measurement.
-        """,
+      The (assumed) absorbed power flux of the sample during the photoluminescence
+      measurement.
+      """,
         unit='W/m^2',
     )
-    excitation_wavelength = Quantity(
+
+
+class PLExcitationWavelength(CombinatorialProperty):
+    value = Quantity(
         type=float,
         description="""
-        The (peak) wavelength of the excitation source used during the photoluminescence
-        measurement.
-        """,
+      The (peak) wavelength of the excitation source used during the photoluminescence
+      measurement.
+      """,
         unit='nm',
     )
-    plqy = Quantity(
+
+
+class PLQY(CombinatorialProperty):
+    value = Quantity(
         type=float,
         description="""
         The photoluminescence quantum yield of the sample.
         """,
     )
+
+
+class Photoluminescence(ArchiveSection):
+    peak_position = SubSection(section_def=PLPeakPostion)
+    fwhm = SubSection(section_def=PLFWHM)
+    peak_area = SubSection(section_def=PLPeakArea)
+    absorber_power_flux = SubSection(section_def=PLAbsorbedPowerFlux)
+    excitation_wavelength = SubSection(section_def=PLExcitationWavelength)
+    plqy = SubSection(section_def=PLQY)
 
 
 class XRayDiffraction(CombinatorialProperty):
@@ -570,14 +603,17 @@ class ComplexRefractiveIndex(CombinatorialProperty):
     )
 
 
-class Photovoltaic(CombinatorialProperty):
-    efficiency = Quantity(
+class PhotovoltaicEfficiency(CombinatorialProperty):
+    value = Quantity(
         type=float,
         description="""
         The (theoretical) efficiency of the sample as a solar cell under AM1.5G.
         """,
     )
-    jsc = Quantity(
+
+
+class PhotovoltaicShortCircuitCurrentDensity(CombinatorialProperty):
+    value = Quantity(
         type=float,
         description="""
         The (theoretical) short circuit current of the sample as a solar cell under
@@ -585,7 +621,10 @@ class Photovoltaic(CombinatorialProperty):
         """,
         unit='A/m^2',
     )
-    voc = Quantity(
+
+
+class PhotovoltaicOpenCircuitVoltage(CombinatorialProperty):
+    value = Quantity(
         type=float,
         description="""
         The (theoretical) open circuit voltage of the sample as a solar cell under
@@ -593,13 +632,23 @@ class Photovoltaic(CombinatorialProperty):
         """,
         unit='V',
     )
-    ff = Quantity(
+
+
+class PhotovoltaicFillFactor(CombinatorialProperty):
+    value = Quantity(
         type=float,
         description="""
-        The (theoretical) fill factor of the sample as a solar cell under
-        AM1.5G.
-        """,
+       The (theoretical) fill factor of the sample as a solar cell under
+       AM1.5G.
+       """,
     )
+
+
+class Photovoltaic(ArchiveSection):
+    efficiency = SubSection(section_def=PhotovoltaicEfficiency)
+    jsc = SubSection(section_def=PhotovoltaicShortCircuitCurrentDensity)
+    voc = SubSection(section_def=PhotovoltaicOpenCircuitVoltage)
+    ff = SubSection(section_def=PhotovoltaicFillFactor)
 
 
 class ThinFilmCombinatorialSample(CombinatorialSample):
