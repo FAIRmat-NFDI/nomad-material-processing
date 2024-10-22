@@ -373,7 +373,7 @@ class CombinatorialProperty(ArchiveSection):
         """,
     )
 
-    model_file = Quantity(
+    analysis = Quantity(
         type=str,
         description="""
         The model used to calculate the property.
@@ -385,14 +385,6 @@ class CombinatorialProperty(ArchiveSection):
         type=Reference(Measurement.m_def),
         description="""
         List of measurements used to determine the property.
-        """,
-        shape=['*'],
-    )
-
-    used_properties = Quantity(
-        type=Reference(SectionProxy("CombinatorialProperty")),
-        description="""
-        List of combinatorial properties used for this property.
         """,
         shape=['*'],
     )
@@ -427,16 +419,6 @@ class Conductivity(CombinatorialProperty):
     )
 
 
-class SheetResistance(CombinatorialProperty):
-    value = Quantity(
-        type=float,
-        description="""
-        The conductivity of the sample.
-        """,
-        unit='ohm',
-    )
-
-
 class CarrierLifetime(CombinatorialProperty):
     value = Quantity(
         type=float,
@@ -448,16 +430,6 @@ class CarrierLifetime(CombinatorialProperty):
 
 
 class BandGap(CombinatorialProperty):
-    value = Quantity(
-        type=float,
-        description="""
-        The band gap of the sample.
-        """,
-        unit='eV',
-    )
-
-
-class QuasiFermiLevelSplitting(CombinatorialProperty):
     value = Quantity(
         type=float,
         description="""
@@ -537,7 +509,7 @@ class PLAbsorbedPowerFlux(CombinatorialProperty):
 
 
 class PLExcitationWavelength(CombinatorialProperty):
-    excitation_wavelength = Quantity(
+    value = Quantity(
         type=float,
         description="""
       The (peak) wavelength of the excitation source used during the photoluminescence
@@ -548,7 +520,7 @@ class PLExcitationWavelength(CombinatorialProperty):
 
 
 class PLQY(CombinatorialProperty):
-    plqy = Quantity(
+    value = Quantity(
         type=float,
         description="""
         The photoluminescence quantum yield of the sample.
@@ -683,7 +655,6 @@ class ThinFilmCombinatorialSample(CombinatorialSample):
     formula = SubSection(section_def=Formula)
     thickness = SubSection(section_def=Thickness)
     conductivity = SubSection(section_def=Conductivity)
-    sheet_resistance = SubSection(section_def=SheetResistance)
     carrier_lifetime = SubSection(section_def=CarrierLifetime)
     band_gap = SubSection(section_def=BandGap)
     synthesis = SubSection(section_def=Synthesis)
