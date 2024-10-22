@@ -378,6 +378,7 @@ class CombinatorialProperty(ArchiveSection):
         description="""
         The model used to calculate the property.
         """,
+        a_browser=dict(adaptor='RawFileAdaptor'),
     )
 
     measurements = Quantity(
@@ -493,8 +494,6 @@ class Synthesis(CombinatorialProperty):
         The atmosphere in which the material was synthesized.
         """,
     )
-
-
 
 
 class PLPeakPostion(CombinatorialProperty):
