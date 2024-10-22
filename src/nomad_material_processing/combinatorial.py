@@ -474,7 +474,7 @@ class PLPeakPostion(CombinatorialProperty):
         description="""
       The peak position of the photoluminescence spectrum.
       """,
-        unit='nm',
+        unit='eV',
     )
 
 
@@ -484,7 +484,7 @@ class PLFWHM(CombinatorialProperty):
         description="""
       The full width at half maximum of the photoluminescence spectrum.
       """,
-        unit='nm',
+        unit='eV',
     )
 
 
@@ -508,17 +508,6 @@ class PLAbsorbedPowerFlux(CombinatorialProperty):
     )
 
 
-class PLExcitationWavelength(CombinatorialProperty):
-    value = Quantity(
-        type=float,
-        description="""
-      The (peak) wavelength of the excitation source used during the photoluminescence
-      measurement.
-      """,
-        unit='nm',
-    )
-
-
 class PLQY(CombinatorialProperty):
     value = Quantity(
         type=float,
@@ -529,11 +518,46 @@ class PLQY(CombinatorialProperty):
 
 
 class Photoluminescence(ArchiveSection):
+    excitation_wavelength = Quantity(
+        type=float,
+        description="""
+      The (peak) wavelength of the excitation source used during the photoluminescence
+      measurement.
+      """,
+        unit='nm',
+    )
+
+    excitation_power = Quantity(
+        type=float,
+        description="""
+      The power of the excitation source used during the photoluminescence
+      measurement.
+      """,
+        unit='W',
+    )
+
+    long_pass_filter = Quantity(
+        type=float,
+        description="""
+      The long pass filter wavelength of the excitation set up used during the photoluminescence
+      measurement.
+      """,
+        unit='nm',
+    )
+
+    spot_size_diameter = Quantity(
+        type=float,
+        description="""
+      The diameter of spot_size  of the excitation source used during the photoluminescence
+      measurement.
+      """,
+        unit='m',
+    )
+
     peak_position = SubSection(section_def=PLPeakPostion)
     fwhm = SubSection(section_def=PLFWHM)
     peak_area = SubSection(section_def=PLPeakArea)
     absorber_power_flux = SubSection(section_def=PLAbsorbedPowerFlux)
-    excitation_wavelength = SubSection(section_def=PLExcitationWavelength)
     plqy = SubSection(section_def=PLQY)
 
 
@@ -585,6 +609,16 @@ class ComplexRefractiveIndex(CombinatorialProperty):
         The (real part of the) refractive index of the sample.
         """,
         shape=['n_values'],
+        a_plot=[{
+            'label': 'n data over wavelength',
+            'x': 'photon_wavelength',
+            'y': 'n',
+            'layout': {
+                'yaxis': {
+                    "fixedrange": False},
+                'xaxis': {
+                    "fixedrange": False}},
+        }]
     )
     k = Quantity(
         type=float,
@@ -592,6 +626,16 @@ class ComplexRefractiveIndex(CombinatorialProperty):
         The attenuation coefficient of the sample.
         """,
         shape=['n_values'],
+        a_plot=[{
+            'label': 'k data over wavelength',
+            'x': 'photon_wavelength',
+            'y': 'n',
+            'layout': {
+                'yaxis': {
+                    "fixedrange": False},
+                'xaxis': {
+                    "fixedrange": False}},
+        }]
     )
     photon_wavelength = Quantity(
         type=float,
