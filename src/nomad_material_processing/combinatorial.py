@@ -629,7 +629,7 @@ class ComplexRefractiveIndex(CombinatorialProperty):
         a_plot=[{
             'label': 'k data over wavelength',
             'x': 'photon_wavelength',
-            'y': 'n',
+            'y': 'k',
             'layout': {
                 'yaxis': {
                     "fixedrange": False},
