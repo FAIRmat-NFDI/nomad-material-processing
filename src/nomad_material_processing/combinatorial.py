@@ -43,7 +43,7 @@ from nomad.metainfo import (
     Quantity,
     Reference,
     Section,
-    SubSection, SectionProxy
+    SubSection
 )
 
 if TYPE_CHECKING:
