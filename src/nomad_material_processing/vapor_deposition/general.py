@@ -31,6 +31,7 @@ from nomad.datamodel.metainfo.basesections import (
     Component,
     CompositeSystemReference,
     Entity,
+    EntityReference,
     PubChemPureSubstanceSection,
     PureSubstanceSection,
 )
@@ -118,6 +119,21 @@ class InsertReduction(Entity):
     )
 
 
+class InsertReductionPDIReference(EntityReference):
+    """
+    A section used for referencing a FilledSubstrateHolderPDI.
+    """
+
+    reference = Quantity(
+        type=InsertReduction,
+        description='Optional description of insert if used.',
+        a_eln=ELNAnnotation(
+            component='ReferenceEditQuantity',
+            label='Insert Reduction Reference',
+        ),
+    )
+
+
 class SubstrateHolderPosition(ArchiveSection):
     """
     One casing position of the substrate holder.
@@ -159,14 +175,6 @@ class SubstrateHolderPosition(ArchiveSection):
     slot_geometry = SubSection(
         section_def=Geometry,
     )
-    insert_reduction = Quantity(
-        type=InsertReduction,
-        description='Optional description of insert if used.',
-        a_eln=ELNAnnotation(
-            component='ReferenceEditQuantity',
-            label='ThinFilmStackMbe Reference',
-        ),
-    )
 
 
 class SubstrateHolder(Entity):
@@ -192,7 +200,7 @@ class SubstrateHolder(Entity):
             component=ELNComponentEnum.StringEditQuantity, label='holder_id'
         ),
     )
-    material = SubSection(section_def=PubChemPureSubstanceSection, repeats=True)
+    holder_material = SubSection(section_def=PubChemPureSubstanceSection, repeats=True)
     thickness = Quantity(
         type=float,
         unit='meter',
@@ -243,6 +251,12 @@ class FilledSubstrateHolderPosition(SubstrateHolderPosition):
     One casing position of the filled substrate holder.
     """
 
+    insert_reduction = SubSection(
+        section_def=InsertReductionPDIReference,
+        description="""
+        The Insert reduction placed in this position.
+        """,
+    )
     substrate = SubSection(
         section_def=CompositeSystemReference,
         description="""
@@ -261,7 +275,7 @@ class FilledSubstrateHolder(SubstrateHolder):
         description='A reference to an empty substrate holder.',
         a_eln=ELNAnnotation(
             component='ReferenceEditQuantity',
-            label='ThinFilmStackMbe Reference',
+            label='Empty Substrate Holder Reference',
         ),
     )
     positions = SubSection(
