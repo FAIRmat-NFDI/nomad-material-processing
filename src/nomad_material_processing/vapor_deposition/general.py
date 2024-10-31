@@ -119,7 +119,7 @@ class InsertReduction(Entity):
     )
 
 
-class InsertReductionPDIReference(EntityReference):
+class InsertReductionReference(EntityReference):
     """
     A section used for referencing a FilledSubstrateHolderPDI.
     """
@@ -252,7 +252,7 @@ class FilledSubstrateHolderPosition(SubstrateHolderPosition):
     """
 
     insert_reduction = SubSection(
-        section_def=InsertReductionPDIReference,
+        section_def=InsertReductionReference,
         description="""
         The Insert reduction placed in this position.
         """,
