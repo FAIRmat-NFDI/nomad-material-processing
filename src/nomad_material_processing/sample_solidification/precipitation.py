@@ -343,6 +343,7 @@ class ReactorProgram(Process, PlotSection, Schema, ArchiveSection):
             'Dosing1.MassA',
             'Dosing2.MassB',
             'pH1',
+            'pH1.Input',
             'Tj',
             'Tr',
             'Vr',
@@ -352,6 +353,7 @@ class ReactorProgram(Process, PlotSection, Schema, ArchiveSection):
             'elapsed_time',
             'dosing1_mass_a',
             'dosing2_mass_b',
+            'ph',
             'ph',
             'temperature_j',
             'temperature',
@@ -415,7 +417,7 @@ class ReactorProgram(Process, PlotSection, Schema, ArchiveSection):
             step = ReactorProgramStep()
             step.name = row['step name']
             if pd.isnull(row['duration']) is False:
-                print(row['duration'])
+                # print(row['duration'])
                 x = time.strptime(row['duration'], '%H:%M:%S')
                 step.duration = datetime.timedelta(
                     hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec
@@ -710,13 +712,24 @@ class ReactorProgram(Process, PlotSection, Schema, ArchiveSection):
                     counter += 1
                     if isinstance(step, ReactorProgramStep):
                         if step.duration is not None:
-                            df_steps = df_steps.append(
-                                {
-                                    'stepnumber': counter,
-                                    'name': step.name,
-                                    'duration': step.duration.to('s').magnitude,
-                                    'elapsed_time': step.elapsed_time.to('s').magnitude,
-                                },
+                            df_steps = pd.concat(
+                                [
+                                    df_steps,
+                                    pd.DataFrame(
+                                        [
+                                            {
+                                                'stepnumber': counter,
+                                                'name': step.name,
+                                                'duration': step.duration.to(
+                                                    's'
+                                                ).magnitude,
+                                                'elapsed_time': step.elapsed_time.to(
+                                                    's'
+                                                ).magnitude,
+                                            }
+                                        ]
+                                    ),
+                                ],
                                 ignore_index=True,
                             )
                 df_steps['duration'] = df_steps['duration'].astype(float)
