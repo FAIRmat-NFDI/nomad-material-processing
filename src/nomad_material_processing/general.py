@@ -757,6 +757,7 @@ class ElectronicProperties(ArchiveSection):
             'P-type',
             'N-type',
             'Semi-insulating',
+            'Insulating',
         ),
         description="""The type of semiconductor, N-type being electrons
         the majority carriers and P-type being holes the majority carriers.""",
