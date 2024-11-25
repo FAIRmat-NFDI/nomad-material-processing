@@ -9,9 +9,9 @@ This is a plugin for [NOMAD](https://nomad-lab.eu) which contains base sections 
 material processing.
 
 ## Getting started
-`nomad-material-processing` can be installed from PyPI using `pip`. 
+`nomad-material-processing` can be installed from PyPI using `pip`.
 
-> [!WARNING] 
+> [!WARNING]
 > Unfortunately, the current plugin mechanism is not supported by the latest nomad-lab version on PyPI and therefore an index url pointing to the NOMAD Gitlab registry needs to be added.
 
 ```sh
