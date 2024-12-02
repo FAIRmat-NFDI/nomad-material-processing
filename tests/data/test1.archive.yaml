@@ -1,4 +1,4 @@
 data:
-  m_def: nomad_synthesis_plugin.schema_packages.crystallization.ReactorProgram
+  m_def: nomad_material_processing.sample_solidification.precipitation.ReactorProgram
   name: Julia
   data_file: 'Experiment_Labmax.xlsx'

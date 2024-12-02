@@ -140,5 +140,6 @@ mbe_schema = "nomad_material_processing.vapor_deposition.pvd:mbe_schema"
 pld_schema = "nomad_material_processing.vapor_deposition.pvd:pld_schema"
 sputtering_schema = "nomad_material_processing.vapor_deposition.pvd:sputtering_schema"
 thermal_schema = "nomad_material_processing.vapor_deposition.pvd:thermal_schema"
+precipitation_schema = "nomad_material_processing.sample_solidification:precipitation_schema"
 
 [tool.setuptools_scm]
