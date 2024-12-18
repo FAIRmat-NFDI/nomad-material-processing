@@ -58,12 +58,16 @@ def test_solution():
     starter_water_concentration = starter_solution_archive.data.solvents[
         0
     ].molar_concentration.calculated_concentration
+    starter_water_amount = starter_solution_archive.data.solvents[0].amount_of_substance
     starter_salt_concentration = starter_solution_archive.data.solutes[
         0
     ].molar_concentration.calculated_concentration
     starter_salt_mass = starter_solution_archive.data.solutes[0].mass
 
     assert pytest.approx(starter_water_concentration, 1e-3) == 55.523 * ureg('mol/l')
+    assert pytest.approx(starter_water_amount, 1e-3) == 0.5 * ureg('l') * 55.523 * ureg(
+        'mol/l'
+    )
     assert pytest.approx(starter_salt_concentration, 1e-3) == 0.345 * ureg('mol/l')
     assert pytest.approx(starter_salt_mass, 1e-3) == 0.01 * ureg('kg')
 
@@ -89,6 +93,13 @@ def test_solution():
             1e-3,
         )
         == starter_water_concentration
+    )
+    assert (
+        pytest.approx(
+            main_solution_archive.data.solvents[0].amount_of_substance,
+            1e-3,
+        )
+        == starter_water_amount / 5
     )
     assert (
         pytest.approx(
@@ -131,6 +142,13 @@ def test_solution():
     )
     assert (
         pytest.approx(
+            main_solution_archive.data.solvents[0].amount_of_substance,
+            1e-3,
+        )
+        == (starter_water_amount / 5) * 2
+    )
+    assert (
+        pytest.approx(
             main_solution_archive.data.solutes[
                 0
             ].molar_concentration.calculated_concentration,
@@ -153,6 +171,13 @@ def test_solution():
             1e-3,
         )
         == starter_water_concentration
+    )
+    assert (
+        pytest.approx(
+            starter_solution_archive.data.solvents[0].amount_of_substance,
+            1e-3,
+        )
+        == starter_water_amount
     )
     assert (
         pytest.approx(
