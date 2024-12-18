@@ -168,7 +168,6 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
     Section for a component added to the solution.
     """
 
-    # TODO get the density of the component automatically if not provided
     m_def = Section(
         description='A component added to the solution.',
         a_eln=ELNAnnotation(
