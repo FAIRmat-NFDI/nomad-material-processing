@@ -75,10 +75,9 @@ class MolarConcentration(ArchiveSection):
     )
     calculated_concentration = Quantity(
         type=float,
-        description=(
-            'The expected concentration calculated from the component moles and '
-            'total volume.'
-        ),
+        description="""
+        The expected concentration calculated from the component moles and total volume.
+        """,
         a_eln=ELNAnnotation(
             defaultDisplayUnit='mol / liter',
         ),
@@ -86,10 +85,9 @@ class MolarConcentration(ArchiveSection):
     )
     measured_concentration = Quantity(
         type=float,
-        description=(
-            """The concentration observed or measured
-            with some characterization technique."""
-        ),
+        description="""
+        The concentration observed or measured with some characterization technique.
+        """,
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             defaultDisplayUnit='mol / liter',
@@ -211,7 +209,11 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
     )
     mass = Quantity(
         type=float,
-        description='The mass of the component without the container.',
+        description="""
+        The mass of the component without the container. Can be calculated automatically
+        if `volume` and `density` are available or if `amount_of_substance`
+        and `pure_substance.molecular_mass` are available.
+        """,
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             defaultDisplayUnit='gram',
@@ -281,8 +283,8 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         self, volume: Quantity, logger: 'BoundLogger' = None
     ) -> None:
         """
-        Calculate the molar concentration of the component
-        in a given volume of solution.
+        Calculate the molar concentration of the component in a given volume of
+        solution.
 
         Args:
             volume (Quantity): The volume of the solution.
