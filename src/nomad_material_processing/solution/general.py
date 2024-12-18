@@ -239,10 +239,10 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         description='The density of the liquid component.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
-            defaultDisplayUnit='gram / liter',
+            defaultDisplayUnit='gram / milliliter',
             minValue=0,
         ),
-        unit='kilogram / liter',
+        unit='gram / milliliter',
     )
     molar_concentration = SubSection(section_def=MolarConcentration)
     pure_substance = SubSection(section_def=PubChemPureSubstanceSection)
@@ -370,7 +370,7 @@ class Solution(CompositeSystem, EntryData):
         a_eln=ELNAnnotation(
             defaultDisplayUnit='gram / milliliter',
         ),
-        unit='kilogram / liter',
+        unit='gram / milliliter',
     )
     mass = Quantity(
         description='The mass of the solution.',
