@@ -219,6 +219,20 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         ),
         unit='kilogram',
     )
+    amount_of_substance = Quantity(
+        link='https://doi.org/10.1351/goldbook.A00297',
+        type=float,
+        description="""
+        The number of elementary entities of the given substance. Can be calculated
+        automatically if `mass` and `pure_substance.molecular_mass` are available.
+        """,
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='mole',
+            minValue=0,
+        ),
+        unit='mole',
+    )
     density = Quantity(
         type=float,
         description='The density of the liquid component.',
@@ -283,9 +297,10 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
             return
         if not self.molar_concentration:
             self.molar_concentration = MolarConcentration()
-        moles = self._calculate_moles(logger)
-        if moles:
-            self.molar_concentration.calculated_concentration = moles / volume
+        if self.amount_of_substance:
+            self.molar_concentration.calculated_concentration = (
+                self.amount_of_substance / volume
+            )
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
@@ -301,6 +316,12 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
             self.pure_substance.normalize(archive, logger)
         if self.volume and self.density:
             self.mass = self.volume * self.density
+        if self.mass and self.pure_substance and not self.amount_of_substance:
+            self.amount_of_substance = self._calculate_moles(logger)
+        if self.amount_of_substance and self.pure_substance and not self.mass:
+            self.mass = self.amount_of_substance * (
+                self.pure_substance.molecular_mass * ureg.N_A
+            )
         super().normalize(archive, logger)
 
 
