@@ -449,7 +449,7 @@ class Solution(CompositeSystem, EntryData):
                 continue
             comparison_key = component.pure_substance.pub_chem_cid
             if comparison_key in combined_components:
-                for prop in ['mass', 'volume']:
+                for prop in ['mass', 'volume', 'amount_of_substance']:
                     val1 = getattr(combined_components[comparison_key], prop, None)
                     val2 = getattr(component, prop, None)
                     if val1 and val2:
@@ -540,6 +540,8 @@ class Solution(CompositeSystem, EntryData):
                                 self.solvents[-1].volume *= scaler
                             if self.solvents[-1].mass:
                                 self.solvents[-1].mass *= scaler
+                            if self.solvents[-1].amount_of_substance:
+                                self.solvents[-1].amount_of_substance *= scaler
                     if component.system.solutes:
                         for solute in component.system.solutes:
                             self.solutes.append(solute.m_copy(deep=True))
@@ -547,6 +549,8 @@ class Solution(CompositeSystem, EntryData):
                                 self.solutes[-1].volume *= scaler
                             if self.solutes[-1].mass:
                                 self.solutes[-1].mass *= scaler
+                            if self.solutes[-1].amount_of_substance:
+                                self.solutes[-1].amount_of_substance *= scaler
 
         self.solvents = self.combine_components(self.solvents, logger)
         self.solutes = self.combine_components(self.solutes, logger)
