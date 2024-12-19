@@ -75,10 +75,9 @@ class MolarConcentration(ArchiveSection):
     )
     calculated_concentration = Quantity(
         type=float,
-        description=(
-            'The expected concentration calculated from the component moles and '
-            'total volume.'
-        ),
+        description="""
+        The expected concentration calculated from the component moles and total volume.
+        """,
         a_eln=ELNAnnotation(
             defaultDisplayUnit='mol / liter',
         ),
@@ -86,10 +85,9 @@ class MolarConcentration(ArchiveSection):
     )
     measured_concentration = Quantity(
         type=float,
-        description=(
-            """The concentration observed or measured
-            with some characterization technique."""
-        ),
+        description="""
+        The concentration observed or measured with some characterization technique.
+        """,
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             defaultDisplayUnit='mol / liter',
@@ -170,7 +168,6 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
     Section for a component added to the solution.
     """
 
-    # TODO get the density of the component automatically if not provided
     m_def = Section(
         description='A component added to the solution.',
         a_eln=ELNAnnotation(
@@ -211,7 +208,11 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
     )
     mass = Quantity(
         type=float,
-        description='The mass of the component without the container.',
+        description="""
+        The mass of the component without the container. Can be calculated automatically
+        if `volume` and `density` are available or if `amount_of_substance`
+        and `pure_substance.molecular_mass` are available.
+        """,
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             defaultDisplayUnit='gram',
@@ -219,15 +220,29 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         ),
         unit='kilogram',
     )
+    amount_of_substance = Quantity(
+        link='https://doi.org/10.1351/goldbook.A00297',
+        type=float,
+        description="""
+        The number of elementary entities of the given substance. Can be calculated
+        automatically if `mass` and `pure_substance.molecular_mass` are available.
+        """,
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='mole',
+            minValue=0,
+        ),
+        unit='mole',
+    )
     density = Quantity(
         type=float,
         description='The density of the liquid component.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
-            defaultDisplayUnit='gram / liter',
+            defaultDisplayUnit='gram / milliliter',
             minValue=0,
         ),
-        unit='kilogram / liter',
+        unit='gram / milliliter',
     )
     molar_concentration = SubSection(section_def=MolarConcentration)
     pure_substance = SubSection(section_def=PubChemPureSubstanceSection)
@@ -267,8 +282,8 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         self, volume: Quantity, logger: 'BoundLogger' = None
     ) -> None:
         """
-        Calculate the molar concentration of the component
-        in a given volume of solution.
+        Calculate the molar concentration of the component in a given volume of
+        solution.
 
         Args:
             volume (Quantity): The volume of the solution.
@@ -283,9 +298,10 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
             return
         if not self.molar_concentration:
             self.molar_concentration = MolarConcentration()
-        moles = self._calculate_moles(logger)
-        if moles:
-            self.molar_concentration.calculated_concentration = moles / volume
+        if self.amount_of_substance:
+            self.molar_concentration.calculated_concentration = (
+                self.amount_of_substance / volume
+            )
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
@@ -301,6 +317,12 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
             self.pure_substance.normalize(archive, logger)
         if self.volume and self.density:
             self.mass = self.volume * self.density
+        if self.mass and self.pure_substance and not self.amount_of_substance:
+            self.amount_of_substance = self._calculate_moles(logger)
+        if self.amount_of_substance and self.pure_substance and not self.mass:
+            self.mass = self.amount_of_substance * (
+                self.pure_substance.molecular_mass * ureg.N_A
+            )
         super().normalize(archive, logger)
 
 
@@ -348,7 +370,7 @@ class Solution(CompositeSystem, EntryData):
         a_eln=ELNAnnotation(
             defaultDisplayUnit='gram / milliliter',
         ),
-        unit='kilogram / liter',
+        unit='gram / milliliter',
     )
     mass = Quantity(
         description='The mass of the solution.',
@@ -426,7 +448,7 @@ class Solution(CompositeSystem, EntryData):
                 continue
             comparison_key = component.pure_substance.pub_chem_cid
             if comparison_key in combined_components:
-                for prop in ['mass', 'volume']:
+                for prop in ['mass', 'volume', 'amount_of_substance']:
                     val1 = getattr(combined_components[comparison_key], prop, None)
                     val2 = getattr(component, prop, None)
                     if val1 and val2:
@@ -517,6 +539,8 @@ class Solution(CompositeSystem, EntryData):
                                 self.solvents[-1].volume *= scaler
                             if self.solvents[-1].mass:
                                 self.solvents[-1].mass *= scaler
+                            if self.solvents[-1].amount_of_substance:
+                                self.solvents[-1].amount_of_substance *= scaler
                     if component.system.solutes:
                         for solute in component.system.solutes:
                             self.solutes.append(solute.m_copy(deep=True))
@@ -524,6 +548,8 @@ class Solution(CompositeSystem, EntryData):
                                 self.solutes[-1].volume *= scaler
                             if self.solutes[-1].mass:
                                 self.solutes[-1].mass *= scaler
+                            if self.solutes[-1].amount_of_substance:
+                                self.solutes[-1].amount_of_substance *= scaler
 
         self.solvents = self.combine_components(self.solvents, logger)
         self.solutes = self.combine_components(self.solutes, logger)

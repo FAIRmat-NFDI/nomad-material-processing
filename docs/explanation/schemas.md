@@ -123,21 +123,21 @@ The `nomad_material_processing.vapor_deposition.pvd.mbe` module uses the thermal
 source and also adds a plasma source.
 
 
-### nomad_material_processing.solution.general
+### Solutions
 
-The main entry sections in this module are
+`nomad_material_processing.solution.general` provides
 [`Solution`](#nomad_material_processing.solution.general.Solution) and
-[`SolutionPreparation`](#nomad_material_processing.solution.general.SolutionPreparation) which can
-be used to create NOMAD
+[`SolutionPreparation`](#nomad_material_processing.solution.general.SolutionPreparation)
+entry sections which can be used to create NOMAD
 [entries](https://nomad-lab.eu/prod/v1/docs/reference/glossary.html#entry).
-There's a long list of other auxiliary sections supporting these entry section which
+It also contains other auxiliary sections supporting these entry section which
 can be accessed in the
 [metainfo browser](https://nomad-lab.eu/prod/v1/oasis/gui/analyze/metainfo/nomad_material_processing)
 by searching for: `"nomad_material_processing.solution.general"`
 
-#### `nomad_material_processing.solution.general.Solution`
+#### Solution
 
-Describes liquid solutions by extending the
+`nomad_material_processing.solution.general.Solution` describes liquid solutions by extending the
 [`CompositeSystem`](https://nomad-lab.eu/prod/v1/docs/howto/customization/base_sections.html#system) with quantities: _pH_, _mass_,
 _calculated_volume_, _measured_volume_, _density_, and sub-sections:
 _solvents_, _solutes_, and _solution_storage_.
@@ -172,14 +172,24 @@ _calculated_volume_ of the solution. The component can either nest a
 sub-section describing its composition, or can be another `Solution` entry connected
 via reference.
 These options are are handled by
-`SolutionComponent` and `SolutionComponentReference` sections respectively. Let's take a closer look at each of them.
+`SolutionComponent` and `SolutionComponentReference` sections respectively. 
 
-`SolutionComponent` extends `PureSubstanceComponent` with quantities:
-_component_role_, _mass_, _volume_, _density_, and sub-section: _molar_concentration_.
+Let's take a closer look at each of them.
+
+__`SolutionComponent`__ extends `PureSubstanceComponent` with quantities:
+_component_role_, _mass_, _volume_, _density_, _amount_of_substance_ (in moles),
+and sub-section: _molar_concentration_.
 The _pure_substance_ sub-section inherited from `PureSubstanceComponent` specifies the
-chemical compound. This information along with the mass of the component and
+chemical compound. This information along with the amount of the component and
 total volume of the solution is used to automatically determine the molar concentration of
 the component, populating the corresponding sub-section.
+
+If not provided, _amount_of_substance_ can be determined from _mass_ and 
+_pure_substance.molecular_mass_.
+On other hand, if _amount_of_substance_ is available, but _mass_ is missing, it can be 
+determined using _amount_of_substance_ and _pure_substance.molecular_mass_.
+_mass_ can also be determined if _volume_ and _density_ are available.
+
 Based on the _component_role_, the components are copied over to either
 `Solution.solvents` or `Solution.solutes`.
 
@@ -189,10 +199,11 @@ class SolutionComponent(PureSubstanceComponent):
     mass: float
     volume: float
     density: float
+    amount_of_substance: float
     molar_concentration: MolarConcentration
 ```
 
-`SolutionComponentReference` makes a reference to another `Solution` entry and specifies
+__`SolutionComponentReference`__ makes a reference to another `Solution` entry and specifies
 the amount used. Based on this, _solutes_ and _solvents_ of the referenced solution are
 copied over to the first solution. Their mass and volume are adjusted based on the
 amount of the referenced solution used.
@@ -212,9 +223,10 @@ combined into one.
 The _solution_storage_ uses `SolutionStorage` section to describe storage conditions
 , i.e., temperature and atmosphere, along with preparation and expiry dates.
 
-#### `nomad_material_processing.solution.general.SolutionPreparation`
+#### SolutionPreparation
 
-Describes the steps of solution preparation by extending
+`nomad_material_processing.solution.general.SolutionPreparation`
+describes the steps of solution preparation by extending
 [`Process`](https://nomad-lab.eu/prod/v1/docs/howto/customization/base_sections.html#process).
 Based on the steps added, it also creates a `Solution` entry and references it under the
 _solution_ sub-section.
