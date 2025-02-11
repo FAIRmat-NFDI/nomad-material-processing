@@ -443,6 +443,7 @@ class FlashSource(CVDSource):
         The flux of the peristaltic pump 
         feeding into the flash evaporator.
         """,
+    )
 
 
 class MistSource(CVDSource):
