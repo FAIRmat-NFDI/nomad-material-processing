@@ -437,16 +437,12 @@ class FlashSource(CVDSource):
         Example: A heater, a filament, a laser, a bubbler, etc.
         """,
     )
-    peristaltic_pump_flux = Quantity(
-        type=float,
-        unit='liter / second',
+    peristaltic_pump_flux = SubSection(
+        section_def=VolumetricFlowRate,
         description="""
-            The flux of the peristaltic pump 
-            feeding into the flash evaporator.""",
-        a_eln=ELNAnnotation(
-            component='NumberEditQuantity',
-            defaultDisplayUnit='milliliter / minute',
-        ),
+        The flux of the peristaltic pump 
+        feeding into the flash evaporator.
+        """,
     )
 
 
