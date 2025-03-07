@@ -5,6 +5,11 @@ on:
     branches:
       - main  # Triggers deployment on push to the main branch
 
+env:
+  REGISTRY: ghcr.io
+  UV_VERSION: 0.6
+  PYTHON_VERSION: 3.12
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -13,14 +18,15 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
       - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: ${{ env.UV_VERSION }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install dependencies
         run: |
