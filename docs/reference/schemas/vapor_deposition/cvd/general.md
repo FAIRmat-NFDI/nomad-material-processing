@@ -1,0 +1,1 @@
+{{ metainfo_package('nomad_material_processing.vapor_deposition.cvd.general') }}
