@@ -14,11 +14,32 @@ nav:
     - Install this Plugin: how_to/install.md
     - Use this Plugin: how_to/use_this_plugin.md
     - Contribute to this Plugin: how_to/develop.md
-  - References: reference/references.md
+  - Reference: 
+    - Glossary: reference/references.md
+    - Schemas: 
+      - reference/schemas/general.md
+      - reference/schemas/combinatorial.md
+      - reference/schemas/epitaxy.md
+      - reference/schemas/crystal_growth.md
+      - Solution:
+        - reference/schemas/solution/general.md
+      - Vapor Deposition:
+        - reference/schemas/vapor_deposition/general.md
+        - CVD:
+          - reference/schemas/vapor_deposition/cvd/general.md
+          - reference/schemas/vapor_deposition/cvd/movpe.md
+        - PVD:
+          - reference/schemas/vapor_deposition/pvd/general.md
+          - reference/schemas/vapor_deposition/pvd/sputtering.md
+          - reference/schemas/vapor_deposition/pvd/thermal.md
+          - reference/schemas/vapor_deposition/pvd/pld.md
+          - reference/schemas/vapor_deposition/pvd/mbe.md
   - Tutorials: tutorial/tutorial.md
   - Contact: contact.md
 plugins:
  - search
+ - macros:
+    module_name: docs/main
 theme:
   name: material
   palette:
