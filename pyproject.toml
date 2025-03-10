@@ -57,6 +57,7 @@ dev = [
     "pymdown-extensions",
     "mkdocs-click",
     "mkdocs-macros-plugin>=1.0",
+    "fastapi",
 ]
 
 [tool.ruff]
