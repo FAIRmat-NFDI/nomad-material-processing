@@ -1,0 +1,3027 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The documentation for NOMAD plugin nomad-material-processing.
+">
+      
+      
+        <meta name="author" content="The NOMAD Authors">
+      
+      
+      
+        <link rel="prev" href="../references.html">
+      
+      
+        <link rel="next" href="combinatorial.html">
+      
+      
+      <link rel="icon" href="../../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.7">
+    
+    
+      
+        <title>General - Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.8608ea7d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Titillium Web";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="#2A4CDF" data-md-color-accent="#008A67">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#geometry" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="header.title">
+    <a href="https://nomad-lab.eu" title="Documentation" class="md-header__button md-logo" aria-label="Documentation" data-md-component="logo">
+      
+  <img src="../../assets/nomad-plugin-logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              General
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/FAIRmat-NFDI/nomad-material-processing" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://nomad-lab.eu" title="Documentation" class="md-nav__button md-logo" aria-label="Documentation" data-md-component="logo">
+      
+  <img src="../../assets/nomad-plugin-logo.png" alt="logo">
+
+    </a>
+    Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/FAIRmat-NFDI/nomad-material-processing" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/levelsofschema.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Levels of Schema
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/schemas.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Schemas
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how_to/install.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Install this Plugin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how_to/use_this_plugin.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Use this Plugin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how_to/develop.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribute to this Plugin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../references.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Schemas
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Schemas
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    General
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="general.html" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    General
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#geometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      Geometry
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parallelepiped" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parallelepiped
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#squarecuboid" class="md-nav__link">
+    <span class="md-ellipsis">
+      SquareCuboid
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rectanglecuboid" class="md-nav__link">
+    <span class="md-ellipsis">
+      RectangleCuboid
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#truncatedcone" class="md-nav__link">
+    <span class="md-ellipsis">
+      TruncatedCone
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cylinder" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cylinder
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cylindersector" class="md-nav__link">
+    <span class="md-ellipsis">
+      CylinderSector
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#irregularparallelsurfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      IrregularParallelSurfaces
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#millerindices" class="md-nav__link">
+    <span class="md-ellipsis">
+      MillerIndices
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bravaismillerindices" class="md-nav__link">
+    <span class="md-ellipsis">
+      BravaisMillerIndices
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crystallographicdirection" class="md-nav__link">
+    <span class="md-ellipsis">
+      CrystallographicDirection
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#projectedmiscutorientation" class="md-nav__link">
+    <span class="md-ellipsis">
+      ProjectedMiscutOrientation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cartesianmiscut" class="md-nav__link">
+    <span class="md-ellipsis">
+      CartesianMiscut
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#polarmiscut" class="md-nav__link">
+    <span class="md-ellipsis">
+      PolarMiscut
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#miscut" class="md-nav__link">
+    <span class="md-ellipsis">
+      Miscut
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dopant" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dopant
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crystalproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      CrystalProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#substratecrystalproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      SubstrateCrystalProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#electronicproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      ElectronicProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#substrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Substrate
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crystallinesubstrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      CrystallineSubstrate
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thinfilm" class="md-nav__link">
+    <span class="md-ellipsis">
+      ThinFilm
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thinfilmreference" class="md-nav__link">
+    <span class="md-ellipsis">
+      ThinFilmReference
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#substratereference" class="md-nav__link">
+    <span class="md-ellipsis">
+      SubstrateReference
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thinfilmstack" class="md-nav__link">
+    <span class="md-ellipsis">
+      ThinFilmStack
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thinfilmstackreference" class="md-nav__link">
+    <span class="md-ellipsis">
+      ThinFilmStackReference
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sampledeposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      SampleDeposition
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#timeseries" class="md-nav__link">
+    <span class="md-ellipsis">
+      TimeSeries
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recipe
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#etchingstep" class="md-nav__link">
+    <span class="md-ellipsis">
+      EtchingStep
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#etching" class="md-nav__link">
+    <span class="md-ellipsis">
+      Etching
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#etchingrecipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      EtchingRecipe
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#annealingstep" class="md-nav__link">
+    <span class="md-ellipsis">
+      AnnealingStep
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#annealing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Annealing
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#annealingrecipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      AnnealingRecipe
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleaningstep" class="md-nav__link">
+    <span class="md-ellipsis">
+      CleaningStep
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleaning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cleaning
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleaningrecipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      CleaningRecipe
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="combinatorial.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Combinatorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="epitaxy.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Epitaxy
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="crystal_growth.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Crystal growth
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2_5" id="__nav_4_2_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Solution
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            Solution
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="solution/general.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    General
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2_6" id="__nav_4_2_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Vapor Deposition
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            Vapor Deposition
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="vapor_deposition/general.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    General
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2_6_2" id="__nav_4_2_6_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    CVD
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_2_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            CVD
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="vapor_deposition/cvd/general.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    General
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="vapor_deposition/cvd/movpe.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Movpe
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2_6_3" id="__nav_4_2_6_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    PVD
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_2_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            PVD
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="vapor_deposition/pvd/general.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    General
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="vapor_deposition/pvd/sputtering.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sputtering
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="vapor_deposition/pvd/thermal.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Thermal
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="vapor_deposition/pvd/pld.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pld
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="vapor_deposition/pvd/mbe.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Mbe
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/tutorial.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tutorials
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contact.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contact
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#geometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      Geometry
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parallelepiped" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parallelepiped
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#squarecuboid" class="md-nav__link">
+    <span class="md-ellipsis">
+      SquareCuboid
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rectanglecuboid" class="md-nav__link">
+    <span class="md-ellipsis">
+      RectangleCuboid
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#truncatedcone" class="md-nav__link">
+    <span class="md-ellipsis">
+      TruncatedCone
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cylinder" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cylinder
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cylindersector" class="md-nav__link">
+    <span class="md-ellipsis">
+      CylinderSector
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#irregularparallelsurfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      IrregularParallelSurfaces
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#millerindices" class="md-nav__link">
+    <span class="md-ellipsis">
+      MillerIndices
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bravaismillerindices" class="md-nav__link">
+    <span class="md-ellipsis">
+      BravaisMillerIndices
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crystallographicdirection" class="md-nav__link">
+    <span class="md-ellipsis">
+      CrystallographicDirection
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#projectedmiscutorientation" class="md-nav__link">
+    <span class="md-ellipsis">
+      ProjectedMiscutOrientation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cartesianmiscut" class="md-nav__link">
+    <span class="md-ellipsis">
+      CartesianMiscut
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#polarmiscut" class="md-nav__link">
+    <span class="md-ellipsis">
+      PolarMiscut
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#miscut" class="md-nav__link">
+    <span class="md-ellipsis">
+      Miscut
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dopant" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dopant
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crystalproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      CrystalProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#substratecrystalproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      SubstrateCrystalProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#electronicproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      ElectronicProperties
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#substrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Substrate
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crystallinesubstrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      CrystallineSubstrate
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thinfilm" class="md-nav__link">
+    <span class="md-ellipsis">
+      ThinFilm
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thinfilmreference" class="md-nav__link">
+    <span class="md-ellipsis">
+      ThinFilmReference
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#substratereference" class="md-nav__link">
+    <span class="md-ellipsis">
+      SubstrateReference
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thinfilmstack" class="md-nav__link">
+    <span class="md-ellipsis">
+      ThinFilmStack
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thinfilmstackreference" class="md-nav__link">
+    <span class="md-ellipsis">
+      ThinFilmStackReference
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sampledeposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      SampleDeposition
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#timeseries" class="md-nav__link">
+    <span class="md-ellipsis">
+      TimeSeries
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recipe
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#etchingstep" class="md-nav__link">
+    <span class="md-ellipsis">
+      EtchingStep
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#etching" class="md-nav__link">
+    <span class="md-ellipsis">
+      Etching
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#etchingrecipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      EtchingRecipe
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#annealingstep" class="md-nav__link">
+    <span class="md-ellipsis">
+      AnnealingStep
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#annealing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Annealing
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#annealingrecipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      AnnealingRecipe
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleaningstep" class="md-nav__link">
+    <span class="md-ellipsis">
+      CleaningStep
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleaning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cleaning
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleaningrecipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      CleaningRecipe
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>General</h1>
+
+<h3 id="geometry">Geometry<a class="headerlink" href="#geometry" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: Geometrical shape attributes of a system. Sections derived from <code>Geometry</code> represent concrete geometrical shapes.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.data.ArchiveSection</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>volume</td>
+<td><code>float</code></td>
+<td>The measure of the amount of space occupied in 3D space.</br><strong>unit</strong>=<code>meter ** 3</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="parallelepiped">Parallelepiped<a class="headerlink" href="#parallelepiped" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: Six-faced polyhedron with each pair of opposite faces parallel and equal in size, characterized by rectangular sides and parallelogram faces.</p>
+<p><strong>inherits from</strong>: <a href="#geometry"><code>Geometry</code></a></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>height</td>
+<td><code>float</code></td>
+<td>The z dimension of the parallelepiped.</br><strong>unit</strong>=<code>meter</code></td>
+</tr>
+<tr>
+<td>width</td>
+<td><code>float</code></td>
+<td>The x dimension of the parallelepiped.</br><strong>unit</strong>=<code>meter</code></td>
+</tr>
+<tr>
+<td>length</td>
+<td><code>float</code></td>
+<td>The y dimension of the parallelepiped.</br><strong>unit</strong>=<code>meter</code></td>
+</tr>
+<tr>
+<td>alpha</td>
+<td><code>float</code></td>
+<td>The angle between y and z sides.</br><strong>unit</strong>=<code>degree</code></td>
+</tr>
+<tr>
+<td>beta</td>
+<td><code>float</code></td>
+<td>The angle between x and z sides.</br><strong>unit</strong>=<code>degree</code></td>
+</tr>
+<tr>
+<td>gamma</td>
+<td><code>float</code></td>
+<td>The angle between x and y sides.</br><strong>unit</strong>=<code>degree</code></td>
+</tr>
+<tr>
+<td>surface_area</td>
+<td><code>float</code></td>
+<td>The product of length and width, representing the total exposed area of the primary surface.</br><strong>unit</strong>=<code>meter ** 2</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="squarecuboid">SquareCuboid<a class="headerlink" href="#squarecuboid" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A cuboid with all sides equal in length.</p>
+<p><strong>inherits from</strong>: <a href="#parallelepiped"><code>Parallelepiped</code></a></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>height</td>
+<td><code>float</code></td>
+<td>The z dimension of the parallelepiped.</br><strong>unit</strong>=<code>meter</code></td>
+</tr>
+<tr>
+<td>width</td>
+<td><code>float</code></td>
+<td>The x dimension of the parallelepiped.</br><strong>unit</strong>=<code>meter</code></td>
+</tr>
+<tr>
+<td>alpha</td>
+<td><code>float</code></td>
+<td>The angle between y and z sides.</br><strong>unit</strong>=<code>degree</code>, <strong>default</strong>=<code>90.0</code></td>
+</tr>
+<tr>
+<td>beta</td>
+<td><code>float</code></td>
+<td>The angle between x and z sides.</br><strong>unit</strong>=<code>degree</code>, <strong>default</strong>=<code>90.0</code></td>
+</tr>
+<tr>
+<td>gamma</td>
+<td><code>float</code></td>
+<td>The angle between x and y sides.</br><strong>unit</strong>=<code>degree</code>, <strong>default</strong>=<code>90.0</code></td>
+</tr>
+<tr>
+<td>surface_area</td>
+<td><code>float</code></td>
+<td>The product of length and width, representing the total exposed area of the primary surface.</br><strong>unit</strong>=<code>meter ** 2</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="rectanglecuboid">RectangleCuboid<a class="headerlink" href="#rectanglecuboid" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A rectangular cuboid is a specific type of parallelepiped where all angles between adjacent faces are right angles,
+and all faces are rectangles.</p>
+<p><strong>inherits from</strong>: <a href="#parallelepiped"><code>Parallelepiped</code></a></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>height</td>
+<td><code>float</code></td>
+<td>The z dimension of the parallelepiped.</br><strong>unit</strong>=<code>meter</code></td>
+</tr>
+<tr>
+<td>width</td>
+<td><code>float</code></td>
+<td>The x dimension of the parallelepiped.</br><strong>unit</strong>=<code>meter</code></td>
+</tr>
+<tr>
+<td>length</td>
+<td><code>float</code></td>
+<td>The y dimension of the parallelepiped.</br><strong>unit</strong>=<code>meter</code></td>
+</tr>
+<tr>
+<td>alpha</td>
+<td><code>float</code></td>
+<td>The angle between y and z sides.</br><strong>unit</strong>=<code>degree</code>, <strong>default</strong>=<code>90.0</code></td>
+</tr>
+<tr>
+<td>beta</td>
+<td><code>float</code></td>
+<td>The angle between x and z sides.</br><strong>unit</strong>=<code>degree</code>, <strong>default</strong>=<code>90.0</code></td>
+</tr>
+<tr>
+<td>gamma</td>
+<td><code>float</code></td>
+<td>The angle between x and y sides.</br><strong>unit</strong>=<code>degree</code>, <strong>default</strong>=<code>90.0</code></td>
+</tr>
+<tr>
+<td>surface_area</td>
+<td><code>float</code></td>
+<td>The product of length and width, representing the total exposed area of the primary surface.</br><strong>unit</strong>=<code>meter ** 2</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="truncatedcone">TruncatedCone<a class="headerlink" href="#truncatedcone" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A cone with the top cut off parallel to the cone bottom.</p>
+<p><strong>inherits from</strong>: <a href="#geometry"><code>Geometry</code></a></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>height</td>
+<td><code>float</code></td>
+<td>The z dimension of the parallelepiped.</br><strong>unit</strong>=<code>meter</code></td>
+</tr>
+<tr>
+<td>lower_cap_radius</td>
+<td><code>float</code></td>
+<td>Radius of the lower cap.</br><strong>unit</strong>=<code>meter</code></td>
+</tr>
+<tr>
+<td>upper_cap_radius</td>
+<td><code>float</code></td>
+<td>Radius of the upper cap.</br><strong>unit</strong>=<code>meter</code></td>
+</tr>
+<tr>
+<td>lower_cap_surface_area</td>
+<td><code>float</code></td>
+<td>Area of the lower cap.</br><strong>unit</strong>=<code>meter ** 2</code></td>
+</tr>
+<tr>
+<td>upper_cap_surface_area</td>
+<td><code>float</code></td>
+<td>Area of the upper cap.</br><strong>unit</strong>=<code>meter ** 2</code></td>
+</tr>
+<tr>
+<td>lateral_surface_area</td>
+<td><code>float</code></td>
+<td>Area of the lateral surface.</br><strong>unit</strong>=<code>meter ** 2</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="cylinder">Cylinder<a class="headerlink" href="#cylinder" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A cylinder, i.e. a prism with a circular base.</p>
+<p><strong>inherits from</strong>: <a href="#geometry"><code>Geometry</code></a></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>height</td>
+<td><code>float</code></td>
+<td>The z dimension of the parallelepiped.</br><strong>unit</strong>=<code>meter</code></td>
+</tr>
+<tr>
+<td>radius</td>
+<td><code>float</code></td>
+<td>Radius of the cylinder.</br><strong>unit</strong>=<code>meter</code></td>
+</tr>
+<tr>
+<td>lower_cap_surface_area</td>
+<td><code>float</code></td>
+<td>Area of the lower cap.</br><strong>unit</strong>=<code>meter ** 2</code></td>
+</tr>
+<tr>
+<td>cap_surface_area</td>
+<td><code>float</code></td>
+<td>Area of the cap.</br><strong>unit</strong>=<code>meter ** 2</code></td>
+</tr>
+<tr>
+<td>lateral_surface_area</td>
+<td><code>float</code></td>
+<td>Area of the lateral surface.</br><strong>unit</strong>=<code>meter ** 2</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="cylindersector">CylinderSector<a class="headerlink" href="#cylindersector" title="Permanent link">&para;</a></h3>
+<p><strong>inherits from</strong>: <a href="#cylinder"><code>Cylinder</code></a></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>central_angle</td>
+<td><code>float</code></td>
+<td>The angle that defines the portion of the cylinder. This angle is taken at the center of the base circle and extends to the arc that defines the cylindrical sector.</br><strong>unit</strong>=<code>degree</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="irregularparallelsurfaces">IrregularParallelSurfaces<a class="headerlink" href="#irregularparallelsurfaces" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A shape that does not fit into any of the other geometry classes.</p>
+<p><strong>inherits from</strong>: <a href="#geometry"><code>Geometry</code></a></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>height</td>
+<td><code>float</code></td>
+<td>The z dimension of the irregular shape.</br><strong>unit</strong>=<code>meter</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="millerindices">MillerIndices<a class="headerlink" href="#millerindices" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: The Miller indices are a notation system in crystallography for planes in crystal (Bravais) lattices. In particular, a family of lattice planes is determined by three
+integers h, k, and l, the Miller indices.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.data.ArchiveSection</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>h_index</td>
+<td><code>float</code></td>
+<td>The Miller index h.</td>
+</tr>
+<tr>
+<td>k_index</td>
+<td><code>float</code></td>
+<td>The Miller index k.</td>
+</tr>
+<tr>
+<td>l_index</td>
+<td><code>float</code></td>
+<td>The Miller index l.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="bravaismillerindices">BravaisMillerIndices<a class="headerlink" href="#bravaismillerindices" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A component added to the solution.</p>
+<p><strong>inherits from</strong>: <a href="#millerindices"><code>MillerIndices</code></a></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>i</td>
+<td><code>float</code></td>
+<td>The Miller index i.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="crystallographicdirection">CrystallographicDirection<a class="headerlink" href="#crystallographicdirection" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A specific crystallographic plane or direction within a crystal structure. The same property can be described in the direct (or real) space or in the
+reciprocal space.</p>
+<p>The (hkl) indices in direct space and [hkl] indices in reciprocal space describe
+the same set of crystallographic planes,
+but their interpretation differs between the two spaces.
+In direct space,
+(hkl) indices describe the orientation of a plane within the crystal.
+In reciprocal space,
+[hkl] indices describe a point in the reciprocal lattice that is perpendicular
+to the corresponding (hkl) plane in direct space.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.data.ArchiveSection</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hkl_reciprocal</td>
+<td><a href="#millerindices"><code>MillerIndices</code></a></td>
+<td>The reciprocal lattice vector associated with the family of lattice planes is OH = h a* + k b* + l c<em>, where a</em>, b<em>, c</em> are the reciprocal lattice basis vectors. OH is perpendicular to the family of lattice planes and OH = 1/d where d is the lattice spacing of the family. Ref. https://dictionary.iucr.org/Miller_indices</br><strong>sub-section</strong></td>
+</tr>
+<tr>
+<td>hkl_direct</td>
+<td><a href="#millerindices"><code>MillerIndices</code></a></td>
+<td>In three-dimensional space, the direction passing through the origin and the lattice nodes nh,nk,nl, where n is an integer, has direction indices [hkl]. This corresponds to taking the coordinates of the first lattice node on that direction after the origin as direction indices. When a primitive unit cell is used, the direction indices are all integer; they may instead be rational when a centred unit cell is adopted. Ref. https://dictionary.iucr.org/Direction_indices</br><strong>sub-section</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="projectedmiscutorientation">ProjectedMiscutOrientation<a class="headerlink" href="#projectedmiscutorientation" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: The overall miscut angle is the total angular deviation from the primary plane of the substrate.
+However, this overall miscut can be described as having components projected onto
+two perpendicular crystallographic directions that lie in the primary surface plane.
+The angular miscut is defined as a tilt (in degree) along these two directions.</p>
+<p>The projected miscut orientation specifies the tilt angle along one
+crystallographic direction.</p>
+<p><strong>inherits from</strong>: <a href="#crystallographicdirection"><code>CrystallographicDirection</code></a></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>angle</td>
+<td><code>float</code></td>
+<td>The miscut angle (or offcut angle, or angular displacement offset) toward the specified crystallographic direction.</br><strong>unit</strong>=<code>degree</code></td>
+</tr>
+<tr>
+<td>angle_deviation</td>
+<td><code>float</code></td>
+<td>The ± deviation of the angular displacement offset.</br><strong>unit</strong>=<code>degree</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="cartesianmiscut">CartesianMiscut<a class="headerlink" href="#cartesianmiscut" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: The miscut might be directed in a non-pure crystallographic direction. In this case two components must be specified, in Cartesian coordinates.</p>
+<p>If the miscut is directed in a pure crystallographic direction,
+only one component can be filled in.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.data.ArchiveSection</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>reference_orientation</td>
+<td><a href="#projectedmiscutorientation"><code>ProjectedMiscutOrientation</code></a></td>
+<td>The reference direction of the miscut.</br><strong>sub-section</strong></td>
+</tr>
+<tr>
+<td>perpendicular_orientation</td>
+<td><a href="#projectedmiscutorientation"><code>ProjectedMiscutOrientation</code></a></td>
+<td>A direction perpendicular to the reference direction.</br><strong>sub-section</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="polarmiscut">PolarMiscut<a class="headerlink" href="#polarmiscut" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: This direction can be described by a crystallographic direction [hkl], which indicates the direction of the tilt relative to the crystal axes.</p>
+<p>The miscut might be directed in a non-pure crystallographic direction.
+In this case two components must be specified,
+either in Cartesian or polar coordinates.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.data.ArchiveSection</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rho</td>
+<td><code>float</code></td>
+<td>Out-of-plane tilt angle, defined in polar coordinates as a module in the out-of-plane axis.</br><strong>unit</strong>=<code>degree</code></td>
+</tr>
+<tr>
+<td>theta</td>
+<td><code>float</code></td>
+<td>In-plane angle of the miscut toward the reference orientation.</br><strong>unit</strong>=<code>degree</code></td>
+</tr>
+<tr>
+<td>reference_orientation</td>
+<td><a href="#crystallographicdirection"><code>CrystallographicDirection</code></a></td>
+<td>The reference direction of the miscut.</br><strong>sub-section</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="miscut">Miscut<a class="headerlink" href="#miscut" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: The miscut in a crystalline substrate refers to the intentional deviation from a specific crystallographic orientation,
+commonly expressed as the angular displacement of a crystal plane.</p>
+<p>The overall miscut angle is the total angular deviation
+from the primary plane of the substrate.
+However, this overall miscut can be described as having components projected onto
+two perpendicular crystallographic directions that lie in the primary surface plane.
+The angular miscut is defined as a tilt (in degree) along these two directions.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.data.ArchiveSection</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>directions_image</td>
+<td><code>str</code></td>
+<td>A schematic representation of the miscut directions.</td>
+</tr>
+<tr>
+<td>cartesian_miscut</td>
+<td><a href="#cartesianmiscut"><code>CartesianMiscut</code></a></td>
+<td>The orientation of the miscut (or offcut) in Cartesian coordinates.</br><strong>sub-section</strong></td>
+</tr>
+<tr>
+<td>polar_miscut</td>
+<td><a href="#polarmiscut"><code>PolarMiscut</code></a></td>
+<td>The orientation of the miscut (or offcut) in polar coordinates.</br><strong>sub-section</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="dopant">Dopant<a class="headerlink" href="#dopant" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A dopant element in a crystalline structure is a foreign atom intentionally introduced into the crystal lattice.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.metainfo.basesections.v1.ElementalComposition</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>doping_level</td>
+<td><code>float</code></td>
+<td>The chemical doping level.</br><strong>unit</strong>=<code>1 / meter ** 3</code></td>
+</tr>
+<tr>
+<td>doping_deviation</td>
+<td><code>float</code></td>
+<td>The ± deviation in the doping level.</br><strong>unit</strong>=<code>1 / meter ** 3</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>normalization</strong>: </p>
+<p>Will add a
+results.material subsection if none exists. Will append the element to the
+elements property of that subsection and a
+nomad.datamodel.results.ElementalComposition instances to the
+elemental_composition property  using the element and atomic fraction from this
+section.</p>
+<h3 id="crystalproperties">CrystalProperties<a class="headerlink" href="#crystalproperties" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: Characteristics arising from the ordered arrangement of atoms in a crystalline structure.
+These properties are defined by factors such as crystal symmetry, lattice
+parameters, and the specific arrangement of atoms within the crystal lattice.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.data.ArchiveSection</code></p>
+<h3 id="substratecrystalproperties">SubstrateCrystalProperties<a class="headerlink" href="#substratecrystalproperties" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: Crystallographic parameters such as orientation, miscut, and surface structure.</p>
+<p><strong>inherits from</strong>: <a href="#crystalproperties"><code>CrystalProperties</code></a></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bravais_lattices</td>
+<td><code>['Cubic Body Centered', 'Cubic Face Centered', 'Cubic Simple', 'Hexagonal', 'Monoclinic Base Centered', 'Monoclinic Simple', 'Orthorhombic Base Centered', 'Orthorhombic Body Centered', 'Orthorhombic Face Centered', 'Orthorhombic Simple', 'Tetragonal Body Centered', 'Tetragonal Simple', 'Triclinic', 'Trigonal']</code></td>
+<td>The crystal system of the substrate.</td>
+</tr>
+<tr>
+<td>surface_orientation</td>
+<td><a href="#crystallographicdirection"><code>CrystallographicDirection</code></a></td>
+<td>The orientation of the substrate surface.</br><strong>sub-section</strong></td>
+</tr>
+<tr>
+<td>miscut</td>
+<td><a href="#miscut"><code>Miscut</code></a></td>
+<td>Miscut of the substrate.</br><strong>sub-section</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="electronicproperties">ElectronicProperties<a class="headerlink" href="#electronicproperties" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: The electronic properties of a material.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.data.ArchiveSection</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>conductivity_type</td>
+<td><code>['Insulating', 'N-type', 'P-type', 'Semi-insulating']</code></td>
+<td>The type of semiconductor, N-type being electrons the majority carriers and P-type being holes the majority carriers.</td>
+</tr>
+<tr>
+<td>carrier_density</td>
+<td><code>float</code></td>
+<td>Concentration of free charge carriers, electrons in the conduction band and holes in the valence band.</br><strong>unit</strong>=<code>1 / centimeter ** 3</code></td>
+</tr>
+<tr>
+<td>carrier_density_deviation</td>
+<td><code>float</code></td>
+<td>Deviation in the concentration of free charge carriers, electrons in the conduction band and holes in the valence band.</br><strong>unit</strong>=<code>1 / meter ** 3</code></td>
+</tr>
+<tr>
+<td>electrical_resistivity</td>
+<td><code>float</code></td>
+<td>Resistance of the charges to move in the presence of an electric current.</br><strong>unit</strong>=<code>meter * ohm</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="substrate">Substrate<a class="headerlink" href="#substrate" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A thin free standing sheet of material. Not to be confused with the substrate role during a deposition, which can be a <code>Substrate</code> with <code>ThinFilm</code>(s) on it.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.metainfo.basesections.v1.CompositeSystem</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>supplier</td>
+<td><code>str</code></td>
+<td>The supplier of the current substrate specimen.</td>
+</tr>
+<tr>
+<td>supplier_id</td>
+<td><code>str</code></td>
+<td>An ID string that is unique from the supplier.</td>
+</tr>
+<tr>
+<td>lab_id</td>
+<td><code>str</code></td>
+<td>An ID string that is unique at least for the lab that produced this data.</td>
+</tr>
+<tr>
+<td>image</td>
+<td><code>str</code></td>
+<td>A photograph or image of the substrate.</td>
+</tr>
+<tr>
+<td>information_sheet</td>
+<td><code>str</code></td>
+<td>Pdf files containing certificate and other documentation.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>normalization</strong>: </p>
+<p>If the elemental composition list is
+empty, the normalizer will iterate over the components and extract all the
+elements for populating the elemental composition list. If masses are provided for
+all components and the elemental composition of all components contain atomic
+fractions the normalizer will also calculate the atomic fractions for the
+composite system. The populated elemental composition list is added to the results
+by the normalizer in the <code>System</code> super class.</p>
+<h3 id="crystallinesubstrate">CrystallineSubstrate<a class="headerlink" href="#crystallinesubstrate" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: The substrate defined in this class is composed of periodic arrangement of atoms and shows typical features of a crystal structure.</p>
+<p><strong>inherits from</strong>: <a href="#substrate"><code>Substrate</code></a></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>geometry</td>
+<td><a href="#geometry"><code>Geometry</code></a></td>
+<td>Section containing the geometry of the substrate.</br><strong>sub-section</strong></td>
+</tr>
+<tr>
+<td>crystal_properties</td>
+<td><a href="#substratecrystalproperties"><code>SubstrateCrystalProperties</code></a></td>
+<td>Section containing the crystal properties of the substrate.</br><strong>sub-section</strong></td>
+</tr>
+<tr>
+<td>electronic_properties</td>
+<td><a href="#electronicproperties"><code>ElectronicProperties</code></a></td>
+<td>Section containing the electronic properties of the substrate.</br><strong>sub-section</strong></td>
+</tr>
+<tr>
+<td>dopants</td>
+<td><a href="#dopant"><code>Dopant</code></a></td>
+<td>Repeating section containing information on any dopants in the substrate.</br><strong>sub-section</strong>, <strong>repeats</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>normalization</strong>: </p>
+<p>If the elemental composition list is
+empty, the normalizer will iterate over the components and extract all the
+elements for populating the elemental composition list. If masses are provided for
+all components and the elemental composition of all components contain atomic
+fractions the normalizer will also calculate the atomic fractions for the
+composite system. The populated elemental composition list is added to the results
+by the normalizer in the <code>System</code> super class.</p>
+<h3 id="thinfilm">ThinFilm<a class="headerlink" href="#thinfilm" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A thin film of material which exists as part of a stack.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.metainfo.basesections.v1.CompositeSystem</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>geometry</td>
+<td><a href="#geometry"><code>Geometry</code></a></td>
+<td>Section containing the geometry of the thin film.</br><strong>sub-section</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>normalization</strong>: </p>
+<p>If the elemental composition list is
+empty, the normalizer will iterate over the components and extract all the
+elements for populating the elemental composition list. If masses are provided for
+all components and the elemental composition of all components contain atomic
+fractions the normalizer will also calculate the atomic fractions for the
+composite system. The populated elemental composition list is added to the results
+by the normalizer in the <code>System</code> super class.</p>
+<h3 id="thinfilmreference">ThinFilmReference<a class="headerlink" href="#thinfilmreference" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: Class autogenerated from yaml schema.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.metainfo.basesections.v1.CompositeSystemReference</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lab_id</td>
+<td><code>str</code></td>
+<td>The readable identifier for the entity.</td>
+</tr>
+<tr>
+<td>reference</td>
+<td><a href="#thinfilm"><code>ThinFilm</code></a></td>
+<td>A reference to a NOMAD <code>CompositeSystem</code> entry.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>normalization</strong>: </p>
+<p>Will attempt to fill the <code>reference</code> from the <code>lab_id</code> or vice versa.</p>
+<h3 id="substratereference">SubstrateReference<a class="headerlink" href="#substratereference" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A section for describing a system component and its role in a composite system.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.metainfo.basesections.v1.CompositeSystemReference</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lab_id</td>
+<td><code>str</code></td>
+<td>The readable identifier for the entity.</td>
+</tr>
+<tr>
+<td>reference</td>
+<td><a href="#substrate"><code>Substrate</code></a></td>
+<td>A reference to a NOMAD <code>CompositeSystem</code> entry.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>normalization</strong>: </p>
+<p>Will attempt to fill the <code>reference</code> from the <code>lab_id</code> or vice versa.</p>
+<h3 id="thinfilmstack">ThinFilmStack<a class="headerlink" href="#thinfilmstack" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A stack of <code>ThinFilm</code>(s). Typically deposited on a <code>Substrate</code>.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.metainfo.basesections.v1.CompositeSystem</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>layers</td>
+<td><a href="#thinfilmreference"><code>ThinFilmReference</code></a></td>
+<td>An ordered list (starting at the substrate) of the thin films making up the thin film stacks.</br><strong>sub-section</strong>, <strong>repeats</strong></td>
+</tr>
+<tr>
+<td>substrate</td>
+<td><a href="#substratereference"><code>SubstrateReference</code></a></td>
+<td>The substrate which the thin film layers of the thin film stack are deposited on.</br><strong>sub-section</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>normalization</strong>: </p>
+<p>The normalizer for the <code>ThinFilmStack</code> class.</p>
+<p>Args:
+    archive (EntryArchive): The archive containing the section that is being
+    normalized.
+    logger (BoundLogger): A structlog logger.</p>
+<h3 id="thinfilmstackreference">ThinFilmStackReference<a class="headerlink" href="#thinfilmstackreference" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: Class autogenerated from yaml schema.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.metainfo.basesections.v1.CompositeSystemReference</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lab_id</td>
+<td><code>str</code></td>
+<td>The readable identifier for the entity.</td>
+</tr>
+<tr>
+<td>reference</td>
+<td><a href="#thinfilmstack"><code>ThinFilmStack</code></a></td>
+<td>A reference to a NOMAD <code>CompositeSystem</code> entry.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>normalization</strong>: </p>
+<p>Will attempt to fill the <code>reference</code> from the <code>lab_id</code> or vice versa.</p>
+<h3 id="sampledeposition">SampleDeposition<a class="headerlink" href="#sampledeposition" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: The process of the settling of particles (atoms or molecules) from a solution, suspension or vapour onto a pre-existing surface, resulting in the growth of a
+new phase. [database_cross_reference: https://orcid.org/0000-0002-0640-0422]</p>
+<p>Synonyms:
+ - deposition</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.metainfo.basesections.v1.SynthesisMethod</code></p>
+<p><strong>links</strong>: <a href="http://purl.obolibrary.org/obo/CHMO_0001310">http://purl.obolibrary.org/obo/CHMO_0001310</a></p>
+<p><strong>normalization</strong>: </p>
+<p>The normalizer for the <code>SampleDeposition</code> class.</p>
+<p>Args:
+    archive (EntryArchive): The archive containing the section that is being
+    normalized.
+    logger (BoundLogger): A structlog logger.</p>
+<h3 id="timeseries">TimeSeries<a class="headerlink" href="#timeseries" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A time series of data during a process step. This is an abstract class and should not be used directly.
+Instead, it should be derived and the the units of the <code>value</code> and <code>set_value</code>
+should be specified.</p>
+<p>For example, a derived class could be <code>Temperature</code> with <code>value</code> in Kelvin:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">Temperature</span><span class="p">(</span><span class="n">TimeSeries</span><span class="p">):</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">value</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">m_copy</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">value</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="s2">&quot;kelvin&quot;</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">set_value</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">m_copy</span><span class="p">()</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">set_value</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="s2">&quot;kelvin&quot;</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">set_value</span><span class="o">.</span><span class="n">a_eln</span><span class="o">.</span><span class="n">defaultDisplayUnit</span> <span class="o">=</span> <span class="s2">&quot;celsius&quot;</span>
+</code></pre></div></p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.data.ArchiveSection</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>set_value</td>
+<td><code>float</code></td>
+<td>The set value(s) (i.e. the intended values) set.</br><strong>shape</strong>=<code>['*']</code></td>
+</tr>
+<tr>
+<td>set_time</td>
+<td><code>float</code></td>
+<td>The process time when each of the set values were set. If this is empty and only one set value is present, it is assumed that the value was set at the start of the process step. If two set values are present, it is assumed that a linear ramp between the two values was set.</br><strong>shape</strong>=<code>['*']</code>, <strong>unit</strong>=<code>second</code></td>
+</tr>
+<tr>
+<td>value</td>
+<td><code>float</code></td>
+<td>The observed value as a function of time.</br><strong>shape</strong>=<code>['*']</code></td>
+</tr>
+<tr>
+<td>time</td>
+<td><code>float</code></td>
+<td>The process time when each of the values were recorded.</br><strong>shape</strong>=<code>['*']</code>, <strong>unit</strong>=<code>second</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="recipe">Recipe<a class="headerlink" href="#recipe" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A Recipe for a material processing experiment. This class will be subclassed for each process that needs a recipe.</p>
+<p>The subclass will inherit Recipe and a specific Process class.</p>
+<p>The only difference between the Recipe and the actual Process is that
+the datetime and the input samples Entities are hidden in the Recipe.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.data.ArchiveSection</code></p>
+<h3 id="etchingstep">EtchingStep<a class="headerlink" href="#etchingstep" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A step of etching process.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.metainfo.basesections.v1.ProcessStep</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>duration</td>
+<td><code>float</code></td>
+<td>The elapsed time since the annealing process started.</br><strong>unit</strong>=<code>second</code></td>
+</tr>
+<tr>
+<td>temperature</td>
+<td><code>float</code></td>
+<td>The temperature of the etching process.</br><strong>unit</strong>=<code>degree_Celsius</code></td>
+</tr>
+<tr>
+<td>agitation</td>
+<td><code>['Magnetic Stirring', 'Sonication']</code></td>
+<td>The agitation method used during the etching process.</td>
+</tr>
+<tr>
+<td>etching_reagents</td>
+<td><code>nomad.datamodel.metainfo.basesections.v1.CompositeSystem</code></td>
+<td><strong>sub-section</strong>, <strong>repeats</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="etching">Etching<a class="headerlink" href="#etching" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: Selectively remove material from a surface using chemical or physical processes to create specific patterns or structures.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.metainfo.basesections.v1.Process</code>, <code>nomad.datamodel.data.EntryData</code></p>
+<p><strong>links</strong>: <a href="http://purl.obolibrary.org/obo/CHMO_0001558">http://purl.obolibrary.org/obo/CHMO_0001558</a></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tags</td>
+<td><code>str</code></td>
+<td>Searchable tags for this entry. Use Explore tab for searching.</br><strong>shape</strong>=<code>['*']</code></td>
+</tr>
+<tr>
+<td>recipe</td>
+<td><a href="#etchingrecipe"><code>EtchingRecipe</code></a></td>
+<td>The recipe used for the process. If a recipe is found, all the data is copied from the Recipe within the Process.</td>
+</tr>
+<tr>
+<td>steps</td>
+<td><a href="#etchingstep"><code>EtchingStep</code></a></td>
+<td>The steps of the etching process.</br><strong>sub-section</strong>, <strong>repeats</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>normalization</strong>: </p>
+<ul>
+<li>Sets the start time for each step in <code>self.steps</code> if not already set, based on the <code>datetime</code> and <code>duration</code> fields.</li>
+<li>Sets the <code>end_time</code> field to the calculated end time if it is not already set.</li>
+<li>Updates the <code>archive.workflow2.outputs</code> list with links to the samples processed.</li>
+</ul>
+<h3 id="etchingrecipe">EtchingRecipe<a class="headerlink" href="#etchingrecipe" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A Recipe for an etching process.</p>
+<p><strong>inherits from</strong>: <a href="#etching"><code>Etching</code></a>, <a href="#recipe"><code>Recipe</code></a>, <code>nomad.datamodel.data.EntryData</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lab_id</td>
+<td><code>str</code></td>
+<td>A unique human readable ID for the recipe.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>normalization</strong>: </p>
+<ul>
+<li>Sets the start time for each step in <code>self.steps</code> if not already set, based on the <code>datetime</code> and <code>duration</code> fields.</li>
+<li>Sets the <code>end_time</code> field to the calculated end time if it is not already set.</li>
+<li>Updates the <code>archive.workflow2.outputs</code> list with links to the samples processed.</li>
+</ul>
+<h3 id="annealingstep">AnnealingStep<a class="headerlink" href="#annealingstep" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A step of annealing process.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.metainfo.basesections.v1.ProcessStep</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>duration</td>
+<td><code>float</code></td>
+<td>The elapsed time since the annealing process started.</br><strong>unit</strong>=<code>second</code></td>
+</tr>
+<tr>
+<td>starting_temperature</td>
+<td><code>float</code></td>
+<td>The starting T in the annealing ramp.</br><strong>unit</strong>=<code>degree_Celsius</code></td>
+</tr>
+<tr>
+<td>ending_temperature</td>
+<td><code>float</code></td>
+<td>The starting T in the annealing ramp.</br><strong>unit</strong>=<code>degree_Celsius</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="annealing">Annealing<a class="headerlink" href="#annealing" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: Heat treatment process used to alter the material's properties, such as reducing defects, improving crystallinity, or relieving internal stresses.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.metainfo.basesections.v1.Process</code>, <code>nomad.datamodel.data.EntryData</code></p>
+<p><strong>links</strong>: <a href="http://purl.obolibrary.org/obo/CHMO_0001465">http://purl.obolibrary.org/obo/CHMO_0001465</a></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tags</td>
+<td><code>str</code></td>
+<td>Searchable tags for this entry. Use Explore tab for searching.</br><strong>shape</strong>=<code>['*']</code></td>
+</tr>
+<tr>
+<td>recipe</td>
+<td><a href="#annealingrecipe"><code>AnnealingRecipe</code></a></td>
+<td>The recipe used for the process. If a recipe is found, all the data is copied from the Recipe within the Process.</td>
+</tr>
+<tr>
+<td>duration</td>
+<td><code>float</code></td>
+<td>The elapsed time since the annealing process started.</br><strong>unit</strong>=<code>second</code></td>
+</tr>
+<tr>
+<td>steps</td>
+<td><a href="#annealingstep"><code>AnnealingStep</code></a></td>
+<td>The steps of the annealing process.</br><strong>sub-section</strong>, <strong>repeats</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>normalization</strong>: </p>
+<ul>
+<li>Sets the start time for each step in <code>self.steps</code> if not already set, based on the <code>datetime</code> and <code>duration</code> fields.</li>
+<li>Sets the <code>end_time</code> field to the calculated end time if it is not already set.</li>
+<li>Updates the <code>archive.workflow2.outputs</code> list with links to the samples processed.</li>
+</ul>
+<h3 id="annealingrecipe">AnnealingRecipe<a class="headerlink" href="#annealingrecipe" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A Recipe for an annealing process.</p>
+<p><strong>inherits from</strong>: <a href="#annealing"><code>Annealing</code></a>, <a href="#recipe"><code>Recipe</code></a>, <code>nomad.datamodel.data.EntryData</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lab_id</td>
+<td><code>str</code></td>
+<td>A unique human readable ID for the recipe.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>normalization</strong>: </p>
+<ul>
+<li>Sets the start time for each step in <code>self.steps</code> if not already set, based on the <code>datetime</code> and <code>duration</code> fields.</li>
+<li>Sets the <code>end_time</code> field to the calculated end time if it is not already set.</li>
+<li>Updates the <code>archive.workflow2.outputs</code> list with links to the samples processed.</li>
+</ul>
+<h3 id="cleaningstep">CleaningStep<a class="headerlink" href="#cleaningstep" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A step of cleaning process.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.metainfo.basesections.v1.ProcessStep</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>duration</td>
+<td><code>float</code></td>
+<td>The elapsed time since the cleaning process started.</br><strong>unit</strong>=<code>second</code></td>
+</tr>
+<tr>
+<td>temperature</td>
+<td><code>float</code></td>
+<td>The temperature of the cleaning process.</br><strong>unit</strong>=<code>degree_Celsius</code></td>
+</tr>
+<tr>
+<td>agitation</td>
+<td><code>['Magnetic Stirring', 'Sonication']</code></td>
+<td>The agitation method used during the cleaning process.</td>
+</tr>
+<tr>
+<td>cleaning_reagents</td>
+<td><code>nomad.datamodel.metainfo.basesections.v1.CompositeSystemReference</code></td>
+<td><strong>sub-section</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="cleaning">Cleaning<a class="headerlink" href="#cleaning" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: Surface cleaning in thin film material science involves removing contaminants and residues from a substrate's surface to ensure proper adhesion
+and uniformity of the thin film deposition.</p>
+<p><strong>inherits from</strong>: <code>nomad.datamodel.metainfo.basesections.v1.Process</code>, <code>nomad.datamodel.data.EntryData</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tags</td>
+<td><code>str</code></td>
+<td>Searchable tags for this entry. Use Explore tab for searching.</br><strong>shape</strong>=<code>['*']</code></td>
+</tr>
+<tr>
+<td>recipe</td>
+<td><a href="#cleaningrecipe"><code>CleaningRecipe</code></a></td>
+<td>The recipe used for the process. If a recipe is found, all the data is copied from the Recipe within the Process.</td>
+</tr>
+<tr>
+<td>duration</td>
+<td><code>float</code></td>
+<td>The elapsed time since the annealing process started.</br><strong>unit</strong>=<code>second</code></td>
+</tr>
+<tr>
+<td>steps</td>
+<td><a href="#cleaningstep"><code>CleaningStep</code></a></td>
+<td>The steps of the cleaning process.</br><strong>sub-section</strong>, <strong>repeats</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>normalization</strong>: </p>
+<ul>
+<li>Sets the start time for each step in <code>self.steps</code> if not already set, based on the <code>datetime</code> and <code>duration</code> fields.</li>
+<li>Sets the <code>end_time</code> field to the calculated end time if it is not already set.</li>
+<li>Updates the <code>archive.workflow2.outputs</code> list with links to the samples processed.</li>
+</ul>
+<h3 id="cleaningrecipe">CleaningRecipe<a class="headerlink" href="#cleaningrecipe" title="Permanent link">&para;</a></h3>
+<p><strong>description</strong>: A Recipe for an cleaning process.</p>
+<p><strong>inherits from</strong>: <a href="#cleaning"><code>Cleaning</code></a>, <a href="#recipe"><code>Recipe</code></a>, <code>nomad.datamodel.data.EntryData</code></p>
+<p><strong>properties</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>type</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lab_id</td>
+<td><code>str</code></td>
+<td>A unique human readable ID for the recipe.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>normalization</strong>: </p>
+<ul>
+<li>Sets the start time for each step in <code>self.steps</code> if not already set, based on the <code>datetime</code> and <code>duration</code> fields.</li>
+<li>Sets the <code>end_time</code> field to the calculated end time if it is not already set.</li>
+<li>Updates the <code>archive.workflow2.outputs</code> list with links to the samples processed.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+        <script src="../../javascript.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

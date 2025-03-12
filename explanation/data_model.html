@@ -1,0 +1,1424 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The documentation for NOMAD plugin nomad-material-processing.
+">
+      
+      
+        <meta name="author" content="The NOMAD Authors">
+      
+      
+      
+      
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.7">
+    
+    
+      
+        <title>Data model - Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.8608ea7d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Titillium Web";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="#2A4CDF" data-md-color-accent="#008A67">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nomad-material-processing-a-community-plugin" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="header.title">
+    <a href="https://nomad-lab.eu" title="Documentation" class="md-header__button md-logo" aria-label="Documentation" data-md-component="logo">
+      
+  <img src="../assets/nomad-plugin-logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Data model
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/FAIRmat-NFDI/nomad-material-processing" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://nomad-lab.eu" title="Documentation" class="md-nav__button md-logo" aria-label="Documentation" data-md-component="logo">
+      
+  <img src="../assets/nomad-plugin-logo.png" alt="logo">
+
+    </a>
+    Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/FAIRmat-NFDI/nomad-material-processing" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Explanation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="levelsofschema.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Levels of Schema
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="schemas.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Schemas
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how_to/install.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Install this Plugin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how_to/use_this_plugin.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Use this Plugin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how_to/develop.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribute to this Plugin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/references.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Schemas
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Schemas
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/schemas/general.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    General
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/schemas/combinatorial.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Combinatorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/schemas/epitaxy.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Epitaxy
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/schemas/crystal_growth.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Crystal growth
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2_5" id="__nav_4_2_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Solution
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            Solution
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/schemas/solution/general.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    General
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2_6" id="__nav_4_2_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Vapor Deposition
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            Vapor Deposition
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/schemas/vapor_deposition/general.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    General
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2_6_2" id="__nav_4_2_6_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    CVD
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_2_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            CVD
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/schemas/vapor_deposition/cvd/general.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    General
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/schemas/vapor_deposition/cvd/movpe.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Movpe
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2_6_3" id="__nav_4_2_6_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    PVD
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_2_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            PVD
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/schemas/vapor_deposition/pvd/general.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    General
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/schemas/vapor_deposition/pvd/sputtering.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sputtering
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/schemas/vapor_deposition/pvd/thermal.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Thermal
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/schemas/vapor_deposition/pvd/pld.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pld
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/schemas/vapor_deposition/pvd/mbe.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Mbe
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorial/tutorial.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tutorials
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contact.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contact
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#nomad-material-processing-a-community-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      NOMAD Material Processing: a Community plugin
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NOMAD Material Processing: a Community plugin">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#technical-description" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technical description
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-model-description" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data model description
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data model description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nomad_material_processinggeneral" class="md-nav__link">
+    <span class="md-ellipsis">
+      nomad_material_processing.general
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nomad_material_processingvapor_depositiongeneral" class="md-nav__link">
+    <span class="md-ellipsis">
+      nomad_material_processing.vapor_deposition.general
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nomad_material_processingvapor_depositioncvdgeneral" class="md-nav__link">
+    <span class="md-ellipsis">
+      nomad_material_processing.vapor_deposition.cvd.general
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nomad_material_processingvapor_depositioncvdmovpe" class="md-nav__link">
+    <span class="md-ellipsis">
+      nomad_material_processing.vapor_deposition.cvd.movpe
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nomad_material_processingvapor_depositionpvd" class="md-nav__link">
+    <span class="md-ellipsis">
+      nomad_material_processing.vapor_deposition.pvd
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nomad_material_processingvapor_depositionpvdgeneral" class="md-nav__link">
+    <span class="md-ellipsis">
+      nomad_material_processing.vapor_deposition.pvd.general
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nomad_material_processingvapor_depositionpvdmbe" class="md-nav__link">
+    <span class="md-ellipsis">
+      nomad_material_processing.vapor_deposition.pvd.mbe
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nomad_material_processingvapor_depositionpvdpld" class="md-nav__link">
+    <span class="md-ellipsis">
+      nomad_material_processing.vapor_deposition.pvd.pld
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nomad_material_processingvapor_depositionpvdsputtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      nomad_material_processing.vapor_deposition.pvd.sputtering
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nomad_material_processingvapor_depositionpvdthermal" class="md-nav__link">
+    <span class="md-ellipsis">
+      nomad_material_processing.vapor_deposition.pvd.thermal
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nomad_material_processingsolutiongeneral" class="md-nav__link">
+    <span class="md-ellipsis">
+      nomad_material_processing.solution.general
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="nomad_material_processing.solution.general">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#solution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Solution
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#solutionpreparation" class="md-nav__link">
+    <span class="md-ellipsis">
+      SolutionPreparation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Data model</h1>
+
+<h2 id="nomad-material-processing-a-community-plugin">NOMAD Material Processing: a Community plugin<a class="headerlink" href="#nomad-material-processing-a-community-plugin" title="Permanent link">&para;</a></h2>
+<p>The NOMAD Material Processing Plugin contains schemas for different synthesis methods.
+An overview of the package structure is shown below.</p>
+<h3 id="technical-description">Technical description<a class="headerlink" href="#technical-description" title="Permanent link">&para;</a></h3>
+<p>There are some technical aspects to understand the Python package built for this plugin, they are not crucial for the data model understanding itself:</p>
+<ul>
+<li>It is structured according to the <a href="https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/">src layout</a>.</li>
+<li>It is a <a href="https://docs.python.org/3/reference/import.html#regular-packages">regular Python package</a>, i. e., the structure is defined by the presence of <code>__init__.py</code> files. Each of these files contains one or multiple <a href="https://nomad-lab.eu/prod/v1/staging/docs/howto/plugins/plugins.html#plugin-entry-points">entry points</a>. These are used to load a portion of the code within your NOMAD through a specific section in the <code>nomad.yaml</code> file.</li>
+<li>It is pip installable. The <code>project.toml</code> file defines what will be installed, the dependencies, further details. The <strong>entry points</strong> included are listed in this file.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>nomad-material-processing/
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── docs
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── pyproject.toml
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>├── README.md
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>├── src
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│   └── nomad_material_processing
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│       ├── __init__.py
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│       ├── utils.py
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│       ├── general.py
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│       ├── vapor_deposition
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│       │   ├── __init__.py
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>│       │   ├── general.py
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│       │   ├── cvd
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>│       │   │   ├── __init__.py
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>│       │   │   ├── general.py
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>│       │   │   └── movpe.py
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>│       │   └── pvd
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│       │       ├── __init__.py
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>│       │       ├── general.py
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>│       │       ├── mbe.py
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>│       │       ├── pld.py
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>│       │       ├── sputtering.py
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>│       │       └── thermal.py
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>│       └── solution
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>│           ├── __init__.py
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>│           ├── general.py
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>│           └── utils.py
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>└── tests
+</code></pre></div>
+<h3 id="data-model-description">Data model description<a class="headerlink" href="#data-model-description" title="Permanent link">&para;</a></h3>
+<p>Each method has a dedicated <a href="https://docs.python.org/3/tutorial/modules.html">module</a>, i. e., a python file.</p>
+<h4 id="nomad_material_processinggeneral">nomad_material_processing.general<a class="headerlink" href="#nomad_material_processinggeneral" title="Permanent link">&para;</a></h4>
+<p>A very general module containing several categories of classes:</p>
+<ul>
+<li>an abstract process class <code>SampleDeposition</code> that is inherited in the specific processes such as MOVPE, MBE, PLD, etc.</li>
+<li><code>Substrate</code> and <code>CrystallineSubstrate</code> entities, the support used in <code>SampleDeposition</code> activities.</li>
+<li><code>ThinFilm</code> entity, usually created during <code>SampleDeposition</code> activities.</li>
+<li><code>ThinFilmStack</code> in case of processes producing multilayer samples. This class also contains a reference to the <code>Substrate</code>.</li>
+<li><code>Geometry</code> and its <a href="../reference/references.html#subclass">subclasses</a>, defining the commonly found macroscopic shapes of a sample. It is a <a href="../reference/references.html#subsection">subsection</a> composed within the <code>Substrate</code>. They include <code>Parallelepiped</code>, <code>SquareCuboid</code>, <code>RectangleCuboid</code>, <code>TruncatedCone</code>, <code>Cylinder</code>, <code>CylinderSector</code>, <code>IrregularParallelSurfaces</code>.</li>
+<li><code>Miscut</code> another <a href="../reference/references.html#subsection">subsection</a> of  <code>Substrate</code> to specify the miscut of the orientation of the surface in terms of angular deviation toward crystallographic directions.</li>
+<li><code>CrystalProperties</code> and <code>ElectronicProperties</code>, found as <a href="../reference/references.html#subsection">subsection</a> of sample entities that need these parameters.</li>
+<li>simple activities performed on samples: <code>Etching</code>, <code>Annealing</code>, <code>Cleaning</code>. They also include a <code>Recipe</code> that can be referenced inside to avoid repetition for routine tasks.</li>
+<li><code>TimeSeries</code> a general class that shapes every kind of parameters logged along a time window. The quantities referring to the measured parameter are <code>value</code> and <code>time</code>. <code>set_value</code> and <code>set_time</code> can also be specified, as they usually differ from the measured ones. Several <a href="../reference/references.html#subclass">subclasses</a> inheriting from this one can be found nested in the package.</li>
+</ul>
+<h4 id="nomad_material_processingvapor_depositiongeneral">nomad_material_processing.vapor_deposition.general<a class="headerlink" href="#nomad_material_processingvapor_depositiongeneral" title="Permanent link">&para;</a></h4>
+<p>The classes and now specified toward a specified group of techniques. The master class in this module is <code>VaporDeposition</code>, inheriting from <code>SampleDeposition</code>.</p>
+<p>The other classes found here are specifying the <a href="../reference/references.html#subsection">subsections</a> found in the steps of the <code>VaporDeposition</code> process.
+<code>VaporDepositionStep</code> contains three <a href="../reference/references.html#subsection">subsections</a> allowing to describe the parameters usually recorded during an experiment:</p>
+<ul>
+<li><code>VaporDepositionSource</code> the metadata on which kind of source will bring the raw material in the reaction chamber.
+This class is in turn composed by three distinct elements, namely the <code>Component</code> material to be evaporated, the <code>EvaporationSource</code> that is the element that produces the vapor, and <code>MolarFlowRate</code> that is a time series recording the molar flux exiting the source. This is used as a list within the <code>VaporDepositionStep</code> because many sources can be present at the same time.</li>
+<li><code>SampleParameter</code> this <a href="../reference/references.html#subsection">subsection</a> hosts the references to the <code>ThinFilm</code> deposited and the <code>ThinFilmStack</code> or <code>Substrate</code> used as support of the deposition. This <a href="../reference/references.html#subsection">subsection</a> is also used to record sample-specific parameters in the process, such as temperature, or growth rate. This is a list because many samples can be grown at the same time.</li>
+<li><code>ChamberEnvironment</code> collects the metadata connected to the whole reaction chamber that cannot be linked to one single sample. It usually contains temperature or <code>GasFlow</code> <a href="../reference/references.html#subsection">subsections</a>.</li>
+</ul>
+<p>These three <a href="../reference/references.html#subsection">subsections</a> are the backbone of the <code>VaporDeposition</code> process and they are usually inherited whenever a specific experiment requires to extend them.</p>
+<h4 id="nomad_material_processingvapor_depositioncvdgeneral">nomad_material_processing.vapor_deposition.cvd.general<a class="headerlink" href="#nomad_material_processingvapor_depositioncvdgeneral" title="Permanent link">&para;</a></h4>
+<p>This module contains specifications of <code>VaporDepositionSource</code> and <code>TimeSeries</code> commonly adopted in CVD techniques:</p>
+<p>Sources for CVD are inheriting from <code>CVDSource</code>, that is in turn a <code>VaporDepositionSource</code>.</p>
+<ul>
+<li><code>BubblerSource</code> defines a bubbler commonly used in CVD for liquid precursors.</li>
+<li><code>FlashSource</code> the vapor is generated by a <code>FlashEvaporator</code>.</li>
+<li><code>MistSource</code> another kind of source adopted in CVD.</li>
+<li><code>GasCylinderSource</code> a simple cylinder containing some gas phase precursor. In this case the <code>EvaporationSource</code> <a href="../reference/references.html#subclass">subclass</a>, called <code>GasCylinderEvaporator</code>, is not really evaporating as the precursor is already at the gas state.</li>
+<li><code>GasLineSource</code> used for gaseous precursors that are provided through a stable installation sourcing gas from facilities external to the lab.</li>
+</ul>
+<p><code>TimeSeries</code> used in CVD are:
+- <code>Rotation</code> specifies rotation frequency of the substrate holder in the chamber
+- <code>PartialVaporPressure</code> as <a href="../reference/references.html#subclass">subclass</a> of <code>Pressure</code>
+- <code>PushPurgeGasFlow</code> contains two <code>VolumetricFlowRate</code> <a href="../reference/references.html#subsection">subsections</a> that record the source and drain fluxes of the carries gas in the chamber.</p>
+<h4 id="nomad_material_processingvapor_depositioncvdmovpe">nomad_material_processing.vapor_deposition.cvd.movpe<a class="headerlink" href="#nomad_material_processingvapor_depositioncvdmovpe" title="Permanent link">&para;</a></h4>
+<h4 id="nomad_material_processingvapor_depositionpvd">nomad_material_processing.vapor_deposition.pvd<a class="headerlink" href="#nomad_material_processingvapor_depositionpvd" title="Permanent link">&para;</a></h4>
+<h4 id="nomad_material_processingvapor_depositionpvdgeneral">nomad_material_processing.vapor_deposition.pvd.general<a class="headerlink" href="#nomad_material_processingvapor_depositionpvdgeneral" title="Permanent link">&para;</a></h4>
+<h4 id="nomad_material_processingvapor_depositionpvdmbe">nomad_material_processing.vapor_deposition.pvd.mbe<a class="headerlink" href="#nomad_material_processingvapor_depositionpvdmbe" title="Permanent link">&para;</a></h4>
+<h4 id="nomad_material_processingvapor_depositionpvdpld">nomad_material_processing.vapor_deposition.pvd.pld<a class="headerlink" href="#nomad_material_processingvapor_depositionpvdpld" title="Permanent link">&para;</a></h4>
+<h4 id="nomad_material_processingvapor_depositionpvdsputtering">nomad_material_processing.vapor_deposition.pvd.sputtering<a class="headerlink" href="#nomad_material_processingvapor_depositionpvdsputtering" title="Permanent link">&para;</a></h4>
+<h4 id="nomad_material_processingvapor_depositionpvdthermal">nomad_material_processing.vapor_deposition.pvd.thermal<a class="headerlink" href="#nomad_material_processingvapor_depositionpvdthermal" title="Permanent link">&para;</a></h4>
+<h4 id="nomad_material_processingsolutiongeneral">nomad_material_processing.solution.general<a class="headerlink" href="#nomad_material_processingsolutiongeneral" title="Permanent link">&para;</a></h4>
+<p><code>solution.general</code> module contains the following entry sections (used to create
+NOMAD <a href="https://nomad-lab.eu/prod/v1/docs/reference/glossary.html#entry">entries</a>):</p>
+<h5 id="solution"><code>Solution</code><a class="headerlink" href="#solution" title="Permanent link">&para;</a></h5>
+<p>Describes liquid solutions by extending the
+<a href="https://nomad-lab.eu/prod/v1/docs/howto/customization/base_sections.html#system"><code>CompositeSystem</code></a> with quantities: <em>pH</em>, <em>mass</em>,
+<em>calculated_volume</em>, <em>measured_volume</em>, <em>density</em>, and sub-sections:
+<em>solvents</em>, <em>solutes</em>, and <em>solution_storage</em>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># pseudocode for `Solution` datamodel</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">Solution</span><span class="p">(</span><span class="n">CompositeSystem</span><span class="p">,</span> <span class="n">EntryData</span><span class="p">):</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">ph_value</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">mass</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">calculated_volume</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">measured_volume</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">density</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">components</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>        <span class="n">Union</span><span class="p">(</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>            <span class="n">SolutionComponent</span><span class="p">,</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>            <span class="n">SolutionComponentReference</span><span class="p">,</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>        <span class="p">)</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="p">]</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="n">solutes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SolutionComponent</span><span class="p">]</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="n">solvents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SolutionComponent</span><span class="p">]</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    <span class="n">solution_storage</span><span class="p">:</span> <span class="n">SolutionStorage</span>
+</code></pre></div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>The <em>measured_volume</em> field is user-defined. By default, the automation in
+<code>Solution</code> uses <em>calculated_volume</em>, but if <em>measured_volume</em> is provided, it will take
+precedence. This is useful when the final solution volume differs from the sum of its
+component volumes, and should be specified by the user.</p>
+</div>
+<p>The <em>components</em> sub-section, inherited from <code>CompositeSystem</code> and re-defined, is used to describe
+a list of components used in the solution. Each of them contributes to the <em>mass</em> and
+<em>calculated_volume</em> of the solution. The component can either nest a
+sub-section describing its composition, or can be another <code>Solution</code> entry connected
+via reference.
+These options are are handled by
+<code>SolutionComponent</code> and <code>SolutionComponentReference</code> sections respectively.</p>
+<p>Let's take a closer look at each of them.</p>
+<p><code>SolutionComponent</code> extends <code>PureSubstanceComponent</code> with quantities:
+<em>component_role</em>, <em>mass</em>, <em>volume</em>, <em>density</em>, and sub-section: <em>molar_concentration</em>.
+The <em>pure_substance</em> sub-section inherited from <code>PureSubstanceComponent</code> specifies the
+chemical compound. This information along with the mass of the component and
+total volume of the solution is used to automatically determine the molar concentration of
+the component, populating the corresponding sub-section.
+Based on the <em>component_role</em>, the components are copied over to either
+<code>Solution.solvents</code> or <code>Solution.solutes</code>.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">SolutionComponent</span><span class="p">(</span><span class="n">PureSubstanceComponent</span><span class="p">):</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">component_role</span><span class="p">:</span> <span class="n">Enum</span><span class="p">(</span><span class="s1">&#39;Solvent&#39;</span><span class="p">,</span> <span class="s1">&#39;Solute&#39;</span><span class="p">)</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">mass</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">volume</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">density</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">molar_concentration</span><span class="p">:</span> <span class="n">MolarConcentration</span>
+</code></pre></div></p>
+<p><code>SolutionComponentReference</code> makes a reference to another <code>Solution</code> entry and specifies
+the amount used. Based on this, <em>solutes</em> and <em>solvents</em> of the referenced solution are
+copied over to the first solution. Their mass and volume are adjusted based on the
+amount of the referenced solution used.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">SolutionComponentReference</span><span class="p">(</span><span class="n">SystemComponent</span><span class="p">):</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="n">mass</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">volume</span><span class="p">:</span> <span class="nb">float</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="n">system</span><span class="p">:</span> <span class="n">Solution</span>
+</code></pre></div></p>
+<p>Both <code>Solution.solvents</code> and <code>Solution.solutes</code> are a list of <code>SolutionComponent</code>. The
+molar concentration of each of them is automatically determined. Additionally, if the
+list has multiple <code>SolutionComponent</code> representing the same chemical entity, there are
+combined into one.</p>
+<p>The <em>solution_storage</em> uses <code>SolutionStorage</code> section to describe storage conditions
+, i.e., temperature and atmosphere, along with preparation and expiry dates.</p>
+<h5 id="solutionpreparation"><code>SolutionPreparation</code><a class="headerlink" href="#solutionpreparation" title="Permanent link">&para;</a></h5>
+<p>Extends <a href="https://nomad-lab.eu/prod/v1/docs/howto/customization/base_sections.html#process"><code>Process</code></a>
+to describe the recipe for solution preparation. It generates a <code>Solution</code> entry based
+on the data added to it.</p>
+<p>!!! todo: add description of each module</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+        <script src="../javascript.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
