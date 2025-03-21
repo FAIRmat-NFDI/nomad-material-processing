@@ -971,11 +971,13 @@ class ThinFilmStack(CompositeSystem):
         if self.substrate.reference:
             self.components.append(SystemComponent(system=self.substrate.reference))
         if self.layers:
-            self.components = [
-                SystemComponent(system=layer.reference)
-                for layer in self.layers
-                if layer.reference
-            ]
+            self.components.extend(
+                [
+                    SystemComponent(system=layer.reference)
+                    for layer in self.layers
+                    if layer.reference
+                ]
+            )
         super().normalize(archive, logger)
 
 
