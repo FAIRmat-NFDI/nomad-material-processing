@@ -969,11 +969,15 @@ class ThinFilmStack(CompositeSystem):
         """
         self.components = []
         if self.substrate.reference:
-            self.components.append(SystemComponent(system=self.substrate.reference))
+            self.components.append(
+                SystemComponent(
+                    name=self.substrate.name, system=self.substrate.reference
+                )
+            )
         if self.layers:
             self.components.extend(
                 [
-                    SystemComponent(system=layer.reference)
+                    SystemComponent(name=layer.name, system=layer.reference)
                     for layer in self.layers
                     if layer.reference
                 ]
