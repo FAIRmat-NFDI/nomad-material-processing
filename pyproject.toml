@@ -51,12 +51,13 @@ dev = [
     "pytest",
     "ruff",
     "structlog",
-    "mkdocs", 
+    "mkdocs",
     "mkdocs-material>=9.0",
     "pymdown-extensions",
     "mkdocs-click",
     "mkdocs-macros-plugin>=1.0",
-    "pydantic>=2.0,<2.11"
+    "pydantic>=2.0,<2.11",
+    "nomad-docs",
 ]
 
 [tool.ruff]
