@@ -968,7 +968,7 @@ class ThinFilmStack(CompositeSystem):
             logger (BoundLogger): A structlog logger.
         """
         self.components = []
-        if self.substrate.reference:
+        if self.substrate and self.substrate.reference:
             self.components.append(
                 SystemComponent(
                     name=self.substrate.name, system=self.substrate.reference
