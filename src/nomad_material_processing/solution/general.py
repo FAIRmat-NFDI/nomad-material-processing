@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 from nomad.datamodel.data import (
     ArchiveSection,
@@ -247,7 +247,7 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
     molar_concentration = SubSection(section_def=MolarConcentration)
     pure_substance = SubSection(section_def=PubChemPureSubstanceSection)
 
-    def _calculate_moles(self, logger: 'BoundLogger' = None) -> Union[Quantity, None]:
+    def _calculate_moles(self, logger: 'BoundLogger' = None) -> Quantity | None:
         """
         A private method to calculate the moles of a component in the solution.
 
