@@ -1,13 +1,5 @@
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from nomad.datamodel.datamodel import (
-        EntryArchive,
-    )
-    from structlog.stdlib import (
-        BoundLogger,
-    )
-
 import numpy as np
 from nomad.config import config
 from nomad.datamodel.data import ArchiveSection, EntryData
@@ -37,6 +29,15 @@ from nomad.metainfo import (
     SectionProxy,
     SubSection,
 )
+
+if TYPE_CHECKING:
+    from nomad.datamodel.datamodel import (
+        EntryArchive,
+    )
+    from structlog.stdlib import (
+        BoundLogger,
+    )
+
 
 m_package = SchemaPackage(
     aliases=[
