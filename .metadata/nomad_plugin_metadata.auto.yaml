@@ -1,0 +1,186 @@
+id: nomad-material-processing
+metadata_schema_version: 1.0.0
+name: nomad-material-processing
+description: A plugin for NOMAD containing base sections for material processing.
+license: LICENSE
+upstream_repository: https://github.com/FAIRmat-NFDI/nomad-material-processing
+documentation: https://fairmat-nfdi.github.io/nomad-material-processing/
+homepage: https://github.com/FAIRmat-NFDI/nomad-material-processing
+issue_tracker: https://github.com/FAIRmat-NFDI/nomad-material-processing/issues
+maintainers:
+- name: FAIRmat
+  email: fairmat@physik.hu-berlin.de
+authors:
+- name: Andrea Albino
+- name: "Sebastian Br\xFCckner"
+- name: "Michael G\xF6tte"
+- name: Ahmed Ilyas
+- name: Sarthak Kapoor
+- name: "Jos\xE9 A. M\xE1rquez"
+- name: "Hampus N\xE4sstr\xF6m"
+- name: Markus Scheidgen
+entry_points:
+- id: nomad.plugin:general_schema
+  entry_point_group: nomad.plugin
+  entry_point_name: general_schema
+  python_object: nomad_material_processing:schema
+  capability_type: schema
+- id: nomad.plugin:solution_schema
+  entry_point_group: nomad.plugin
+  entry_point_name: solution_schema
+  python_object: nomad_material_processing.solution:schema
+  capability_type: schema
+- id: nomad.plugin:vd_schema
+  entry_point_group: nomad.plugin
+  entry_point_name: vd_schema
+  python_object: nomad_material_processing.vapor_deposition:schema
+  capability_type: schema
+- id: nomad.plugin:cvd_schema
+  entry_point_group: nomad.plugin
+  entry_point_name: cvd_schema
+  python_object: nomad_material_processing.vapor_deposition.cvd:schema
+  capability_type: schema
+- id: nomad.plugin:movpe_schema
+  entry_point_group: nomad.plugin
+  entry_point_name: movpe_schema
+  python_object: nomad_material_processing.vapor_deposition.cvd:movpe_schema
+  capability_type: schema
+- id: nomad.plugin:pvd_schema
+  entry_point_group: nomad.plugin
+  entry_point_name: pvd_schema
+  python_object: nomad_material_processing.vapor_deposition.pvd:schema
+  capability_type: schema
+- id: nomad.plugin:mbe_schema
+  entry_point_group: nomad.plugin
+  entry_point_name: mbe_schema
+  python_object: nomad_material_processing.vapor_deposition.pvd:mbe_schema
+  capability_type: schema
+- id: nomad.plugin:pld_schema
+  entry_point_group: nomad.plugin
+  entry_point_name: pld_schema
+  python_object: nomad_material_processing.vapor_deposition.pvd:pld_schema
+  capability_type: schema
+- id: nomad.plugin:sputtering_schema
+  entry_point_group: nomad.plugin
+  entry_point_name: sputtering_schema
+  python_object: nomad_material_processing.vapor_deposition.pvd:sputtering_schema
+  capability_type: schema
+- id: nomad.plugin:thermal_schema
+  entry_point_group: nomad.plugin
+  entry_point_name: thermal_schema
+  python_object: nomad_material_processing.vapor_deposition.pvd:thermal_schema
+  capability_type: schema
+capabilities:
+- id: general_schema
+  capability_type: schema
+  title: General Schema
+  summary: "Schema package containing basic classes used\n    in the nomad_material_processing\
+    \ plugin."
+- id: solution_schema
+  capability_type: schema
+  title: Solution Schema
+  summary: Schema package containing classes for liquid solutions.
+- id: vd_schema
+  capability_type: schema
+  title: General Vapor Deposition Schema
+  summary: "Schema package containing basic classes used\n    in the vapor_deposition\
+    \ submodule."
+- id: cvd_schema
+  capability_type: schema
+  title: CVD Schema
+  summary: Schema package for general CVD techniques.
+- id: movpe_schema
+  capability_type: schema
+  title: MOVPE Schema
+  summary: Schema package for MOVPE techniques.
+- id: pvd_schema
+  capability_type: schema
+  title: General PVD Schema
+  summary: "Schema package containing basic classes used\n    in the vapor_deposition\
+    \ submodule."
+- id: mbe_schema
+  capability_type: schema
+  title: Mbe Schema
+  summary: "Schema package containing basic classes used\n    in the MBE submodule."
+- id: pld_schema
+  capability_type: schema
+  title: Pld Schema
+  summary: "Schema package containing basic classes used\n    in the PLD submodule."
+- id: sputtering_schema
+  capability_type: schema
+  title: Sputtering Schema
+  summary: "Schema package containing basic classes used\n    in the sputtering submodule."
+- id: thermal_schema
+  capability_type: schema
+  title: Thermal Schema
+  summary: "Schema package containing basic classes used\n    in the thermal submodule."
+schema_dependencies:
+- dependency_type: python_package
+  package_name: nomad-lab
+  version_range: '>= 1.3.14'
+  optional: false
+  purpose: runtime
+- dependency_type: python_package
+  package_name: pytest
+  version_range: ''
+  optional: true
+  purpose: optional
+- dependency_type: python_package
+  package_name: ruff
+  version_range: ''
+  optional: true
+  purpose: optional
+- dependency_type: python_package
+  package_name: structlog
+  version_range: ''
+  optional: true
+  purpose: optional
+- dependency_type: python_package
+  package_name: nomad-docs
+  version_range: '>=0.1.3'
+  optional: true
+  purpose: optional
+- dependency_type: python_package
+  package_name: mkdocs
+  version_range: ''
+  optional: true
+  purpose: optional
+- dependency_type: python_package
+  package_name: mkdocs-material
+  version_range: '>=9.0'
+  optional: true
+  purpose: optional
+- dependency_type: python_package
+  package_name: pymdown-extensions
+  version_range: ''
+  optional: true
+  purpose: optional
+- dependency_type: python_package
+  package_name: mkdocs-click
+  version_range: ''
+  optional: true
+  purpose: optional
+- dependency_type: python_package
+  package_name: mkdocs-macros-plugin
+  version_range: '>=1.0'
+  optional: true
+  purpose: optional
+metadata_provenance:
+- source: pyproject
+  extraction_method: deterministic
+  generated_at: '2026-03-19T14:50:31.884588+00:00'
+  generator_version: 0.1.0
+- source: plugin_entry_points
+  extraction_method: deterministic
+  generated_at: '2026-03-19T14:50:31.884624+00:00'
+  generator_version: 0.1.0
+- source: citation_cff
+  extraction_method: deterministic
+  generated_at: '2026-03-19T14:50:31.884639+00:00'
+  generator_version: 0.1.0
+stars: 11
+owner: FAIRmat-NFDI
+owner_type: Organization
+created: '2023-08-15T09:04:41Z'
+last_updated: '2025-08-11T13:23:35Z'
+archived: false
