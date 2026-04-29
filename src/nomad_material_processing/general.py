@@ -706,12 +706,6 @@ class CrystalProperties(ArchiveSection):
     parameters, and the specific arrangement of atoms within the crystal lattice.
     """
 
-
-class SubstrateCrystalProperties(CrystalProperties):
-    """
-    Crystallographic parameters such as orientation, miscut, and surface structure.
-    """
-
     bravais_lattices = Quantity(
         type=MEnum(
             'Triclinic',
@@ -729,21 +723,30 @@ class SubstrateCrystalProperties(CrystalProperties):
             'Trigonal',
             'Hexagonal',
         ),
-        description='The crystal system of the substrate.',
+        description='The Bravais lattice type of the crystal structure.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.EnumEditQuantity,
         ),
     )
     surface_orientation = SubSection(
         section_def=CrystallographicDirection,
-        description='The orientation of the substrate surface.',
+        description='The orientation of the crystal surface.',
     )
     miscut = SubSection(
         section_def=Miscut,
         description="""
-        Miscut of the substrate.
+        Miscut of the crystal.
         """,
     )
+
+
+class SubstrateCrystalProperties(CrystalProperties):
+    """
+    Crystallographic parameters specific to a substrate.
+
+    Note: This class is currently identical to `CrystalProperties`, but it is defined separately
+    backward compatibility. This can change in future.
+    """
 
 
 class ElectronicProperties(ArchiveSection):
