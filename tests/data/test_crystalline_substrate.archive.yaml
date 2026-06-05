@@ -1,0 +1,4 @@
+data:
+  m_def: nomad_material_processing.CrystallineSubstrate
+  crystal_properties:
+    bravais_lattices: Monoclinic Simple
