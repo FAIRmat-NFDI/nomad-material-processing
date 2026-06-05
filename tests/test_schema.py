@@ -25,8 +25,5 @@ def test_crystalline_substrate_bravais_lattice_normalization():
     normalize_all(entry_archive)
 
     assert (
-        entry_archive.data.crystal_properties.bravais_lattices
-        == 'Monoclinic Primitive'
+        entry_archive.data.crystal_properties.bravais_lattices == 'Monoclinic Primitive'
     )
-
-

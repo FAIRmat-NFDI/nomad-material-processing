@@ -704,6 +704,7 @@ class CrystalProperties(ArchiveSection):
     These properties are defined by factors such as crystal symmetry, lattice
     parameters, and the specific arrangement of atoms within the crystal lattice.
     """
+
     bravais_lattices = Quantity(
         type=MEnum(
             'Triclinic',
@@ -749,11 +750,11 @@ class SubstrateCrystalProperties(CrystalProperties):
             'Cubic Face Centered',
             'Rhombohedral',
             'Hexagonal',
-            'Monoclinic Simple',  # Incorrect term, will be normalized to Monoclinic Primitive
-            'Orthorhombic Simple',  # Incorrect term, will be normalized to Orthorhombic Primitive
-            'Tetragonal Simple',  # Incorrect term, will be normalized to Tetragonal Primitive
-            'Cubic Simple',  # Incorrect term, will be normalized to Cubic Primitive
-            'Trigonal', # Incorrect term, will be normalized to Rhombohedral
+            'Monoclinic Simple',  # Incorrect term, normalizes to Monoclinic Primitive
+            'Orthorhombic Simple',  # Incorrect term, norm. to Orthorhombic Primitive
+            'Tetragonal Simple',  # Incorrect term, normalizes to Tetragonal Primitive
+            'Cubic Simple',  # Incorrect term, normalizes to Cubic Primitive
+            'Trigonal',  # Incorrect term, normalizes to Rhombohedral
         ),
         description='The Bravais lattice of the crystal structure.',
         a_eln=ELNAnnotation(
@@ -776,7 +777,8 @@ class SubstrateCrystalProperties(CrystalProperties):
         The normalizer for the `SubstrateCrystalProperties` class.
 
         Args:
-            archive (EntryArchive): The archive containing the section that is being normalized.
+            archive (EntryArchive): The archive containing the section that is being
+            normalized.
             logger (BoundLogger): A structlog logger.
         """
         old_terminologies = {
