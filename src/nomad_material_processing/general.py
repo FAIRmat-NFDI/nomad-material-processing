@@ -706,6 +706,29 @@ class CrystalProperties(ArchiveSection):
     parameters, and the specific arrangement of atoms within the crystal lattice.
     """
 
+    bravais_lattices = Quantity(
+        type=MEnum(
+            'Triclinic',
+            'Monoclinic Primitive',
+            'Monoclinic Base Centered',
+            'Orthorhombic Primitive',
+            'Orthorhombic Base Centered',
+            'Orthorhombic Body Centered',
+            'Orthorhombic Face Centered',
+            'Tetragonal Primitive',
+            'Tetragonal Body Centered',
+            'Cubic Primitive',
+            'Cubic Body Centered',
+            'Cubic Face Centered',
+            'Rhombohedral',
+            'Hexagonal',
+        ),
+        description='The Bravais lattice of the crystal structure.',
+        a_eln=ELNAnnotation(
+            component=ELNComponentEnum.EnumEditQuantity,
+        ),
+    )
+
 
 class SubstrateCrystalProperties(CrystalProperties):
     """
@@ -715,21 +738,26 @@ class SubstrateCrystalProperties(CrystalProperties):
     bravais_lattices = Quantity(
         type=MEnum(
             'Triclinic',
-            'Monoclinic Simple',
+            'Monoclinic Primitive',
             'Monoclinic Base Centered',
-            'Orthorhombic Simple',
+            'Orthorhombic Primitive',
             'Orthorhombic Base Centered',
             'Orthorhombic Body Centered',
             'Orthorhombic Face Centered',
-            'Tetragonal Simple',
+            'Tetragonal Primitive',
             'Tetragonal Body Centered',
-            'Cubic Simple',
+            'Cubic Primitive',
             'Cubic Body Centered',
             'Cubic Face Centered',
-            'Trigonal',
+            'Rhombohedral',
             'Hexagonal',
+            'Monoclinic Simple',  # Incorrect term, normalizes to Monoclinic Primitive
+            'Orthorhombic Simple',  # Incorrect term, norm. to Orthorhombic Primitive
+            'Tetragonal Simple',  # Incorrect term, normalizes to Tetragonal Primitive
+            'Cubic Simple',  # Incorrect term, normalizes to Cubic Primitive
+            'Trigonal',  # Incorrect term, normalizes to Rhombohedral
         ),
-        description='The crystal system of the substrate.',
+        description='The Bravais lattice of the crystal structure.',
         a_eln=ELNAnnotation(
             component=ELNComponentEnum.EnumEditQuantity,
         ),
@@ -744,6 +772,30 @@ class SubstrateCrystalProperties(CrystalProperties):
         Miscut of the substrate.
         """,
     )
+
+    def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
+        """
+        The normalizer for the `SubstrateCrystalProperties` class.
+
+        Args:
+            archive (EntryArchive): The archive containing the section that is being
+            normalized.
+            logger (BoundLogger): A structlog logger.
+        """
+        old_terminologies = {
+            'Monoclinic Simple': 'Monoclinic Primitive',
+            'Orthorhombic Simple': 'Orthorhombic Primitive',
+            'Tetragonal Simple': 'Tetragonal Primitive',
+            'Cubic Simple': 'Cubic Primitive',
+            'Trigonal': 'Rhombohedral',
+        }
+        if self.bravais_lattices in old_terminologies:
+            logger.warning(
+                f"Bravais lattice '{self.bravais_lattices}' is incorrect terminology. "
+                f"Normalizing to '{old_terminologies[self.bravais_lattices]}'."
+            )
+            self.bravais_lattices = old_terminologies[self.bravais_lattices]
+        super().normalize(archive, logger)
 
 
 class ElectronicProperties(ArchiveSection):
