@@ -7,7 +7,7 @@
 # NOMAD's Material Processing Plugin
 This is a plugin for [NOMAD](https://nomad-lab.eu) which contains base sections for
 material processing.
-
+ 
 ## Getting started
 `nomad-material-processing` can be installed from PyPI using `pip`. 
 
