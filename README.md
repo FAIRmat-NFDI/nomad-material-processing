@@ -5,13 +5,12 @@
 [![DOI](https://zenodo.org/badge/678740680.svg)](https://zenodo.org/doi/10.5281/zenodo.13786015)
 
 # NOMAD's Material Processing Plugin
-This is a plugin for [NOMAD](https://nomad-lab.eu) which contains base sections for
-material processing.
+This is a plugin for [NOMAD](https://nomad-lab.eu) which contains base sections for material processing. Please checkout the full documentation at [Material Processing Plugin docs] (https://fairmat-nfdi.github.io/nomad-material-processing/index.html).
 
 ## Getting started
-`nomad-material-processing` can be installed from PyPI using `pip`. 
+`nomad-material-processing` can be installed from PyPI using `pip`.
 
-> [!WARNING] 
+> [!WARNING]
 > Unfortunately, the current plugin mechanism is not supported by the latest nomad-lab version on PyPI and therefore an index url pointing to the NOMAD Gitlab registry needs to be added.
 
 ```sh
@@ -19,10 +18,10 @@ pip install nomad-material-processing --index-url https://gitlab.mpcdf.mpg.de/ap
 ```
 
 ### Setting up your OASIS
-Read the [NOMAD plugin documentation](https://nomad-lab.eu/prod/v1/staging/docs/plugins/plugins.html#add-a-plugin-to-your-nomad) for all details on how to deploy the plugin on your NOMAD instance.
+Read the [NOMAD plugin documentation](https://docs.nomad-lab.eu/1.4.3/howto/oasis/configure.html#plugins) for all details on how to deploy the plugin on your NOMAD instance.
 
-You don't need to modify the ```nomad.yaml``` configuration file of your NOMAD instance, beacuse the package is pip installed and all the available modules (entry points) are loaded.
-To include, instead, only some of the entry points, you need to specify them in the ```include``` section of the ```nomad.yaml```. In the following lines, a list of all the available entry points:
+You don't need to modify the ```nomad.yaml``` configuration file of your NOMAD instance, because the package is pip installed and all the available modules (entry points) are loaded.
+However, if you wish to include only some of the entry points, you need to specify them in the ```include``` section of the ```nomad.yaml```. Below, you find all the available entry points:
 
 ```yaml
 plugins:
