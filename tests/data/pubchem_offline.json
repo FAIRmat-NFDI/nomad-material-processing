@@ -1,0 +1,50 @@
+{
+  "Lead iodide": {
+    "inchi": "InChI=1S/2HI.Pb/h2*1H;/q;;+2/p-2",
+    "inchi_key": "RQQRAHKHDFPBMC-UHFFFAOYSA-L",
+    "iupac_name": "diiodolead",
+    "molar_mass": 461.0,
+    "molecular_formula": "I2Pb",
+    "molecular_mass": 461.7856,
+    "monoisotopic_mass": 461.7856,
+    "pub_chem_cid": 24931,
+    "pub_chem_link": "https://pubchem.ncbi.nlm.nih.gov/compound/24931",
+    "smile": "I[Pb]I"
+  },
+  "N,N-Dimethylformamide": {
+    "inchi": "InChI=1S/C3H7NO/c1-4(2)3-5/h3H,1-2H3",
+    "inchi_key": "ZMXDDKWLCZADIW-UHFFFAOYSA-N",
+    "iupac_name": "N,N-dimethylformamide",
+    "molar_mass": 73.09,
+    "molecular_formula": "C3H7NO",
+    "molecular_mass": 73.052763847,
+    "monoisotopic_mass": 73.052763847,
+    "pub_chem_cid": 6228,
+    "pub_chem_link": "https://pubchem.ncbi.nlm.nih.gov/compound/6228",
+    "smile": "CN(C)C=O"
+  },
+  "Sodium Chloride": {
+    "inchi": "InChI=1S/ClH.Na/h1H;/q;+1/p-1",
+    "inchi_key": "FAPWRFPIFSIZLT-UHFFFAOYSA-M",
+    "iupac_name": "sodium chloride",
+    "molar_mass": 58.44,
+    "molecular_formula": "ClNa",
+    "molecular_mass": 57.958622,
+    "monoisotopic_mass": 57.958622,
+    "pub_chem_cid": 5234,
+    "pub_chem_link": "https://pubchem.ncbi.nlm.nih.gov/compound/5234",
+    "smile": "[Na+].[Cl-]"
+  },
+  "Water": {
+    "inchi": "InChI=1S/H2O/h1H2",
+    "inchi_key": "XLYOFNOQVPJJNP-UHFFFAOYSA-N",
+    "iupac_name": "oxidane",
+    "molar_mass": 18.015,
+    "molecular_formula": "H2O",
+    "molecular_mass": 18.010564683,
+    "monoisotopic_mass": 18.010564683,
+    "pub_chem_cid": 962,
+    "pub_chem_link": "https://pubchem.ncbi.nlm.nih.gov/compound/962",
+    "smile": "O"
+  }
+}
