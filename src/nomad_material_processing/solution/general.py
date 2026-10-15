@@ -213,6 +213,9 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         The mass of the component without the container. Can be calculated automatically
         if `volume` and `density` are available or if `amount_of_substance`
         and `pure_substance.molecular_mass` are available.
+        Volume and density are prioritized over the mass: if both are given, the mass
+        is always calculated from them (m = V · ρ), and an entered mass is replaced,
+        with a warning.
         """,
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -227,6 +230,10 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         description="""
         The number of elementary entities of the given substance. Can be calculated
         automatically if `mass` and `pure_substance.molecular_mass` are available.
+        The mass is prioritized over the amount of substance: if a mass is present, the
+        amount is always calculated from it (n = m / M), and an entered amount is
+        replaced, with a warning. A mass calculated from an entered amount is kept as
+        the mass, so to change the amount later, clear the mass as well.
         """,
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',

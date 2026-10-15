@@ -140,21 +140,13 @@ def test_component_mass_and_amount_related_by_molar_mass(given):
 # Calculated values
 
 
-def reprocessed(data, **changes):
-    """
-    Saves `data` as the ELN does, with `changes` made by the user (values in the
-    fields' units), and normalizes it again.
-    """
-    saved = data.m_to_dict()
-    saved.update(changes)
-    return normalized(type(data).m_from_dict(saved))
-
-
 def test_calculated_values_follow_a_changed_input():
     component = normalized(water(volume=0.5 * ureg('L')))
     amount = component.amount_of_substance
 
-    changed = reprocessed(component, volume=0.3)
+    saved = component.m_to_dict()
+    saved.update(volume=0.3)
+    changed = normalized(type(component).m_from_dict(saved))
 
     assert_quantity(changed.mass, 0.3 * ureg('kg'))
     assert_quantity(changed.amount_of_substance, amount * 0.6)
