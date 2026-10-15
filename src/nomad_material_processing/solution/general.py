@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+import numpy as np
 from nomad.datamodel.data import (
     ArchiveSection,
     EntryData,
@@ -247,36 +248,67 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
     molar_concentration = SubSection(section_def=MolarConcentration)
     pure_substance = SubSection(section_def=PubChemPureSubstanceSection)
 
-    def _calculate_moles(self, logger: 'BoundLogger' = None) -> Quantity | None:
+    @staticmethod
+    def mass_from_volume(volume: Quantity, density: Quantity) -> Quantity:
+        """m = V · ρ"""
+        return volume * density
+
+    @staticmethod
+    def amount_from_mass(mass: Quantity, molar_mass: Quantity) -> Quantity:
+        """n = m / M"""
+        return mass / molar_mass
+
+    @staticmethod
+    def mass_from_amount(
+        amount_of_substance: Quantity, molar_mass: Quantity
+    ) -> Quantity:
+        """m = n · M"""
+        return amount_of_substance * molar_mass
+
+    def _calculate_mass_and_amount(self, logger: 'BoundLogger') -> None:
         """
-        A private method to calculate the moles of a component in the solution.
-
-        Args:
-            component (SolutionComponent): The component to calculate the moles for.
-            logger (BoundLogger): A structlog logger.
-
-        Returns:
-            Union[Quantity, None]: The moles of the component in the solution.
+        Calculates the mass from the volume and density, or else from the amount of
+        substance, and the amount of substance from the mass. Calculated values are
+        overwritten on every normalization, so they follow changed inputs; a given
+        value that is replaced by a different one is reported.
         """
-        if self.volume and self.density:
-            self.mass = self.volume * self.density
+        molar_mass = None
+        if self.pure_substance is not None and self.pure_substance.molecular_mass:
+            molar_mass = self.pure_substance.molecular_mass * ureg.N_A
 
-        if not self.pure_substance.molecular_mass:
-            if logger:
+        if self.volume is not None and self.density is not None:
+            mass = self.mass_from_volume(self.volume, self.density)
+            if self.mass is not None and not np.isclose(
+                self.mass, mass, rtol=1e-9, atol=0
+            ):
+                logger.warning(
+                    f'The mass of "{self.name}" ({self.mass:.4g~P}) is replaced by '
+                    f'm = V · ρ = {mass.to(self.mass.units):.4g~P}.'
+                )
+            self.mass = mass
+        elif self.mass is None and self.amount_of_substance is not None:
+            if molar_mass is not None:
+                self.mass = self.mass_from_amount(self.amount_of_substance, molar_mass)
+
+        if self.mass is None:
+            return
+        if molar_mass is None:
+            if self.pure_substance is not None:
                 logger.warning(
                     f'Could not calculate moles of the "{self.name}" as molecular '
                     'mass is missing.'
                 )
             return
-        if not self.mass:
-            if logger:
-                logger.warning(
-                    f'Could not calculate moles of the "{self.name}" as mass is '
-                    'missing.'
-                )
-            return
-        moles = self.mass / (self.pure_substance.molecular_mass * ureg.N_A)
-        return moles.to_base_units()
+        amount = self.amount_from_mass(self.mass, molar_mass)
+        if self.amount_of_substance is not None and not np.isclose(
+            self.amount_of_substance, amount, rtol=1e-9, atol=0
+        ):
+            logger.warning(
+                f'The amount of substance of "{self.name}" '
+                f'({self.amount_of_substance:.4g~P}) is replaced by n = m / M = '
+                f'{amount.to(self.amount_of_substance.units):.4g~P}.'
+            )
+        self.amount_of_substance = amount
 
     def calculate_molar_concentration(
         self, volume: Quantity, logger: 'BoundLogger' = None
@@ -305,8 +337,8 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
-        Normalize method for the `SolutionComponent` section. Sets the mass if volume
-        and density are provided.
+        Normalize method for the `SolutionComponent` section. Calculates the mass and
+        the amount of substance.
 
         Args:
             archive (EntryArchive): A NOMAD archive.
@@ -315,14 +347,7 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         if self.substance_name and self.pure_substance is None:
             self.pure_substance = PubChemPureSubstanceSection(name=self.substance_name)
             self.pure_substance.normalize(archive, logger)
-        if self.volume and self.density:
-            self.mass = self.volume * self.density
-        if self.mass and self.pure_substance and not self.amount_of_substance:
-            self.amount_of_substance = self._calculate_moles(logger)
-        if self.amount_of_substance and self.pure_substance and not self.mass:
-            self.mass = self.amount_of_substance * (
-                self.pure_substance.molecular_mass * ureg.N_A
-            )
+        self._calculate_mass_and_amount(logger)
         super().normalize(archive, logger)
 
 

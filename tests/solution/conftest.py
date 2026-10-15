@@ -1,3 +1,4 @@
+import itertools
 import json
 import os
 
@@ -52,3 +53,24 @@ def offline_pubchem(monkeypatch):
     yield
     if missing:
         pytest.fail('\n'.join(missing))
+
+
+def input_combinations(inputs: dict) -> list:
+    """
+    Every way of filling a schema with some of `inputs`: no input, each input alone,
+    each pair, and so on up to all of them (2 ** len(inputs) cases). For checking
+    that a normalizer handles every combination of entered values:
+
+        @pytest.mark.parametrize('given', input_combinations(INPUTS))
+        def test_component(given):
+            component = SolutionComponent(**given)
+
+    Each case is a dict of the chosen inputs, named after them (e.g. `mass+volume`,
+    or `nothing`), so a failing case shows which inputs were given.
+    """
+    cases = []
+    for size in range(len(inputs) + 1):  # how many of the inputs are given
+        for combination in itertools.combinations(inputs.items(), size):
+            given = dict(combination)
+            cases.append(pytest.param(given, id='+'.join(given) or 'nothing'))
+    return cases

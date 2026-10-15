@@ -5,6 +5,7 @@ the implementation.
 """
 
 import pytest
+from conftest import input_combinations
 from nomad.client import normalize_all, parse
 from nomad.datamodel.metainfo.basesections import PubChemPureSubstanceSection
 from nomad.units import ureg
@@ -76,9 +77,38 @@ def portion(solution, volume, extra_components=()):
 # Components
 
 
-def test_component_mass_from_volume_and_density():
-    component = normalized(water(volume=0.5 * ureg('L')))
-    assert_quantity(component.mass, 0.5 * ureg('kg'))
+@pytest.mark.parametrize(
+    'given',
+    input_combinations(
+        {
+            'mass': 0.52 * ureg('kg'),
+            'amount_of_substance': 30.0 * ureg('mol'),
+            'volume': 0.5 * ureg('L'),
+            'density': 1.0 * ureg('g/mL'),
+        }
+    ),
+)
+def test_component_input_combinations(given):
+    """
+    The mass comes from V · ρ, else as given, else from n · M; the amount from m / M.
+    Water is used because its molar mass and its monoisotopic mass differ by only
+    0.02 %, so the expected values hold for either (relative tolerance 1e-3).
+    """
+    molar_mass = 18.015 * ureg('g/mol')
+    mass = given.get('mass')
+    if 'volume' in given and 'density' in given:
+        mass = given['volume'] * given['density']
+    elif mass is None and 'amount_of_substance' in given:
+        mass = given['amount_of_substance'] * molar_mass
+
+    component = normalized(SolutionComponent(substance_name='Water', **given))
+
+    if mass is None:
+        assert component.mass is None
+        assert component.amount_of_substance is None
+    else:
+        assert_quantity(component.mass, mass, rel=1e-3)
+        assert_quantity(component.amount_of_substance, mass / molar_mass, rel=1e-3)
 
 
 def test_component_substance_looked_up_by_name():
@@ -90,7 +120,7 @@ def test_component_substance_looked_up_by_name():
 
 @pytest.mark.xfail(
     strict=True,
-    reason='Uses the monoisotopic mass instead of the molar mass;',
+    reason='Uses the monoisotopic mass instead of the molar mass.',
 )
 @pytest.mark.parametrize('given', ['mass', 'amount_of_substance'])
 def test_component_mass_and_amount_related_by_molar_mass(given):
@@ -105,6 +135,29 @@ def test_component_mass_and_amount_related_by_molar_mass(given):
     )
     assert_quantity(component.mass, mass)
     assert_quantity(component.amount_of_substance, amount)
+
+
+# Calculated values
+
+
+def reprocessed(data, **changes):
+    """
+    Saves `data` as the ELN does, with `changes` made by the user (values in the
+    fields' units), and normalizes it again.
+    """
+    saved = data.m_to_dict()
+    saved.update(changes)
+    return normalized(type(data).m_from_dict(saved))
+
+
+def test_calculated_values_follow_a_changed_input():
+    component = normalized(water(volume=0.5 * ureg('L')))
+    amount = component.amount_of_substance
+
+    changed = reprocessed(component, volume=0.3)
+
+    assert_quantity(changed.mass, 0.3 * ureg('kg'))
+    assert_quantity(changed.amount_of_substance, amount * 0.6)
 
 
 # Solutions
