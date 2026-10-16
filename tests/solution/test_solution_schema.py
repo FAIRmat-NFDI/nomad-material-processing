@@ -68,7 +68,8 @@ def test_solution():
     assert pytest.approx(starter_water_amount, 1e-3) == 0.5 * ureg('l') * 55.523 * ureg(
         'mol/l'
     )
-    assert pytest.approx(starter_salt_concentration, 1e-3) == 0.345 * ureg('mol/l')
+    # 0.345 mol/L with the monoisotopic mass of NaCl, 0.342 mol/L with its molar mass.
+    assert pytest.approx(starter_salt_concentration, 1e-3) == 0.342 * ureg('mol/l')
     assert pytest.approx(starter_salt_mass, 1e-3) == 0.01 * ureg('kg')
 
     ## making the main solution using starter solution

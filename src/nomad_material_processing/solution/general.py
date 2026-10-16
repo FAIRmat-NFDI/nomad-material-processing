@@ -212,7 +212,8 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         description="""
         The mass of the component without the container. Can be calculated automatically
         if `volume` and `density` are available or if `amount_of_substance`
-        and `pure_substance.molecular_mass` are available.
+        and `pure_substance.molar_mass` are available (if the molar mass is missing,
+        `pure_substance.molecular_mass` is used instead, with a warning).
         Volume and density are prioritized over the mass: if both are given, the mass
         is always calculated from them (m = V · ρ), and an entered mass is replaced,
         with a warning.
@@ -229,7 +230,9 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         type=float,
         description="""
         The number of elementary entities of the given substance. Can be calculated
-        automatically if `mass` and `pure_substance.molecular_mass` are available.
+        automatically if `mass` and `pure_substance.molar_mass` are available (if the
+        molar mass is missing, `pure_substance.molecular_mass` is used instead, with a
+        warning; if both are missing, the amount is not calculated).
         The mass is prioritized over the amount of substance: if a mass is present, the
         amount is always calculated from it (n = m / M), and an entered amount is
         replaced, with a warning. A mass calculated from an entered amount is kept as
@@ -280,8 +283,14 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         value that is replaced by a different one is reported.
         """
         molar_mass = None
-        if self.pure_substance is not None and self.pure_substance.molecular_mass:
+        if self.pure_substance is not None and self.pure_substance.molar_mass:
+            molar_mass = self.pure_substance.molar_mass
+        elif self.pure_substance is not None and self.pure_substance.molecular_mass:
             molar_mass = self.pure_substance.molecular_mass * ureg.N_A
+            logger.warning(
+                f'The molar mass of "{self.name}" is missing, the molecular mass '
+                f'({self.pure_substance.molecular_mass:.4g~P}) is used instead.'
+            )
 
         if self.volume is not None and self.density is not None:
             mass = self.mass_from_volume(self.volume, self.density)
@@ -302,8 +311,8 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         if molar_mass is None:
             if self.pure_substance is not None:
                 logger.warning(
-                    f'Could not calculate moles of the "{self.name}" as molecular '
-                    'mass is missing.'
+                    f'Could not calculate moles of the "{self.name}" as molar '
+                    'mass and molecular mass are missing.'
                 )
             return
         amount = self.amount_from_mass(self.mass, molar_mass)

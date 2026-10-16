@@ -185,9 +185,10 @@ total volume of the solution is used to automatically determine the molar concen
 the component, populating the corresponding sub-section.
 
 If not provided, _amount_of_substance_ can be determined from _mass_ and 
-_pure_substance.molecular_mass_.
+_pure_substance.molar_mass_.
 On other hand, if _amount_of_substance_ is available, but _mass_ is missing, it can be 
-determined using _amount_of_substance_ and _pure_substance.molecular_mass_.
+determined using _amount_of_substance_ and _pure_substance.molar_mass_.
+If the molar mass is missing, _pure_substance.molecular_mass_ is used instead.
 _mass_ can also be determined if _volume_ and _density_ are available.
 
 Based on the _component_role_, the components are copied over to either

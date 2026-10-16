@@ -118,10 +118,6 @@ def test_component_substance_looked_up_by_name():
     assert component.pure_substance.pub_chem_cid == WATER_CID
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason='Uses the monoisotopic mass instead of the molar mass.',
-)
 @pytest.mark.parametrize('given', ['mass', 'amount_of_substance'])
 def test_component_mass_and_amount_related_by_molar_mass(given):
     mass = 10 * ureg('g')
@@ -135,6 +131,43 @@ def test_component_mass_and_amount_related_by_molar_mass(given):
     )
     assert_quantity(component.mass, mass)
     assert_quantity(component.amount_of_substance, amount)
+
+
+@pytest.mark.parametrize(
+    'entered, molar_mass',
+    [
+        pytest.param(
+            {'molar_mass': 58.44 * ureg('g/mol'), 'molecular_mass': 57.96 * ureg('Da')},
+            58.44 * ureg('g/mol'),
+            id='molar_mass',
+        ),
+        pytest.param(
+            {'molecular_mass': 57.96 * ureg('Da')},
+            57.96 * ureg('g/mol'),
+            id='molecular_mass',
+        ),
+        pytest.param({}, None, id='nothing'),
+    ],
+)
+def test_component_molar_mass_entered_without_lookup(monkeypatch, entered, molar_mass):
+    """
+    If the substance is not found on PubChem, the entered molar mass is used, else the
+    entered molecular mass; without either, the amount is not calculated.
+    """
+    monkeypatch.setattr(
+        PubChemPureSubstanceSection, 'normalize', lambda self, archive, logger: None
+    )
+    mass = 10 * ureg('g')
+    component = normalized(
+        SolutionComponent(
+            mass=mass, pure_substance=PubChemPureSubstanceSection(**entered)
+        )
+    )
+    assert_quantity(component.mass, mass)
+    if molar_mass is None:
+        assert component.amount_of_substance is None
+    else:
+        assert_quantity(component.amount_of_substance, mass / molar_mass)
 
 
 # Calculated values
