@@ -428,6 +428,7 @@ class Solution(CompositeSystem, EntryData):
                     'ph_value',
                     'calculated_volume',
                     'measured_volume',
+                    'estimated_volume',
                     'mass',
                     'density',
                     'description',
@@ -469,6 +470,22 @@ class Solution(CompositeSystem, EntryData):
         volume of its liquid components.
         A solvent without a volume is counted with its mass / density; if it has
         neither, an error is logged.
+        """,
+        type=float,
+        a_eln=ELNAnnotation(
+            defaultDisplayUnit='milliliter',
+        ),
+        unit='liter',
+    )
+    estimated_volume = Quantity(
+        description="""The volume of the solution estimated by assuming that the
+        volumes of all components add up: Σ V_i, with V_i = mass / density for a
+        component without a volume, and the used fraction of the estimated volume for a
+        referenced solution. Unlike `calculated_volume`, it includes the volume of
+        dissolved solids. Only calculated if every component has a volume, or a mass
+        and a density. Used for the `estimated_concentration` of the components; the
+        fraction taken from this solution as a component of another one uses the
+        measured volume, else the calculated volume.
         """,
         type=float,
         a_eln=ELNAnnotation(
@@ -674,7 +691,8 @@ class Solution(CompositeSystem, EntryData):
         for component in self.solutes:
             component.calculate_molar_concentration(volume, logger)
 
-        estimated_volume = None if self.measured_volume else self.additive_volume()
+        self.estimated_volume = self.additive_volume()
+        estimated_volume = None if self.measured_volume else self.estimated_volume
         for component in self.components:
             if isinstance(component, SolutionComponent):
                 component.calculate_estimated_concentration(estimated_volume)

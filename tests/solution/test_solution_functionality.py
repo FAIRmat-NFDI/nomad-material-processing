@@ -334,16 +334,24 @@ def test_components_of_same_substance_are_merged():
                 components=[water(), sodium_chloride(density=SODIUM_CHLORIDE_DENSITY)],
                 measured_volume=0.6 * ureg('L'),
             ),
-            None,
+            0.5 * ureg('L') + 10 * ureg('g') / SODIUM_CHLORIDE_DENSITY,
             id='measured_volume',
         ),
     ],
 )
-def test_estimated_concentration_assumes_additive_volumes(solution, additive_volume):
+def test_estimated_volume_and_concentration_assume_additive_volumes(
+    solution, additive_volume
+):
+    """The estimated concentration uses the estimated volume, unless a volume was
+    measured."""
     solution = normalized(solution)
+    if additive_volume is None:
+        assert solution.estimated_volume is None
+    else:
+        assert_quantity(solution.estimated_volume, additive_volume)
     for component in solution.solvents + solution.solutes:
         estimated = component.molar_concentration.estimated_concentration
-        if additive_volume is None:
+        if additive_volume is None or solution.measured_volume is not None:
             assert estimated is None
         else:
             assert_quantity(estimated, component.amount_of_substance / additive_volume)
