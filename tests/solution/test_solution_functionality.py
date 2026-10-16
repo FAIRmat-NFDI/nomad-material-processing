@@ -9,6 +9,7 @@ from conftest import input_combinations
 from nomad.client import normalize_all, parse
 from nomad.datamodel.metainfo.basesections import PubChemPureSubstanceSection
 from nomad.units import ureg
+from structlog.testing import capture_logs
 
 from nomad_material_processing.solution.general import (
     Solution,
@@ -42,6 +43,16 @@ def water(volume=0.5 * ureg('L')):
         component_role='Solvent',
         volume=volume,
         density=1.0 * ureg('g/mL'),
+        pure_substance=PubChemPureSubstanceSection(name='Water'),
+    )
+
+
+def weighed_water(density=1.0 * ureg('g/mL')):
+    return SolutionComponent(
+        name='Water',
+        component_role='Solvent',
+        mass=0.5 * ureg('kg'),
+        density=density,
         pure_substance=PubChemPureSubstanceSection(name='Water'),
     )
 
@@ -224,6 +235,27 @@ def test_solution_volume_is_sum_of_liquid_volumes():
     assert_quantity(solution.calculated_volume, 0.5 * ureg('L'))
 
 
+def test_solvent_given_by_mass_counts_in_volume():
+    solution = normalized(Solution(components=[weighed_water(), sodium_chloride()]))
+
+    assert_quantity(solution.calculated_volume, 0.5 * ureg('L'))
+    salt = solution.solutes[0]
+    assert_quantity(
+        salt.molar_concentration.calculated_concentration,
+        salt.amount_of_substance / (0.5 * ureg('L')),
+    )
+
+
+def test_solvent_without_volume_and_density_is_an_error():
+    with capture_logs() as logs:
+        normalized(
+            Solution(components=[weighed_water(density=None), sodium_chloride()])
+        )
+    assert any(
+        log['log_level'] == 'error' and '"Water"' in log['event'] for log in logs
+    )
+
+
 def test_solution_mass_and_density(salt_water):
     assert_quantity(salt_water.mass, 0.51 * ureg('kg'))
     assert_quantity(salt_water.density, 0.51 * ureg('kg') / (0.5 * ureg('L')))
@@ -361,6 +393,21 @@ def test_portion_keeps_estimated_concentration():
             component.molar_concentration.estimated_concentration,
             starter_component.molar_concentration.estimated_concentration,
         )
+
+
+def test_portion_of_solution_with_unknown_volume_adds_nothing():
+    starter = normalized(
+        Solution(components=[weighed_water(density=None), sodium_chloride()])
+    )
+
+    result = portion(
+        starter, 0.1 * ureg('L'), extra_components=[water(volume=0.1 * ureg('L'))]
+    )
+
+    assert_quantity(result.components[0].volume, 0.1 * ureg('L'))
+    assert [c.pure_substance.pub_chem_cid for c in result.solvents] == [WATER_CID]
+    assert_quantity(result.solvents[0].volume, 0.1 * ureg('L'))
+    assert result.solutes == []
 
 
 def test_whole_solution_used_if_no_volume_given(salt_water):

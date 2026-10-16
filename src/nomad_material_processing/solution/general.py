@@ -267,7 +267,10 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
     )
     density = Quantity(
         type=float,
-        description='The density of the liquid component.',
+        description="""
+        The density of the liquid component. Needed for a solvent given by its mass, to
+        calculate its volume (V = m / ρ).
+        """,
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             defaultDisplayUnit='gram / milliliter',
@@ -464,6 +467,8 @@ class Solution(CompositeSystem, EntryData):
     calculated_volume = Quantity(
         description="""The final expected volume of the solution, which is the sum of
         volume of its liquid components.
+        A solvent without a volume is counted with its mass / density; if it has
+        neither, an error is logged.
         """,
         type=float,
         a_eln=ELNAnnotation(
@@ -555,14 +560,22 @@ class Solution(CompositeSystem, EntryData):
         """
         self.calculated_volume = ureg.Quantity(0, 'milliliter')
         for component in self.components:
-            if not component.volume:
-                if component.component_role == 'Solvent' and logger:
-                    logger.warning(
-                        f'The volume of the solvent component "{component.name}" is '
-                        'missing.'
+            if component.volume:
+                self.calculated_volume += component.volume
+            elif (
+                isinstance(component, SolutionComponent)
+                and component.component_role == 'Solvent'
+            ):
+                if component.mass is not None and component.density is not None:
+                    self.calculated_volume += component.volume_from_mass(
+                        component.mass, component.density
                     )
-                continue
-            self.calculated_volume += component.volume
+                elif logger:
+                    logger.error(
+                        f'The volume of the solvent "{component.name}" is missing. '
+                        'Enter its volume, or its mass and density, to calculate the '
+                        'volume of the solution.'
+                    )
 
     def additive_volume(self) -> Quantity | None:
         """
@@ -578,9 +591,10 @@ class Solution(CompositeSystem, EntryData):
                 if component.system is None:
                     return None
                 starter_volume = component.system.additive_volume()
-                if starter_volume is None:
+                fraction = component.portion_fraction()
+                if starter_volume is None or fraction is None:
                     return None
-                volume += component.portion_fraction() * starter_volume
+                volume += fraction * starter_volume
             elif component.volume is not None:
                 volume += component.volume
             elif component.mass is not None and component.density is not None:
@@ -630,6 +644,8 @@ class Solution(CompositeSystem, EntryData):
                 # while taking the volume used into account
                 if component.system:
                     scaler = component.portion_fraction()
+                    if scaler is None:
+                        continue
 
                     if component.system.solvents:
                         for solvent in component.system.solvents:
@@ -734,15 +750,17 @@ class SolutionComponentReference(SystemComponent, BaseSolutionComponent):
         unit='kilogram',
     )
 
-    def portion_fraction(self) -> Quantity | float:
+    def portion_fraction(self) -> Quantity | float | None:
         """
         f = V_used / V_solution: the fraction of the referenced solution that is used,
-        with its measured volume, else its calculated volume. 1 if either volume is
-        unknown.
+        with its measured volume, else its calculated volume. 1 if no used volume is
+        given (the whole solution); None if the volume of the solution is unknown.
         """
-        available_volume = self.system.measured_volume or self.system.calculated_volume
-        if not self.volume or not available_volume:
+        if not self.volume:
             return 1
+        available_volume = self.system.measured_volume or self.system.calculated_volume
+        if not available_volume:
+            return None
         return self.volume / available_volume
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
@@ -760,7 +778,15 @@ class SolutionComponentReference(SystemComponent, BaseSolutionComponent):
             available_volume = self.system.calculated_volume
             if self.system.measured_volume:
                 available_volume = self.system.measured_volume
-            if not self.volume:
+            if not available_volume:
+                if self.volume:
+                    logger.error(
+                        f'The volume of the solution "{self.system.name}" is unknown, '
+                        f'so the used part of it can not be determined and its '
+                        'components are not added. Enter the measured volume of the '
+                        'solution, or the volumes of its solvents.'
+                    )
+            elif not self.volume:
                 # assume entire volume of the solution is used
                 self.volume = available_volume
             elif self.volume > available_volume:
