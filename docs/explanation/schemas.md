@@ -139,7 +139,7 @@ by searching for: `"nomad_material_processing.solution.general"`
 
 `nomad_material_processing.solution.general.Solution` describes liquid solutions by extending the
 [`CompositeSystem`](https://nomad-lab.eu/prod/v1/docs/howto/customization/base_sections.html#system) with quantities: _pH_, _mass_,
-_calculated_volume_, _measured_volume_, _density_, and sub-sections:
+_calculated_volume_, _measured_volume_, _estimated_volume_, _density_, and sub-sections:
 _solvents_, _solutes_, and _solution_storage_.
 
 ```py
@@ -148,6 +148,7 @@ class Solution(CompositeSystem, EntryData):
     mass: float
     calculated_volume: float
     measured_volume: float
+    estimated_volume: float
     density: float
     components: list[
         Union(
@@ -227,6 +228,48 @@ combined into one.
 
 The _solution_storage_ uses `SolutionStorage` section to describe storage conditions
 , i.e., temperature and atmosphere, along with preparation and expiry dates.
+
+##### What is calculated from which input for components
+
+Two equations apply for the values of a component:
+
+1. V = m / ρ
+2. m = n * M
+
+The density ρ is entered by the user. The molar mass M is taken from PubChem: the
+molar mass of the pure substance, else its monoisotopic molecular mass, with a warning.
+
+In a laboratory, solvents are typically measured as volumes and solutes in grams, but
+some laboratories weigh solvents or give solutes in moles. To keep the data consistent
+with Equations 1&2, the fields are normalized with an order: volume and density data get highest priority, then follows the mass and, finally, the
+amount. The normalize method then follows the following rules:
+
+- Values with lower priority are calculated from values with higher priority; an
+  entered one is replaced, with a warning. This matters for the ELN and for
+  overdetermined components: a value can only be edited as long as no value with
+  higher priority determines it, otherwise it is recalculated on every save.
+- Values with higher priority are not populated if only values with lower priority
+  are provided. They are only inferred from Equations 1&2 where the solution needs
+  them (e.g. the volume from mass and density counts in the volume of the solution,
+  and the _solvents_ or _solutes_ list uses inferred masses).
+
+For example, if the user provides density and volume, mass is populated as well as
+amount. However, if they provide mass and density, volume is not set, but amount is.
+(The density is never calculated.)
+
+##### What is calculated from which input for solutions
+
+The solution volume is the measured volume, else the sum of the entered component
+volumes (a solvent without a volume counts with mass / density), and is used for the
+calculated concentrations, the density and the fraction taken from a referenced
+solution.
+
+If all components have a volume, or a mass and a density, the _estimated_volume_ is
+populated as well, for comparison. It assumes that all volumes add up, including the
+solute volumes, which is a better estimate than _calculated_volume_, which neglects
+dissolved solids, for most solutions (not for multivalent salts in water). If no volume
+is measured, the _estimated_concentration_ of each component is its amount of substance
+divided by the _estimated_volume_.
 
 #### SolutionPreparation
 

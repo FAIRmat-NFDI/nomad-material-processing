@@ -103,25 +103,27 @@ def portion(solution, volume, extra_components=()):
 )
 def test_component_input_combinations(given):
     """
-    The mass comes from V · ρ, else as given, else from n · M; the amount from m / M.
-    Water is used because its molar mass and its monoisotopic mass differ by only
-    0.02 %, so the expected values hold for either (relative tolerance 1e-3).
+    The mass comes from V · ρ, else as given; the amount from m / M, else as given. A
+    value is never calculated from one with lower priority. Water is used because its
+    molar mass and its monoisotopic mass differ by only 0.02 %, so the expected values
+    hold for either (relative tolerance 1e-3).
     """
     molar_mass = 18.015 * ureg('g/mol')
     mass = given.get('mass')
     if 'volume' in given and 'density' in given:
         mass = given['volume'] * given['density']
-    elif mass is None and 'amount_of_substance' in given:
-        mass = given['amount_of_substance'] * molar_mass
+    amount = given.get('amount_of_substance') if mass is None else mass / molar_mass
 
     component = normalized(SolutionComponent(substance_name='Water', **given))
 
     if mass is None:
         assert component.mass is None
-        assert component.amount_of_substance is None
     else:
         assert_quantity(component.mass, mass, rel=1e-3)
-        assert_quantity(component.amount_of_substance, mass / molar_mass, rel=1e-3)
+    if amount is None:
+        assert component.amount_of_substance is None
+    else:
+        assert_quantity(component.amount_of_substance, amount, rel=1e-3)
 
 
 def test_component_substance_looked_up_by_name():
@@ -133,17 +135,23 @@ def test_component_substance_looked_up_by_name():
 
 @pytest.mark.parametrize('given', ['mass', 'amount_of_substance'])
 def test_component_mass_and_amount_related_by_molar_mass(given):
+    """The solutes of the solution show both, whichever was entered."""
     mass = 10 * ureg('g')
     amount = mass / (58.44 * ureg('g/mol'))  # molar mass of NaCl
-    component = normalized(
-        SolutionComponent(
-            component_role='Solute',
-            pure_substance=PubChemPureSubstanceSection(name='Sodium Chloride'),
-            **{given: mass if given == 'mass' else amount},
+    solution = normalized(
+        Solution(
+            components=[
+                SolutionComponent(
+                    component_role='Solute',
+                    pure_substance=PubChemPureSubstanceSection(name='Sodium Chloride'),
+                    **{given: mass if given == 'mass' else amount},
+                )
+            ]
         )
     )
-    assert_quantity(component.mass, mass)
-    assert_quantity(component.amount_of_substance, amount)
+    salt = solution.solutes[0]
+    assert_quantity(salt.mass, mass)
+    assert_quantity(salt.amount_of_substance, amount)
 
 
 @pytest.mark.parametrize(
@@ -196,6 +204,22 @@ def test_calculated_values_follow_a_changed_input():
 
     assert_quantity(changed.mass, 0.3 * ureg('kg'))
     assert_quantity(changed.amount_of_substance, amount * 0.6)
+
+
+def test_entered_amount_can_be_changed():
+    component = normalized(
+        SolutionComponent(
+            component_role='Solute',
+            amount_of_substance=0.1 * ureg('mol'),
+            pure_substance=PubChemPureSubstanceSection(name='Sodium Chloride'),
+        )
+    )
+
+    saved = component.m_to_dict()
+    saved.update(amount_of_substance=0.2)
+    changed = normalized(type(component).m_from_dict(saved))
+
+    assert_quantity(changed.amount_of_substance, 0.2 * ureg('mol'))
 
 
 def test_estimated_concentration_removed_when_volume_is_measured():

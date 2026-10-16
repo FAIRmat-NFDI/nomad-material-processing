@@ -230,13 +230,12 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
     mass = Quantity(
         type=float,
         description="""
-        The mass of the component without the container. Can be calculated automatically
-        if `volume` and `density` are available or if `amount_of_substance`
-        and `pure_substance.molar_mass` are available (if the molar mass is missing,
-        `pure_substance.molecular_mass` is used instead, with a warning).
-        Volume and density are prioritized over the mass: if both are given, the mass
-        is always calculated from them (m = V · ρ), and an entered mass is replaced,
-        with a warning.
+        The mass of the component without the container. Calculated automatically if
+        `volume` and `density` are available: volume and density are prioritized over
+        the mass, so the mass is then always calculated from them (m = V · ρ), and an
+        entered mass is replaced, with a warning.
+        It is not stored if calculated from the `amount_of_substance`, so the amount
+        stays editable; it is filled in the solvents or solutes list of the solution.
         """,
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -249,14 +248,13 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         link='https://doi.org/10.1351/goldbook.A00297',
         type=float,
         description="""
-        The number of elementary entities of the given substance. Can be calculated
+        The number of elementary entities of the given substance. Calculated
         automatically if `mass` and `pure_substance.molar_mass` are available (if the
         molar mass is missing, `pure_substance.molecular_mass` is used instead, with a
         warning; if both are missing, the amount is not calculated).
         The mass is prioritized over the amount of substance: if a mass is present, the
         amount is always calculated from it (n = m / M), and an entered amount is
-        replaced, with a warning. A mass calculated from an entered amount is kept as
-        the mass, so to change the amount later, clear the mass as well.
+        replaced, with a warning.
         """,
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -303,18 +301,38 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         """V = m / ρ"""
         return mass / density
 
+    def _molar_mass(self) -> Quantity | None:
+        """M of the pure substance: its molar mass, else its molecular mass · N_A."""
+        if self.pure_substance is None:
+            return None
+        if self.pure_substance.molar_mass:
+            return self.pure_substance.molar_mass
+        if self.pure_substance.molecular_mass:
+            return self.pure_substance.molecular_mass * ureg.N_A
+        return None
+
+    def known_mass(self) -> Quantity | None:
+        """
+        The mass, else m = n · M from the amount of substance, which is not stored, so
+        that an entered amount stays editable. None if neither is available.
+        """
+        if self.mass is not None:
+            return self.mass
+        molar_mass = self._molar_mass()
+        if self.amount_of_substance is None or molar_mass is None:
+            return None
+        return self.mass_from_amount(self.amount_of_substance, molar_mass)
+
     def _calculate_mass_and_amount(self, logger: 'BoundLogger') -> None:
         """
-        Calculates the mass from the volume and density, or else from the amount of
-        substance, and the amount of substance from the mass. Calculated values are
-        overwritten on every normalization, so they follow changed inputs; a given
-        value that is replaced by a different one is reported.
+        Calculates the mass from the volume and density, and the amount of substance
+        from the mass. A value is only calculated from values with priority, so the
+        mass is not calculated from the amount. Calculated values are overwritten on
+        every normalization, so they follow changed inputs; a given value that is
+        replaced by a different one is reported.
         """
-        molar_mass = None
-        if self.pure_substance is not None and self.pure_substance.molar_mass:
-            molar_mass = self.pure_substance.molar_mass
-        elif self.pure_substance is not None and self.pure_substance.molecular_mass:
-            molar_mass = self.pure_substance.molecular_mass * ureg.N_A
+        molar_mass = self._molar_mass()
+        if molar_mass is not None and not self.pure_substance.molar_mass:
             logger.warning(
                 f'The molar mass of "{self.name}" is missing, the molecular mass '
                 f'({self.pure_substance.molecular_mass:.4g~P}) is used instead.'
@@ -330,9 +348,6 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
                     f'm = V · ρ = {mass.to(self.mass.units):.4g~P}.'
                 )
             self.mass = mass
-        elif self.mass is None and self.amount_of_substance is not None:
-            if molar_mass is not None:
-                self.mass = self.mass_from_amount(self.amount_of_substance, molar_mass)
 
         if self.mass is None:
             return
@@ -583,9 +598,10 @@ class Solution(CompositeSystem, EntryData):
                 isinstance(component, SolutionComponent)
                 and component.component_role == 'Solvent'
             ):
-                if component.mass is not None and component.density is not None:
+                mass = component.known_mass()
+                if mass is not None and component.density is not None:
                     self.calculated_volume += component.volume_from_mass(
-                        component.mass, component.density
+                        mass, component.density
                     )
                 elif logger:
                     logger.error(
@@ -614,8 +630,10 @@ class Solution(CompositeSystem, EntryData):
                 volume += fraction * starter_volume
             elif component.volume is not None:
                 volume += component.volume
-            elif component.mass is not None and component.density is not None:
-                volume += component.volume_from_mass(component.mass, component.density)
+            elif component.known_mass() is not None and component.density is not None:
+                volume += component.volume_from_mass(
+                    component.known_mass(), component.density
+                )
             else:
                 return None
         return volume
@@ -643,19 +661,24 @@ class Solution(CompositeSystem, EntryData):
 
         for component in self.components:
             if isinstance(component, SolutionComponent):
-                if not component.pure_substance or not component.mass:
+                mass = component.known_mass()
+                if not component.pure_substance or not mass:
                     logger.warning(
-                        f'Either the pure_substance sub_section or mass for the '
-                        f'component "{component.name}" is missing. Not adding it to '
-                        f'the "{component.component_role.lower()}' + 's' + '" list.'
+                        f'Either the pure_substance sub_section or mass (or amount of '
+                        f'substance) for the component "{component.name}" is missing. '
+                        f'Not adding it to the "{component.component_role.lower()}'
+                        + 's'
+                        + '" list.'
                     )
                     continue
                 component.mass_fraction = None
                 component.calculate_molar_concentration(volume, logger)
+                copy = component.m_copy(deep=True)
+                copy.mass = mass
                 if component.component_role == 'Solvent':
-                    self.solvents.append(component.m_copy(deep=True))
+                    self.solvents.append(copy)
                 elif component.component_role == 'Solute':
-                    self.solutes.append(component.m_copy(deep=True))
+                    self.solutes.append(copy)
             elif isinstance(component, SolutionComponentReference):
                 # add solutes and solvents from the solution
                 # while taking the volume used into account
