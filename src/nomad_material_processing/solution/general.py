@@ -84,6 +84,26 @@ class MolarConcentration(ArchiveSection):
         ),
         unit='mol / liter',
     )
+    estimated_concentration = Quantity(
+        type=float,
+        description="""
+        The concentration estimated from the component moles and the volume of the
+        solution, assuming that the volumes of all components add up: c = n / Σ V_i,
+        with V_i = mass / density for a component without a volume.
+        Unlike `calculated_concentration`, which divides by the sum of the liquid
+        volumes and so neglects the volume of dissolved solids, the estimate includes
+        the volume of every component. Additive volumes are a good approximation for
+        liquid mixtures, non-electrolytes, monovalent salts and concentrated
+        solutions; for multivalent salts in water, neglecting the solute volume can be
+        closer.
+        Only calculated if the volume of the solution was not measured and every
+        component has a volume, or a mass and a density.
+        """,
+        a_eln=ELNAnnotation(
+            defaultDisplayUnit='mol / liter',
+        ),
+        unit='mol / liter',
+    )
     measured_concentration = Quantity(
         type=float,
         description="""
@@ -275,6 +295,11 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         """m = n · M"""
         return amount_of_substance * molar_mass
 
+    @staticmethod
+    def volume_from_mass(mass: Quantity, density: Quantity) -> Quantity:
+        """V = m / ρ"""
+        return mass / density
+
     def _calculate_mass_and_amount(self, logger: 'BoundLogger') -> None:
         """
         Calculates the mass from the volume and density, or else from the amount of
@@ -350,6 +375,21 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
             self.molar_concentration.calculated_concentration = (
                 self.amount_of_substance / volume
             )
+
+    def calculate_estimated_concentration(self, volume: Quantity | None) -> None:
+        """
+        Sets the estimated concentration c = n / V for the additive volume `volume` of
+        the solution, or removes it if the volume or the amount is unknown.
+        """
+        if volume is None or self.amount_of_substance is None:
+            if self.molar_concentration is not None:
+                self.molar_concentration.estimated_concentration = None
+            return
+        if self.molar_concentration is None:
+            self.molar_concentration = MolarConcentration()
+        self.molar_concentration.estimated_concentration = (
+            self.amount_of_substance / volume
+        )
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """
@@ -524,6 +564,31 @@ class Solution(CompositeSystem, EntryData):
                 continue
             self.calculated_volume += component.volume
 
+    def additive_volume(self) -> Quantity | None:
+        """
+        V = Σ V_i over all components, assuming that the volumes add up. V_i is the
+        entered volume, else mass / density; for a referenced solution, the used
+        fraction of its additive volume. None if a component has neither.
+        """
+        if not self.components:
+            return None
+        volume = ureg.Quantity(0, 'liter')
+        for component in self.components:
+            if isinstance(component, SolutionComponentReference):
+                if component.system is None:
+                    return None
+                starter_volume = component.system.additive_volume()
+                if starter_volume is None:
+                    return None
+                volume += component.portion_fraction() * starter_volume
+            elif component.volume is not None:
+                volume += component.volume
+            elif component.mass is not None and component.density is not None:
+                volume += component.volume_from_mass(component.mass, component.density)
+            else:
+                return None
+        return volume
+
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:  # noqa: PLR0912, PLR0915
         """
         Normalize method for the `Solution` section. Calculate the total volume of the
@@ -564,14 +629,7 @@ class Solution(CompositeSystem, EntryData):
                 # add solutes and solvents from the solution
                 # while taking the volume used into account
                 if component.system:
-                    scaler = 1
-                    if component.volume:
-                        # update scaler based on the volume used
-                        total_available_volume = component.system.calculated_volume
-                        if component.system.measured_volume:
-                            total_available_volume = component.system.measured_volume
-                        if total_available_volume:
-                            scaler = component.volume / total_available_volume
+                    scaler = component.portion_fraction()
 
                     if component.system.solvents:
                         for solvent in component.system.solvents:
@@ -599,6 +657,13 @@ class Solution(CompositeSystem, EntryData):
             component.calculate_molar_concentration(volume, logger)
         for component in self.solutes:
             component.calculate_molar_concentration(volume, logger)
+
+        estimated_volume = None if self.measured_volume else self.additive_volume()
+        for component in self.components:
+            if isinstance(component, SolutionComponent):
+                component.calculate_estimated_concentration(estimated_volume)
+        for component in self.solvents + self.solutes:
+            component.calculate_estimated_concentration(estimated_volume)
 
         mass = 0
         self.mass = None
@@ -668,6 +733,17 @@ class SolutionComponentReference(SystemComponent, BaseSolutionComponent):
         ),
         unit='kilogram',
     )
+
+    def portion_fraction(self) -> Quantity | float:
+        """
+        f = V_used / V_solution: the fraction of the referenced solution that is used,
+        with its measured volume, else its calculated volume. 1 if either volume is
+        unknown.
+        """
+        available_volume = self.system.measured_volume or self.system.calculated_volume
+        if not self.volume or not available_volume:
+            return 1
+        return self.volume / available_volume
 
     def normalize(self, archive: 'EntryArchive', logger: 'BoundLogger') -> None:
         """

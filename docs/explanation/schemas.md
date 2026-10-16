@@ -165,6 +165,10 @@ class Solution(CompositeSystem, EntryData):
     `Solution` uses _calculated_volume_, but if _measured_volume_ is provided, it will take
     precedence. This is useful when the final solution volume differs from the sum of its
     component volumes, and should be specified by the user.
+    If no volume was measured and every component has a volume, or a mass and a
+    density, the _estimated_concentration_ of each component is also determined,
+    assuming that the volumes of all components add up (including dissolved solids,
+    which _calculated_volume_ neglects).
 
 The _components_ sub-section, inherited from `CompositeSystem` and re-defined, is used to describe
 a list of components used in the solution. Each of them contributes to the _mass_ and

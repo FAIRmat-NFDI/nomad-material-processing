@@ -18,6 +18,7 @@ from nomad_material_processing.solution.general import (
 
 WATER_CID = 962
 SODIUM_CHLORIDE_CID = 5234
+SODIUM_CHLORIDE_DENSITY = 2.165 * ureg('g/mL')
 
 
 def normalized(data):
@@ -45,11 +46,12 @@ def water(volume=0.5 * ureg('L')):
     )
 
 
-def sodium_chloride(mass=10 * ureg('g')):
+def sodium_chloride(mass=10 * ureg('g'), density=None):
     return SolutionComponent(
         name='Sodium Chloride',
         component_role='Solute',
         mass=mass,
+        density=density,
         pure_substance=PubChemPureSubstanceSection(name='Sodium Chloride'),
     )
 
@@ -185,6 +187,20 @@ def test_calculated_values_follow_a_changed_input():
     assert_quantity(changed.amount_of_substance, amount * 0.6)
 
 
+def test_estimated_concentration_removed_when_volume_is_measured():
+    solution = normalized(
+        Solution(components=[water(), sodium_chloride(density=SODIUM_CHLORIDE_DENSITY)])
+    )
+    assert solution.solutes[0].molar_concentration.estimated_concentration is not None
+
+    saved = solution.m_to_dict()
+    saved.update(measured_volume=0.6)
+    changed = normalized(Solution.m_from_dict(saved))
+
+    for component in changed.solvents + changed.solutes:
+        assert component.molar_concentration.estimated_concentration is None
+
+
 # Solutions
 
 
@@ -250,6 +266,57 @@ def test_components_of_same_substance_are_merged():
     )
 
 
+@pytest.mark.parametrize(
+    'solution, additive_volume',
+    [
+        pytest.param(
+            Solution(
+                components=[water(), sodium_chloride(density=SODIUM_CHLORIDE_DENSITY)]
+            ),
+            0.5 * ureg('L') + 10 * ureg('g') / SODIUM_CHLORIDE_DENSITY,
+            id='volumes_and_densities',
+        ),
+        pytest.param(
+            Solution(
+                components=[
+                    SolutionComponent(
+                        name='Water',
+                        component_role='Solvent',
+                        mass=0.5 * ureg('kg'),
+                        density=1.0 * ureg('g/mL'),
+                        pure_substance=PubChemPureSubstanceSection(name='Water'),
+                    ),
+                    sodium_chloride(density=SODIUM_CHLORIDE_DENSITY),
+                ]
+            ),
+            0.5 * ureg('L') + 10 * ureg('g') / SODIUM_CHLORIDE_DENSITY,
+            id='solvent_by_mass',
+        ),
+        pytest.param(
+            Solution(components=[water(), sodium_chloride()]),
+            None,
+            id='solute_without_density',
+        ),
+        pytest.param(
+            Solution(
+                components=[water(), sodium_chloride(density=SODIUM_CHLORIDE_DENSITY)],
+                measured_volume=0.6 * ureg('L'),
+            ),
+            None,
+            id='measured_volume',
+        ),
+    ],
+)
+def test_estimated_concentration_assumes_additive_volumes(solution, additive_volume):
+    solution = normalized(solution)
+    for component in solution.solvents + solution.solutes:
+        estimated = component.molar_concentration.estimated_concentration
+        if additive_volume is None:
+            assert estimated is None
+        else:
+            assert_quantity(estimated, component.amount_of_substance / additive_volume)
+
+
 # Solutions made from other solutions
 
 
@@ -278,6 +345,21 @@ def test_portion_of_solution(salt_water):
         assert_quantity(component.amount_of_substance, amount)
         assert_quantity(
             component.molar_concentration.calculated_concentration, concentration
+        )
+
+
+def test_portion_keeps_estimated_concentration():
+    starter = normalized(
+        Solution(components=[water(), sodium_chloride(density=SODIUM_CHLORIDE_DENSITY)])
+    )
+    result = portion(starter, 0.1 * ureg('L'))
+
+    for component, starter_component in zip(
+        result.solvents + result.solutes, starter.solvents + starter.solutes
+    ):
+        assert_quantity(
+            component.molar_concentration.estimated_concentration,
+            starter_component.molar_concentration.estimated_concentration,
         )
 
 
