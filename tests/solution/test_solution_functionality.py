@@ -191,6 +191,33 @@ def test_component_molar_mass_entered_without_lookup(monkeypatch, entered, molar
         assert_quantity(component.amount_of_substance, mass / molar_mass)
 
 
+@pytest.mark.parametrize(
+    'given, reported',
+    [
+        pytest.param({'mass': 10 * ureg('g')}, True, id='mass'),
+        pytest.param({'amount_of_substance': 0.1 * ureg('mol')}, True, id='amount'),
+        pytest.param({'volume': 1 * ureg('mL')}, False, id='volume_without_density'),
+    ],
+)
+def test_molecular_mass_fallback_reported_only_when_used(monkeypatch, given, reported):
+    """
+    The molecular mass replacing a missing molar mass is reported only if it converts
+    between mass and amount of substance.
+    """
+    monkeypatch.setattr(
+        PubChemPureSubstanceSection, 'normalize', lambda self, archive, logger: None
+    )
+    component = SolutionComponent(
+        name='Sodium Chloride',
+        pure_substance=PubChemPureSubstanceSection(molecular_mass=57.96 * ureg('Da')),
+        **given,
+    )
+    with capture_logs() as logs:
+        normalized(component)
+    fallback = [log for log in logs if 'molecular mass' in log['event']]
+    assert bool(fallback) == reported
+
+
 def test_calculate_moles_returns_amount_from_mass():
     """
     The legacy method, kept for subclasses: the moles from the mass and the

@@ -362,13 +362,6 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         every normalization, so they follow changed inputs; a given value that is
         replaced by a different one is reported.
         """
-        molar_mass = self._molar_mass()
-        if molar_mass is not None and not self.pure_substance.molar_mass:
-            logger.warning(
-                f'The molar mass of "{self.name}" is missing, the molecular mass '
-                f'({self.pure_substance.molecular_mass:.4g~P}) is used instead.'
-            )
-
         if self.volume is not None and self.density is not None:
             mass = self.mass_from_volume(self.volume, self.density)
             if self.mass is not None and not np.isclose(
@@ -379,6 +372,18 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
                     f'm = V · ρ = {mass.to(self.mass.units):.4g~P}.'
                 )
             self.mass = mass
+
+        molar_mass = self._molar_mass()
+        # the molar mass converts between the mass and the amount, also in known_mass
+        if (
+            molar_mass is not None
+            and not self.pure_substance.molar_mass
+            and (self.mass is not None or self.amount_of_substance is not None)
+        ):
+            logger.warning(
+                f'The molar mass of "{self.name}" is missing, the molecular mass '
+                f'({self.pure_substance.molecular_mass:.4g~P}) is used instead.'
+            )
 
         if self.mass is None:
             return
