@@ -515,7 +515,7 @@ class Solution(CompositeSystem, EntryData):
         description="""The final expected volume of the solution, which is the sum of
         volume of its liquid components.
         A solvent without a volume is counted with its mass / density; if it has
-        neither, an error is logged.
+        neither, a warning is logged.
         """,
         type=float,
         a_eln=ELNAnnotation(
@@ -635,7 +635,7 @@ class Solution(CompositeSystem, EntryData):
                         mass, component.density
                     )
                 elif logger:
-                    logger.error(
+                    logger.warning(
                         f'The volume of the solvent "{component.name}" is missing. '
                         'Enter its volume, or its mass and density, to calculate the '
                         'volume of the solution.'

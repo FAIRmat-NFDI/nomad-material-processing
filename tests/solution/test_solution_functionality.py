@@ -286,14 +286,17 @@ def test_solvent_given_by_mass_counts_in_volume():
     )
 
 
-def test_solvent_without_volume_and_density_is_an_error():
+def test_solvent_without_volume_and_density_is_a_warning():
     with capture_logs() as logs:
         normalized(
             Solution(components=[weighed_water(density=None), sodium_chloride()])
         )
-    assert any(
-        log['log_level'] == 'error' and '"Water"' in log['event'] for log in logs
-    )
+    levels = {
+        log['log_level']
+        for log in logs
+        if 'volume of the solvent' in log['event'] and '"Water"' in log['event']
+    }
+    assert levels == {'warning'}
 
 
 def test_solution_mass_and_density(salt_water):
