@@ -279,6 +279,37 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
     molar_concentration = SubSection(section_def=MolarConcentration)
     pure_substance = SubSection(section_def=PubChemPureSubstanceSection)
 
+    def _calculate_moles(self, logger: 'BoundLogger' = None) -> Quantity | None:
+        """
+        A private method to calculate the moles of a component in the solution.
+
+        Args:
+            component (SolutionComponent): The component to calculate the moles for.
+            logger (BoundLogger): A structlog logger.
+
+        Returns:
+            Union[Quantity, None]: The moles of the component in the solution.
+        """
+        if self.volume and self.density:
+            self.mass = self.volume * self.density
+
+        if not self.pure_substance.molecular_mass:
+            if logger:
+                logger.warning(
+                    f'Could not calculate moles of the "{self.name}" as molecular '
+                    'mass is missing.'
+                )
+            return
+        if not self.mass:
+            if logger:
+                logger.warning(
+                    f'Could not calculate moles of the "{self.name}" as mass is '
+                    'missing.'
+                )
+            return
+        moles = self.mass / (self.pure_substance.molecular_mass * ureg.N_A)
+        return moles.to_base_units()
+
     @staticmethod
     def mass_from_volume(volume: Quantity, density: Quantity) -> Quantity:
         """m = V · ρ"""

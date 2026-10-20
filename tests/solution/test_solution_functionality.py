@@ -191,6 +191,22 @@ def test_component_molar_mass_entered_without_lookup(monkeypatch, entered, molar
         assert_quantity(component.amount_of_substance, mass / molar_mass)
 
 
+def test_calculate_moles_returns_amount_from_mass():
+    """
+    The legacy method, kept for subclasses: the moles from the mass and the
+    monoisotopic molecular mass, without setting the amount of substance.
+    """
+    component = SolutionComponent(
+        name='Sodium Chloride',
+        mass=5.7958622 * ureg('g'),
+        pure_substance=PubChemPureSubstanceSection(
+            molecular_mass=57.958622 * ureg('Da')
+        ),
+    )
+    assert_quantity(component._calculate_moles(), 0.1 * ureg('mol'))
+    assert component.amount_of_substance is None
+
+
 # Calculated values
 
 
