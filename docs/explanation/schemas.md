@@ -245,7 +245,7 @@ with Equations 1&2, the fields are normalized with an order: volume and density 
 amount. The normalize method then follows the following rules:
 
 - Values with lower priority are calculated from values with higher priority; an
-  entered one is replaced, with a warning. This matters for the ELN and for
+  entered one is replaced (logged as info). This matters for the ELN and for
   overdetermined components: a value can only be edited as long as no value with
   higher priority determines it, otherwise it is recalculated on every save.
 - Values with higher priority are not populated if only values with lower priority

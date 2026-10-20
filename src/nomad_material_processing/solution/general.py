@@ -233,7 +233,7 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         The mass of the component without the container. Calculated automatically if
         `volume` and `density` are available: volume and density are prioritized over
         the mass, so the mass is then always calculated from them (m = V · ρ), and an
-        entered mass is replaced, with a warning.
+        entered mass is replaced (logged as info).
         It is not stored if calculated from the `amount_of_substance`, so the amount
         stays editable; it is filled in the solvents or solutes list of the solution.
         """,
@@ -254,7 +254,7 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         warning; if both are missing, the amount is not calculated).
         The mass is prioritized over the amount of substance: if a mass is present, the
         amount is always calculated from it (n = m / M), and an entered amount is
-        replaced, with a warning.
+        replaced (logged as info).
         """,
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -374,7 +374,7 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
             if self.mass is not None and not np.isclose(
                 self.mass, mass, rtol=1e-9, atol=0
             ):
-                logger.warning(
+                logger.info(
                     f'The mass of "{self.name}" ({self.mass:.4g~P}) is replaced by '
                     f'm = V · ρ = {mass.to(self.mass.units):.4g~P}.'
                 )
@@ -393,7 +393,7 @@ class SolutionComponent(PureSubstanceComponent, BaseSolutionComponent):
         if self.amount_of_substance is not None and not np.isclose(
             self.amount_of_substance, amount, rtol=1e-9, atol=0
         ):
-            logger.warning(
+            logger.info(
                 f'The amount of substance of "{self.name}" '
                 f'({self.amount_of_substance:.4g~P}) is replaced by n = m / M = '
                 f'{amount.to(self.amount_of_substance.units):.4g~P}.'

@@ -341,6 +341,23 @@ def test_components_of_same_substance_are_merged():
     )
 
 
+def test_saving_again_reports_replaced_values_as_info():
+    """
+    Merging a solvent given by volume with one given by mass stores a merged solvent
+    whose mass differs from its volume times its density. On the next save, that
+    stored solvent is normalized again before the list is rebuilt, which replaces
+    its mass and amount; this is reported as info, as the user can not change it.
+    """
+    solution = normalized(
+        Solution(components=[water(), weighed_water(), sodium_chloride()])
+    )
+    with capture_logs() as logs:
+        normalize_all(solution.m_root())
+    replaced = [log for log in logs if 'is replaced by' in log['event']]
+    assert replaced
+    assert {log['log_level'] for log in replaced} == {'info'}
+
+
 @pytest.mark.parametrize(
     'solution, additive_volume',
     [
