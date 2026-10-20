@@ -354,6 +354,32 @@ def test_measured_volume_is_used_as_solution_volume():
     assert_quantity(solution.density, 0.51 * ureg('kg') / (0.6 * ureg('L')))
 
 
+def atomic_fractions(solution):
+    return {
+        element.element: element.atomic_fraction
+        for element in solution.elemental_composition
+    }
+
+
+def test_elemental_composition_with_solute_given_by_amount():
+    """The composition is the same whether the solute is given by amount or mass."""
+    amount = 0.1 * ureg('mol')
+    by_amount = SolutionComponent(
+        name='Sodium Chloride',
+        component_role='Solute',
+        amount_of_substance=amount,
+        pure_substance=PubChemPureSubstanceSection(name='Sodium Chloride'),
+    )
+    by_mass = sodium_chloride(mass=amount * 58.44 * ureg('g/mol'))
+
+    expected = atomic_fractions(normalized(Solution(components=[water(), by_mass])))
+    actual = atomic_fractions(normalized(Solution(components=[water(), by_amount])))
+
+    assert set(actual) == {'H', 'O', 'Na', 'Cl'}
+    for element, fraction in expected.items():
+        assert actual[element] == pytest.approx(fraction, rel=1e-3)
+
+
 def test_components_of_same_substance_are_merged():
     first, second = water(volume=0.3 * ureg('L')), water(volume=0.2 * ureg('L'))
     solution = normalized(Solution(components=[first, second, sodium_chloride()]))
@@ -473,6 +499,15 @@ def test_portion_of_solution(salt_water):
         assert_quantity(
             component.molar_concentration.calculated_concentration, concentration
         )
+
+
+def test_portion_keeps_elemental_composition(salt_water):
+    """Taking a part of a solution does not change its composition."""
+    result = portion(salt_water, 0.25 * ureg('L'))
+
+    expected = atomic_fractions(salt_water)
+    assert expected
+    assert atomic_fractions(result) == pytest.approx(expected, rel=1e-9)
 
 
 def test_portion_keeps_estimated_concentration():

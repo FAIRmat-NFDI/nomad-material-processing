@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 import numpy as np
+from nomad.atomutils import Formula
 from nomad.datamodel.data import (
     ArchiveSection,
     EntryData,
@@ -15,12 +16,14 @@ from nomad.datamodel.metainfo.basesections import (
     Component,
     CompositeSystem,
     CompositeSystemReference,
+    ElementalComposition,
     InstrumentReference,
     Process,
     ProcessStep,
     PubChemPureSubstanceSection,
     PureSubstanceComponent,
     SystemComponent,
+    elemental_composition_from_formula,
 )
 from nomad.metainfo import (
     Category,
@@ -768,10 +771,37 @@ class Solution(CompositeSystem, EntryData):
             if volume:
                 self.density = self.mass / volume
 
-        # TODO check if the elemental_composition is adjusted based on the volume used
-        # of the starter solutions
-        self.elemental_composition = []
+        self.elemental_composition = self.composition_of(self.solvents + self.solutes)
         super().normalize(archive, logger)
+
+    def composition_of(self, components: list) -> list[ElementalComposition]:
+        """
+        The atomic fractions of the elements in the given solvents and solutes, from
+        their masses and molecular formulas. Unlike the components, these have a mass
+        also if given by their amount of substance, and contain only the used part of
+        the referenced solutions. Empty if there are none.
+        """
+        element_masses: dict[str, float | None] = {}
+        for component in components:
+            formula = component.pure_substance.molecular_formula
+            if not formula:
+                continue
+            try:
+                composition = elemental_composition_from_formula(Formula(formula))
+            except ValueError:
+                continue
+            masses = self._atomic_to_mass(
+                composition, component.mass.to('kg').magnitude
+            )
+            for element, mass in masses.items():
+                if element in element_masses and mass is not None:
+                    if element_masses[element] is not None:
+                        element_masses[element] += mass
+                else:
+                    element_masses[element] = mass
+        if not element_masses:
+            return []
+        return self._mass_to_atomic(element_masses)
 
 
 class SolutionReference(CompositeSystemReference):
