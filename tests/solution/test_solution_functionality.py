@@ -525,3 +525,17 @@ def test_dilution(salt_water):
         result.solutes[0].molar_concentration.calculated_concentration,
         starter_salt / 2,
     )
+
+
+@pytest.mark.parametrize('cycle_length', [1, 2], ids=['itself', 'via_other'])
+def test_additive_volume_of_solutions_referencing_each_other_is_unknown(
+    cycle_length,
+):
+    solutions = [
+        Solution(name=f'Solution {i}', components=[water()])
+        for i in range(cycle_length)
+    ]
+    for solution, referenced in zip(solutions, solutions[1:] + solutions[:1]):
+        solution.components.append(SolutionComponentReference(system=referenced))
+
+    assert solutions[0].additive_volume() is None

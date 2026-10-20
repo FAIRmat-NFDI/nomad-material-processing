@@ -650,7 +650,7 @@ class Solution(CompositeSystem, EntryData):
         """
         V = Σ V_i over all components, assuming that the volumes add up. V_i is the
         entered volume, else mass / density; for a referenced solution, the used
-        fraction of its additive volume. None if a component has neither.
+        fraction of its stored estimated volume. None if a component has neither.
         """
         if not self.components:
             return None
@@ -659,7 +659,7 @@ class Solution(CompositeSystem, EntryData):
             if isinstance(component, SolutionComponentReference):
                 if component.system is None:
                     return None
-                starter_volume = component.system.additive_volume()
+                starter_volume = component.system.estimated_volume
                 fraction = component.portion_fraction()
                 if starter_volume is None or fraction is None:
                     return None
