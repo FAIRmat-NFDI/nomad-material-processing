@@ -138,6 +138,7 @@ where = ["src"]
 
 general_schema = "nomad_material_processing:schema"
 solution_schema = "nomad_material_processing.solution:schema"
+solution_deposition_schema = "nomad_material_processing.solution_deposition:schema"
 vd_schema = "nomad_material_processing.vapor_deposition:schema"
 cvd_schema = "nomad_material_processing.vapor_deposition.cvd:schema"
 movpe_schema = "nomad_material_processing.vapor_deposition.cvd:movpe_schema"
