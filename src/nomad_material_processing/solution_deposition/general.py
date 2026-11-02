@@ -1,40 +1,228 @@
+from nomad.datamodel.data import ArchiveSection
 from nomad.datamodel.metainfo.annotations import ELNAnnotation
 from nomad.datamodel.metainfo.basesections import CompositeSystemReference, ProcessStep
 from nomad.metainfo import Quantity, SchemaPackage, Section, SubSection
 
+from nomad_material_processing.gas.general import Gas
 from nomad_material_processing.general import SampleDeposition, ThinFilmReference
 from nomad_material_processing.solution.general import SolutionReference
+from nomad_material_processing.solution_deposition.flow_geometry import ImpingingJet
 
 m_package = SchemaPackage()
 
 
-class SolutionDepositionStep(ProcessStep):
-    """An operation within a deposition process using a liquid solution."""
+class SolutionProcessingEnvironment(ArchiveSection):
+    """The ambient conditions surrounding the sample during a deposition step."""
 
-    solution = SubSection(
-        section_def=SolutionReference,
-        description='The solution dispensed during this deposition step.',
+    atmosphere = SubSection(
+        section_def=Gas,
+        links=['https://purl.archive.org/tfsco/TFSCO_00001012'],
+        description='The gas surrounding the sample, such as the nitrogen of a '
+        'glovebox or ambient air, including measured impurities such as oxygen and '
+        'water traces.',
     )
-    dispensed_volume = Quantity(
+    temperature = Quantity(
         type=float,
-        unit='meter ** 3',
-        description='The volume of solution dispensed during this step, '
-        'rather than the total volume of the referenced stock solution.',
+        unit='kelvin',
+        description='The ambient temperature, as opposed to the temperature of the '
+        'substrate or of the dispensed solution.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
-            defaultDisplayUnit='microliter',
+            defaultDisplayUnit='celsius',
+        ),
+    )
+    pressure = Quantity(
+        type=float,
+        unit='pascal',
+        links=['https://purl.archive.org/tfsco/TFSCO_00002027'],
+        description='The ambient pressure.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='mbar',
             minValue=0,
         ),
     )
-    substrate = SubSection(
-        section_def=CompositeSystemReference,
-        description='The existing material surface receiving the deposition, '
-        'such as a bare substrate or a thin-film stack.',
+    relative_humidity = Quantity(
+        type=float,
+        unit='dimensionless',
+        links=['https://purl.archive.org/tfsco/TFSCO_00001011'],
+        description='The relative humidity of the ambient gas.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='percent',
+            minValue=0,
+        ),
     )
-    layer = SubSection(
+
+
+class SolutionProcessingStep(ProcessStep):
+    """
+    An operation within a solution deposition process, either depositing a liquid or
+    treating the deposited film, for example by drying or annealing.
+    """
+
+    sample_temperature = Quantity(
+        type=float,
+        unit='kelvin',
+        links=['https://purl.archive.org/tfsco/TFSCO_00009996'],
+        description='The actual temperature of the substrate during this step, as '
+        'opposed to the set temperature of a heat source.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='celsius',
+        ),
+    )
+    environment = SubSection(
+        section_def=SolutionProcessingEnvironment,
+        description='The ambient conditions during this step that differ from the '
+        'environment of the process. Each value given here overrides the '
+        'corresponding process value for this step; values left empty are taken '
+        'from the process environment. A step atmosphere replaces the process '
+        'atmosphere as a whole.',
+    )
+
+
+
+class DepositionStep(SolutionProcessingStep):
+    """A step in which a liquid solution is deposited onto the sample."""
+
+    m_def = Section(
+        links=['https://purl.archive.org/tfsco/TFSCO_00002051'],
+    )
+
+    solution = SubSection(
+        section_def=SolutionReference,
+        links=['http://purl.obolibrary.org/obo/CHEBI_75958'],
+        description='The solution deposited during this step.',
+    )
+    solution_temperature = Quantity(
+        type=float,
+        unit='kelvin',
+        links=['https://purl.archive.org/tfsco/TFSCO_00007018'],
+        description='The temperature of the solution when it is deposited.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='celsius',
+        ),
+    )
+
+    deposited_layer = SubSection(
         section_def=ThinFilmReference,
+        links=['https://purl.archive.org/tfsco/TFSCO_00000007'],
         description='The thin film deposited during this step. '
         'Film composition and geometry belong to the referenced film.',
+    )
+
+
+class TreatmentStep(SolutionProcessingStep):
+    """
+    A step in which the deposited film is treated, for example with an antisolvent,
+    by drying or by annealing.
+    """
+
+
+class AntisolventTreatmentStep(TreatmentStep):
+    """
+    A step in which an antisolvent is applied to the wet film to extract the solvent
+    and induce crystallization.
+    """
+
+    m_def = Section(
+        links=['https://purl.archive.org/tfsco/TFSCO_00001052'],
+    )
+
+    antisolvent = SubSection(
+        section_def=SolutionReference,
+        links=['https://purl.archive.org/tfsco/TFSCO_00002155'],
+        description='The antisolvent applied during this step.',
+    )
+    antisolvent_temperature = Quantity(
+        type=float,
+        unit='kelvin',
+        description='The temperature of the antisolvent when it is applied.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='celsius',
+        ),
+    )
+
+
+class ImpingingJetAntisolventTreatmentStep(AntisolventTreatmentStep, ImpingingJet):
+    """An antisolvent treatment in which a jet of antisolvent impinges on the film."""
+
+
+class DryingStep(TreatmentStep):
+    """A step in which the solvent evaporates from the wet film."""
+
+    m_def = Section(
+        links=['https://purl.archive.org/tfsco/TFSCO_00008011'],
+    )
+
+
+class NaturalDryingStep(DryingStep):
+    """
+    A drying step in which the solvent evaporates into the surrounding atmosphere
+    without a gas stream, a vacuum or an additional heat source.
+    """
+
+
+class ImpingingJetDryingStep(DryingStep, ImpingingJet):
+    """
+    A drying step in which a gas jet from a nozzle, such as an air knife or a round
+    nozzle, impinges on the wet film to induce crystallization.
+    """
+
+    m_def = Section(
+        links=['https://purl.archive.org/tfsco/TFSCO_00001077'],
+    )
+
+    gas = SubSection(
+        section_def=Gas,
+        description='The gas of the jet.',
+    )
+    nozzle_pressure = Quantity(
+        type=float,
+        unit='pascal',
+        links=['https://purl.archive.org/tfsco/TFSCO_00005022'],
+        description='The gas pressure applied to the nozzle.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='bar',
+            minValue=0,
+        ),
+    )
+
+
+class VacuumDryingStep(DryingStep):
+    """
+    A drying step in which the pressure around the wet film is reduced to induce
+    crystallization. The reached pressure is the pressure of the step environment.
+    """
+
+    m_def = Section(
+        links=['https://purl.archive.org/tfsco/TFSCO_00002048'],
+    )
+
+
+class AnnealingStep(TreatmentStep):
+    """
+    A step in which the film is heated by a heat source such as a hot plate or an
+    oven, optionally in a solvent vapor.
+    """
+
+    m_def = Section(
+        links=['https://purl.archive.org/tfsco/TFSCO_00001033'],
+    )
+
+    heater_temperature = Quantity(
+        type=float,
+        unit='kelvin',
+        description='The set temperature of the heat source, such as a hot plate or '
+        'an oven. The actual substrate temperature can be lower.',
+        a_eln=ELNAnnotation(
+            component='NumberEditQuantity',
+            defaultDisplayUnit='celsius',
+        ),
     )
 
 
@@ -45,8 +233,13 @@ class SolutionDeposition(SampleDeposition):
         links=['http://purl.obolibrary.org/obo/CHMO_0001312'],
     )
 
+    environment = SubSection(
+        section_def=SolutionProcessingEnvironment,
+        description='The ambient conditions of the process. Each value applies to '
+        'every step that does not override it in its own environment.',
+    )
     steps = SubSection(
-        section_def=SolutionDepositionStep,
+        section_def=SolutionProcessingStep,
         repeats=True,
         description='The ordered steps of the solution deposition process.',
     )

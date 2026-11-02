@@ -138,7 +138,9 @@ where = ["src"]
 
 general_schema = "nomad_material_processing:schema"
 solution_schema = "nomad_material_processing.solution:schema"
+gas_schema = "nomad_material_processing.gas:schema"
 solution_deposition_schema = "nomad_material_processing.solution_deposition:schema"
+flow_geometry_schema = "nomad_material_processing.solution_deposition:flow_geometry_schema"
 vd_schema = "nomad_material_processing.vapor_deposition:schema"
 cvd_schema = "nomad_material_processing.vapor_deposition.cvd:schema"
 movpe_schema = "nomad_material_processing.vapor_deposition.cvd:movpe_schema"
