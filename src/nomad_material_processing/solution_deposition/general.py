@@ -25,7 +25,7 @@ class SolutionProcessingEnvironment(ArchiveSection):
         type=float,
         unit='kelvin',
         description='The ambient temperature, as opposed to the temperature of the '
-        'substrate or of the dispensed solution.',
+        'sample or of the dispensed solution.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             defaultDisplayUnit='celsius',
@@ -65,7 +65,7 @@ class SolutionProcessingStep(ProcessStep):
         type=float,
         unit='kelvin',
         links=['https://purl.archive.org/tfsco/TFSCO_00009996'],
-        description='The actual temperature of the substrate during this step, as '
+        description='The actual temperature of the sample during this step, as '
         'opposed to the set temperature of a heat source.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
@@ -80,7 +80,6 @@ class SolutionProcessingStep(ProcessStep):
         'from the process environment. A step atmosphere replaces the process '
         'atmosphere as a whole.',
     )
-
 
 
 class DepositionStep(SolutionProcessingStep):
@@ -218,11 +217,44 @@ class AnnealingStep(TreatmentStep):
         type=float,
         unit='kelvin',
         description='The set temperature of the heat source, such as a hot plate or '
-        'an oven. The actual substrate temperature can be lower.',
+        'an oven. The actual sample temperature can be lower.',
         a_eln=ELNAnnotation(
             component='NumberEditQuantity',
             defaultDisplayUnit='celsius',
         ),
+    )
+
+
+class ParameterVariation(ArchiveSection):
+    """
+    A step that some samples of the process went through instead of one of its nominal
+    steps, for example one temperature of an annealing series.
+
+    The replacing step takes the place of the replaced step for the named samples and
+    is complete by itself: it takes no values from the replaced step, so a value left
+    empty is not recorded for these samples. The replaced step still applies to all
+    other samples, and all other steps still apply to the named samples.
+    """
+
+    replaced_step = Quantity(
+        type=SolutionProcessingStep,
+        description='The nominal process step that the named samples did not go '
+        'through.',
+        a_eln=ELNAnnotation(
+            component='ReferenceEditQuantity',
+        ),
+    )
+    samples = SubSection(
+        section_def=CompositeSystemReference,
+        repeats=True,
+        description='The samples that went through the replacing step instead of the '
+        'replaced step.',
+    )
+    replacing_step = SubSection(
+        section_def=SolutionProcessingStep,
+        description='The complete step that the named samples went through instead of '
+        'the replaced step. It may be of another step type. Values left empty are not '
+        'taken from the replaced step.',
     )
 
 
@@ -238,10 +270,27 @@ class SolutionDeposition(SampleDeposition):
         description='The ambient conditions of the process. Each value applies to '
         'every step that does not override it in its own environment.',
     )
+    samples = SubSection(
+        section_def=CompositeSystemReference,
+        repeats=True,
+        links=['https://purl.archive.org/tfsco/TFSCO_00005000'],
+        description='The samples undergoing the process. A sample is the entity moving '
+        'from one process step to the next, as opposed to the substrate, a composite '
+        'system serving as the rigid or flexible starting point that holds the thin '
+        'film.',
+    )
     steps = SubSection(
         section_def=SolutionProcessingStep,
         repeats=True,
-        description='The ordered steps of the solution deposition process.',
+        description='The ordered nominal steps of the solution deposition process. '
+        'They apply to all samples, except where a parameter variation replaces a step '
+        'for some of them.',
+    )
+    parameter_variations = SubSection(
+        section_def=ParameterVariation,
+        repeats=True,
+        description='The steps that some of the samples of the process went through '
+        'instead of nominal steps, such as the members of a parameter series.',
     )
 
 
