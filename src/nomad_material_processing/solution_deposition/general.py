@@ -55,12 +55,30 @@ class SolutionProcessingEnvironment(ArchiveSection):
     )
 
 
+class DepositionSampleReference(CompositeSystemReference):
+    """A sample that a deposition step applied to, with the film it created on it."""
+
+    deposited_layer = SubSection(
+        section_def=ThinFilmReference,
+        links=['https://purl.archive.org/tfsco/TFSCO_00000007'],
+        description='The thin film this step deposited on the sample. Film '
+        'composition and geometry belong to the referenced film.',
+    )
+
+
 class SolutionProcessingStep(ProcessStep):
     """
     An operation within a solution deposition process, either depositing a liquid or
     treating the deposited film, for example by drying or annealing.
     """
 
+    samples = SubSection(
+        section_def=CompositeSystemReference,
+        repeats=True,
+        links=['https://purl.archive.org/tfsco/TFSCO_00005000'],
+        description='The samples of the process that went through this step. Empty '
+        'if the step applied to all samples of the process.',
+    )
     sample_temperature = Quantity(
         type=float,
         unit='kelvin',
@@ -105,11 +123,13 @@ class DepositionStep(SolutionProcessingStep):
         ),
     )
 
-    deposited_layer = SubSection(
-        section_def=ThinFilmReference,
-        links=['https://purl.archive.org/tfsco/TFSCO_00000007'],
-        description='The thin film deposited during this step. '
-        'Film composition and geometry belong to the referenced film.',
+    samples = SubSection(
+        section_def=DepositionSampleReference,
+        repeats=True,
+        links=['https://purl.archive.org/tfsco/TFSCO_00005000'],
+        description='The samples of the process that went through this step, each '
+        'with the thin film deposited on it. Empty if the step applied to all samples '
+        'of the process; to record the deposited films, list every sample.',
     )
 
 
@@ -225,39 +245,6 @@ class AnnealingStep(TreatmentStep):
     )
 
 
-class ParameterVariation(ArchiveSection):
-    """
-    A step that some samples of the process went through instead of one of its nominal
-    steps, for example one temperature of an annealing series.
-
-    The replacing step takes the place of the replaced step for the named samples and
-    is complete by itself: it takes no values from the replaced step, so a value left
-    empty is not recorded for these samples. The replaced step still applies to all
-    other samples, and all other steps still apply to the named samples.
-    """
-
-    replaced_step = Quantity(
-        type=SolutionProcessingStep,
-        description='The nominal process step that the named samples did not go '
-        'through.',
-        a_eln=ELNAnnotation(
-            component='ReferenceEditQuantity',
-        ),
-    )
-    samples = SubSection(
-        section_def=CompositeSystemReference,
-        repeats=True,
-        description='The samples that went through the replacing step instead of the '
-        'replaced step.',
-    )
-    replacing_step = SubSection(
-        section_def=SolutionProcessingStep,
-        description='The complete step that the named samples went through instead of '
-        'the replaced step. It may be of another step type. Values left empty are not '
-        'taken from the replaced step.',
-    )
-
-
 class SolutionDeposition(SampleDeposition):
     """Deposition of material from a liquid solution onto an existing surface."""
 
@@ -282,15 +269,11 @@ class SolutionDeposition(SampleDeposition):
     steps = SubSection(
         section_def=SolutionProcessingStep,
         repeats=True,
-        description='The ordered nominal steps of the solution deposition process. '
-        'They apply to all samples, except where a parameter variation replaces a step '
-        'for some of them.',
-    )
-    parameter_variations = SubSection(
-        section_def=ParameterVariation,
-        repeats=True,
-        description='The steps that some of the samples of the process went through '
-        'instead of nominal steps, such as the members of a parameter series.',
+        description='The steps of the solution deposition process. A sample went '
+        'through every step that names it and every step that names no samples. '
+        'Samples processed under different conditions, such as the members of a '
+        'parameter series, go through separate steps that may run in parallel, each '
+        'with its own start time.',
     )
 
 
