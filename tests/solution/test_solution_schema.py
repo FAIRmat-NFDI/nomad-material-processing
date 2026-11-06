@@ -1,6 +1,9 @@
 import pytest
 from nomad.client import normalize_all, parse
-from nomad.datamodel.metainfo.basesections import PubChemPureSubstanceSection
+from nomad.datamodel.metainfo.basesections import (
+    PubChemPureSubstanceSection,
+    PureSubstanceSection,
+)
 from nomad.units import ureg
 
 from nomad_material_processing.solution.general import (
@@ -8,6 +11,29 @@ from nomad_material_processing.solution.general import (
     SolutionComponent,
     SolutionComponentReference,
 )
+
+
+@pytest.fixture(autouse=True)
+def mock_pubchem(monkeypatch):
+    """Use fixed enrichment data without querying PubChem."""
+    substances = {
+        'Water': (962, 'H2O', 18.010564684),
+        'Sodium Chloride': (5234, 'ClNa', 57.95862196),
+    }
+
+    def normalize_pubchem(section, archive, logger):
+        if section.name not in substances:
+            pytest.fail(f'No mocked PubChem data for {section.name!r}.')
+        cid, formula, molecular_mass = substances[section.name]
+        section.pub_chem_cid = cid
+        section.molecular_formula = formula
+        section.molecular_mass = molecular_mass * ureg('Da')
+
+        # Run the parent normalization as
+        # PubChemPureSubstanceSection inherits from PureSubstanceSection
+        PureSubstanceSection.normalize(section, archive, logger)
+
+    monkeypatch.setattr(PubChemPureSubstanceSection, 'normalize', normalize_pubchem)
 
 
 def test_solution_component():
