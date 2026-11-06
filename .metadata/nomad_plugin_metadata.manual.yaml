@@ -1,0 +1,84 @@
+# Maintainer-owned metadata overrides and manual additions.
+# This file is never machine-overwritten after creation.
+# Use null/empty values as placeholders; only non-empty values override auto output.
+# list[str] domain/topic tags (e.g. "simulations", "spectroscopy")
+subject:
+  - synthesis
+  - material-processing
+  - thin-films
+  - vapor-deposition
+  - workflows
+# enum {alpha, beta, stable, archived}
+maturity: stable
+# str, e.g. "main"
+repository_default_branch: main
+
+# Deployment flags.
+deployment:
+  # boolean
+  on_central: true
+  # boolean
+  on_example_oasis: null
+  # boolean
+  on_pypi: true
+  # str (PyPI package name)
+  pypi_package: nomad-material-processing
+
+# Suggested usages for registry filtering/discovery.
+suggested_usages:
+  -
+    # str (stable ID slug), e.g. "parse-xrd-patterns"
+    id: model-vapor-deposition-processes
+    # str
+    title: Model vapor deposition processing metadata
+    # str (what user wants to do), e.g. "Import and parse raw files"
+    user_intent: Structure CVD and PVD process metadata in NOMAD entries
+    # enum {simulations, measurements, synthesis, cross-domain, workflow, infrastructure}
+    domain_category: synthesis
+    # str, e.g. "XRD", "DFT"
+    technique: vapor-deposition
+    # str, e.g. "beginner", "expert"
+    audience: intermediate
+    # enum {alpha, beta, stable, archived}
+    maturity: stable
+    # list[str]
+    tags: [cvd, pvd, mbe, pld, sputtering]
+  -
+    # str (stable ID slug), e.g. "parse-xrd-patterns"
+    id: harmonize-processing-workflows
+    # str
+    title: Harmonize material processing workflows
+    # str (what user wants to do), e.g. "Import and parse raw files"
+    user_intent: Reuse shared schema sections across material processing plugins
+    # enum {simulations, measurements, synthesis, cross-domain, workflow, infrastructure}
+    domain_category: workflow
+    # str, e.g. "XRD", "DFT"
+    technique: schema-harmonization
+    # str, e.g. "beginner", "expert"
+    audience: advanced
+    # enum {alpha, beta, stable, archived}
+    maturity: stable
+    # list[str]
+    tags: [schema, interoperability, processing]
+
+# Optional file format metadata enrichments.
+file_format_support:
+  -
+    # str (stable ID), e.g. "csv"
+    id: null
+    # str display label, e.g. ".csv"
+    label: null
+    # str capability reference (links to capabilities[].id), e.g. "vasp_parser"
+    capability_id: null
+    # str producer/code family for ambiguous extensions, e.g. "vasp", "quantumespresso"
+    producer: null
+    # list[str] extensions including dot, e.g. [".csv", ".txt"]
+    extensions: []
+    # list[str], e.g. ["text/csv"]
+    mime_types: []
+    # str, e.g. "CIF", "NeXus"
+    standard: null
+    # str, instrument or context label
+    instrument_context: null
+    # str free text notes
+    notes: null
